@@ -5,7 +5,7 @@ agent a workflow: a short plan you approve, test-first code, independent
 validation and review, and a pre-PR gate, so review, QA and production find
 nothing. Any language, any stack. Claude Code, Codex, OpenCode.
 
-[Slides (3 min)](docs/slides/harnex.html)
+[Slides (3 min)](https://tankibaj.github.io/harnex/slides/harnex.html)
 
 ## The problem
 
