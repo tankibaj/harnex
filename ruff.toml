@@ -1,0 +1,6 @@
+# Same rules locally and in CI (CI pins the ruff version too).
+target-version = "py310"
+line-length = 120
+
+[lint]
+select = ["E", "F", "W", "B", "UP"]

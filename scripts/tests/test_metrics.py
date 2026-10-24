@@ -36,7 +36,8 @@ class HookTest(unittest.TestCase):
     def test_logs_harnex_agent_skill_and_slash_only(self):
         base = {"session_id": "s", "cwd": "/r/tenant-service"}
         cases = [
-            {**base, "hook_event_name": "PreToolUse", "tool_name": "Agent", "tool_input": {"subagent_type": "harnex:reviewer", "model": "sonnet", "prompt": "SECRET"}},
+            {**base, "hook_event_name": "PreToolUse", "tool_name": "Agent",
+             "tool_input": {"subagent_type": "harnex:reviewer", "model": "sonnet", "prompt": "SECRET"}},
             {**base, "hook_event_name": "PreToolUse", "tool_name": "Skill", "tool_input": {"skill": "harnex:harnex"}},
             {**base, "hook_event_name": "UserPromptSubmit", "prompt": "/harnex:review check auth"},
             {**base, "hook_event_name": "UserPromptSubmit", "prompt": "/harnex fix the bug"},

@@ -72,8 +72,8 @@ def _gl_thread(d, linked=None):
 def _gh_nodes(data):
     try:
         return data["data"]["repository"]["pullRequest"]["reviewThreads"]["nodes"] or []
-    except (KeyError, TypeError):
-        raise ValueError("unexpected GitHub reviewThreads response")
+    except (KeyError, TypeError) as err:
+        raise ValueError("unexpected GitHub reviewThreads response") from err
 
 
 def _gh_comments(t):
