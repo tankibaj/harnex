@@ -29,7 +29,10 @@ nothing. Any language, any stack. Claude Code, Codex, OpenCode.
 ```bash
 git clone https://github.com/tankibaj/harnex && node harnex/scripts/install-agents.mjs --all
 ```
-Without them, harnex runs each phase itself; same workflow, less isolation.
+> [!WARNING]
+> **Skip this and Codex or OpenCode run every phase in one agent.** Same
+> workflow, but the reviewer is no longer a fresh pair of eyes: it has seen
+> the code being written. Install the sub-agents for an independent review.
 
 **Browser for UI review and QA** (optional; without one these checks are reported `NOT VERIFIED`):
 ```bash
