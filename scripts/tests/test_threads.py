@@ -1,5 +1,10 @@
 """Tests for skills/pr-review/threads.py. Run: python3 -m unittest discover -s scripts/tests"""
-import json, os, subprocess, sys, tempfile, unittest
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPTS = os.path.join(os.path.dirname(os.path.dirname(HERE)), "skills", "pr-review")

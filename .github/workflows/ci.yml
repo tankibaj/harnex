@@ -9,12 +9,24 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Shell scripts (shellcheck)
+        run: shellcheck scripts/*.sh
+      - name: Python (ruff)
+        run: pipx run ruff check scripts skills
+      - name: Commit messages are Conventional Commits
+        if: github.event_name == 'pull_request'
+        run: node scripts/release.mjs --lint origin/${{ github.base_ref }}
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -22,12 +34,45 @@ jobs:
         with:
           python-version: '3.12'
       - run: npm test
-      - name: Commit messages are Conventional Commits
-        if: github.event_name == 'pull_request'
-        run: node scripts/release.mjs --lint origin/${{ github.base_ref }}
-      - name: Plugin manifest is valid
+
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install -g @anthropic-ai/claude-code
+      - name: Claude Code plugin and marketplace manifests
+        run: claude plugin validate .
+      - name: skills.sh lists every skill
         run: |
-          if ! npm install -g @anthropic-ai/claude-code >/dev/null 2>&1; then
-            echo "::warning::claude CLI unavailable; manifest validation skipped"; exit 0
-          fi
-          claude plugin validate .
+          out="$(npx -y skills@latest add . --list 2>&1)"
+          for s in harnex pr-review qa retro; do
+            grep -q "│    $s$" <<<"$out" || { echo "skills.sh does not list $s"; exit 1; }
+          done
+
+  install:
+    # Install the way a user would, with each real CLI, in throwaway config dirs.
+    name: install (${{ matrix.agent }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - agent: claude
+            cli: '@anthropic-ai/claude-code'
+          - agent: codex
+            cli: '@openai/codex'
+          - agent: opencode
+            cli: 'opencode-ai'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm install -g ${{ matrix.cli }}
+      - run: bash scripts/e2e.sh ${{ matrix.agent }}

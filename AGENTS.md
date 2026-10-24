@@ -38,3 +38,8 @@ For agents working ON this repo. What users run lives in `skills/` and
 - `npm test`: plugin layout + leak test, release, agent install (node),
   metrics hook and `threads.py` (python).
 - `npm run validate`: `claude plugin validate .`.
+- `npm run e2e`: installs with the real Claude Code, Codex and OpenCode CLIs
+  into throwaway config dirs and checks every skill and agent is found.
+- `npm run lint`: shellcheck and ruff.
+- Private words that must never ship go in the git-ignored `.leakwords`
+  (one per line); the leak test adds them locally. CI checks the public list.

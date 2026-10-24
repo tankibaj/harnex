@@ -5,7 +5,11 @@ Appends one JSONL line per harnex agent/skill spawn or /harnex command to
 ~/.harnex/metrics.jsonl (override with HARNEX_METRICS). Logs names only,
 never prompts or code. Never blocks: always exits 0.
 """
-import json, os, re, sys, time
+import json
+import os
+import re
+import sys
+import time
 
 LOG = os.environ.get("HARNEX_METRICS", os.path.expanduser("~/.harnex/metrics.jsonl"))
 SLASH = re.compile(r"^\s*/(?:harnex(?::(\w[\w-]*))?|(pr-review|qa|retro))\b")

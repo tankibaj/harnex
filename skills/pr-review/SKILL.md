@@ -12,6 +12,10 @@ check it against `criteria.md`, get a correctness review from
 understands its risky lines. You recommend; the human decides. Never edit,
 commit, approve, merge, or post without a yes. GitHub first, GitLab second.
 
+Agent names: `harnex:<agent>` in Claude Code, `harnex-<agent>` in Codex and
+OpenCode (`scripts/install-agents.mjs`). None installed: do that agent's work
+yourself with the same inputs and output (see `../harnex/SKILL.md`).
+
 ## 1. Resolve the PR
 Works from any directory; the session's repo does not matter.
 - **PR link** (`https://github.com/<owner>/<repo>/pull/<n>`) or **MR link**

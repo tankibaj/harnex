@@ -243,11 +243,11 @@ button:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 <section class="slide" aria-label="Developer flow"><div class="in">
   <p class="eyebrow">One PR, two developers, both on <span class="cmd">/harnex</span></p>
   <h2>Developer flow.</h2>
-  <div class="flow" role="img" aria-label="One PR timeline. Developer A builds with /harnex and opens the PR. Developer B reviews with /pr-review and posts comments. Developer A fixes them with /harnex and pushes; Developer B resolves the threads. The PR is merged.">
+  <div class="flow" role="img" aria-label="One PR timeline. Developer A builds with /harnex and opens the PR. Developer B reviews with /pr-review and posts comments. Developer A fixes what the review asked for with /harnex and pushes; Developer B resolves the threads. The PR is merged.">
     <div class="r h"><div class="hd ha">Developer A</div><span class="mr">PR</span><div class="hd hb">Developer B</div></div>
     <div class="r a"><div class="card"><span class="cmd">/harnex</span><br><span>Builds it, checks it, writes the PR.</span><br><b class="yes">You open the PR</b></div><i class="node"></i></div>
     <div class="r b"><i class="node"></i><div class="card"><span class="cmd">/pr-review</span><br><span>A fresh review, the same checks.</span><br><b class="yes">You post the comments</b></div></div>
-    <div class="r a"><div class="card"><span class="cmd">/harnex</span> <span>with the comments</span><br><span>Fixes the ones you pick, re-checks them.</span><br><b class="yes">You push and reply</b></div><i class="node"></i></div>
+    <div class="r a"><div class="card"><span class="cmd">/harnex</span> <span>&lt;what to change&gt;</span><br><span>Fix what the review asked for.</span><br><b class="yes">You push and reply</b></div><i class="node"></i></div>
     <div class="r b"><i class="node"></i><div class="card">Resolves the threads.<br><span>More comments? Back to A.</span></div></div>
     <div class="r m last"><i class="node"></i><div class="ml">Merged <span>by you</span></div></div>
     

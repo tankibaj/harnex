@@ -1,5 +1,10 @@
 """Tests for the metrics hook (scripts/metrics.py). Run: python3 -m unittest discover -s scripts/tests"""
-import json, os, subprocess, sys, tempfile, unittest
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPTS = os.path.dirname(HERE)
@@ -26,7 +31,7 @@ class HookTest(unittest.TestCase):
         if not os.path.exists(self.log):
             return []
         with open(self.log) as f:
-            return [json.loads(l) for l in f]
+            return [json.loads(line) for line in f]
 
     def test_logs_harnex_agent_skill_and_slash_only(self):
         base = {"session_id": "s", "cwd": "/r/tenant-service"}
@@ -40,7 +45,7 @@ class HookTest(unittest.TestCase):
         ]
         for c in cases:
             self.assertEqual(run_hook(json.dumps(c), self.log), (0, ""))
-        got = [(l["tool"], l["name"], l["repo"]) for l in self.lines()]
+        got = [(r["tool"], r["name"], r["repo"]) for r in self.lines()]
         self.assertEqual(got, [
             ("Agent", "harnex:reviewer", "tenant-service"),
             ("Skill", "harnex:harnex", "tenant-service"),

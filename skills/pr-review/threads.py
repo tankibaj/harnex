@@ -17,7 +17,11 @@ comment's originalCommit). --discussions FILE reads the raw host output
 (a GitLab list, or the GitHub graphql response) and is used by tests.
 Read-only; stdlib only. Exit 2 on a bad URL, 3 when the comment is not found.
 """
-import argparse, json, re, subprocess, sys
+import argparse
+import json
+import re
+import subprocess
+import sys
 
 GITLAB_URL = re.compile(r"^https?://([^/]+)/(.+?)/-/merge_requests/(\d+)(?:[/?][^#]*)?(?:#note_(\d+))?$")
 GITHUB_URL = re.compile(r"^https?://([^/]+)/([^/]+/[^/]+)/pull/(\d+)(?:/[^?#]*)?(?:\?[^#]*)?(?:#discussion_r(\d+))?(?:#.*)?$")
@@ -97,14 +101,16 @@ def kind_of(data):
 
 
 def select(data, note_id, all_threads=False):
-    if kind_of(data) == "github":
-        items, to_thread = _gh_nodes(data), _gh_thread
-        ids = lambda t: [c.get("databaseId") for c in _gh_comments(t)]
-        keep = lambda t: bool(_gh_comments(t)) and (all_threads or not t.get("isResolved"))
-    else:
-        items, to_thread = data, _gl_thread
-        ids = lambda d: [n.get("id") for n in d.get("notes") or []]
-        keep = lambda d: _gl_keep(d, all_threads)
+    github = kind_of(data) == "github"
+    items, to_thread = (_gh_nodes(data), _gh_thread) if github else (data, _gl_thread)
+
+    def ids(t):
+        return [c.get("databaseId") for c in _gh_comments(t)] if github else [n.get("id") for n in t.get("notes") or []]
+
+    def keep(t):
+        if github:
+            return bool(_gh_comments(t)) and (all_threads or not t.get("isResolved"))
+        return _gl_keep(t, all_threads)
     if note_id is not None:
         for t in items:
             if note_id in ids(t):

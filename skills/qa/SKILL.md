@@ -11,6 +11,10 @@ environment. For a QA engineer or a second developer on any PR, or for a
 goal on the current branch. Report only: never edit code, commit, approve, or merge;
 never post or run anything without a yes. Never prod.
 
+Agent names: `harnex:<agent>` in Claude Code, `harnex-<agent>` in Codex and
+OpenCode (`scripts/install-agents.mjs`). None installed: do that agent's work
+yourself with the same inputs and output (see `../harnex/SKILL.md`).
+
 ## 1. Resolve the change
 - **PR link, number, or branch:** resolve the PR as
   `../pr-review/SKILL.md` step 1 does (GitHub first, GitLab second; the

@@ -13,7 +13,7 @@ const SHIPPED = ['skills', 'agents', 'hooks', 'docs', 'README.md'];
 const PRIVATE = path.join(ROOT, '.leakwords');
 // Stale names from the project this was copied from, and removed skills.
 const LEAKS = ['CLAUDE_PLUGIN_ROOT', 'gradle.md', 'yarn-jest', 'setup.sh', 'workspace.sh',
-  'plugins/', 'mr-resolve', 'deploy-check', 'mr_threads', 'ticket.md', 'mr-description', '/harnex:review', 'stats.py',
+  'devflow', 'DevFlow', 'plugins/', 'mr-resolve', 'deploy-check', 'mr_threads', 'ticket.md', 'mr-description', '/harnex:review', 'stats.py',
   ...(fs.existsSync(PRIVATE) ? fs.readFileSync(PRIVATE, 'utf8').split('\n').map((w) => w.trim()).filter(Boolean) : [])];
 
 function files(p) {
