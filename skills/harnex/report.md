@@ -37,10 +37,6 @@ line.
 - `Review:` each reviewer's verdict and the model it ran on.
 - `UI review:` the `ui-ux-reviewer` verdict, or `UI scope none` checked
   against the changed-file set. UI scope with no UI review means not done.
-- `QA:` cases written, run, failed, and the CRITICAL/HIGH findings
-  (`Not reported: n minor`), or `QA: skipped (<why>)` (declined, no
-  environment, Quick, no UI or API). Skipping never blocks; its findings go
-  through the review loop like any other.
 - `Checklist:` every plan item with its evidence (command and result, test
   name, reviewer line) or `[~] skipped: <reason>`. Skipped gates (e2e,
   browser walk, red check) are listed, never omitted. An item with neither
@@ -95,8 +91,7 @@ reference, or null), `minutes` (per phase and total from the timings file; Quick
 `waits_min`, `rounds`, `findings` (`{critical, must_fix, nice}` across all
 reviewers), `escaped` (findings reviewers raised that the validator's tests
 missed, count), `tests` (`PASS|FAIL|NOT VERIFIED`), `red_check`
-(`proven|n/a|NOT VERIFIED`), `ui_review` (`APPROVE|CHANGES|none`), `explore` (`{rounds, built, kept}`, explore runs only, also when none was kept), `qa` (`{cases, run, failed,
-findings}` or `"skipped"`). No code,
+(`proven|n/a|NOT VERIFIED`), `ui_review` (`APPROVE|CHANGES|none`), `explore` (`{rounds, built, kept}`, explore runs only, also when none was kept). No code,
 file contents, requirement text, or names. `/pr-review`
 and `/qa` write their own kinds with the keys their skills list.
 

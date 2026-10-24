@@ -53,7 +53,7 @@ opencode mcp add          # then: playwright, local, npx @playwright/mcp@latest
 | `/harnex quick\|standard\|full <goal>` | You already know it's small, or risky. |
 | `/harnex explore <goal>` | Not sure which approach is best: builds 2–3 side by side, you keep one. |
 | `/pr-review <PR URL>` | Review any PR (GitLab MRs too): criteria, a fresh review, questions on the risky lines. |
-| `/qa <PR URL or goal>` | Manual test cases; on your yes, runs them in a real browser and against the OpenAPI. |
+| `/qa <PR URL or goal>` | Manual test cases; on your yes, runs them in a real browser and against the OpenAPI. Standalone: run it on the PR `/harnex` opened. |
 | `/retro` | Something slipped through. Proposes the check that would have caught it. `/retro html` saves a readable report. |
 
 Input is mostly your goal in plain words. An issue URL (GitHub or GitLab)
@@ -68,7 +68,7 @@ flowchart TD
   brief -- "refine" --> plan
   brief -- "looks good" --> build["1 · Implementer: failing test, then code"]
   build --> check["2 · Validator + fresh reviewer, at the same time"]
-  check --> ui["3 · UI reviewer if the UI changed · QA if you want"]
+  check --> ui["3 · UI reviewer, if the UI changed"]
   ui --> found{"4 · Findings?"}
   found -- "must-fix or failing test<br/>(up to 3 rounds)" --> fix["Fix, re-check only the fix"] --> check
   found -- "critical, or still failing" --> you["Stops and asks you"]

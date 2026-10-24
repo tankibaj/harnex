@@ -10,7 +10,7 @@ You orchestrate. The goal is a change that does what was asked, is proven by
 tests someone other than its author ran, and has had a fresh correctness
 review, with rigor scaled to risk, not size. Phase agents (`harnex:planner`,
 `harnex:implementer`, `harnex:validator`, `harnex:reviewer`,
-`harnex:ui-ux-reviewer`, `harnex:qa`) carry their own rules and output
+`harnex:ui-ux-reviewer`) carry their own rules and output
 formats; all of them follow
 `standards.md` next to this file. Read it first, and read
 `brief.md`: every mode shows its brief
@@ -119,16 +119,6 @@ take; the brief's "Change mode" option is how the developer overrides it.
    <base>...HEAD` plus uncommitted and untracked, where `<base>` is
    `git symbolic-ref --short refs/remotes/origin/HEAD`, else `develop`, else
    `main`, else `master`. Re-evaluate it every round.
-5. **QA** (`harnex:qa`), optional: offered, never forced. Standard and
-   Full only, never Quick, and only when the change touches a UI (UI scope
-   not `none`) or an API (an `API checks:` item in the plan). Once the
-   validator passes, spawn it in mode `cases` (no browser), alongside the UI
-   reviewer when there is one. Show the table, then follow
-   `../qa/SKILL.md` steps 3-4 only (offer, the
-   non-prod origin confirmed, the human's own login, the run); the run
-   starts after the UI reviewer returns (one browser at a time). Declined
-   or no environment: `QA: skipped (<why>)` in the report, nothing blocks.
-   Findings it does return are real defects and join the review loop.
 
 Webapps, every path: start the dev server once before the first validation,
 the way the repo says (standards.md "Run target"; desktop app:
@@ -148,11 +138,7 @@ the way the repo says (standards.md "Run target"; desktop app:
   the fix diff and verifies those, not the whole change. Re-run the tests
   (yourself on Quick and after your own fix; the validator on the plan's tier
   otherwise). The UI reviewer re-runs in delta mode when UI findings or UI
-  files were touched. QA re-runs the failed cases plus every case touching
-  the fixed files.
-- QA findings (CRITICAL or HIGH only) enter this loop: CRITICAL stays
-  CRITICAL (escalate), HIGH is MUST-FIX and counts in the run's `findings`.
-  Lower failures are `Not reported: n minor`.
+  files were touched.
 - **Cap: 3 rounds**, inline fixes included. Still failing: stop and escalate
   with what remains, what was tried, and a recommendation.
 
@@ -182,7 +168,7 @@ on the developer's yes; an opened PR's link is the last line.
   re-run that reviewer. It is not a fix round and never goes to the
   implementer.
 - Never run the UI reviewer on a failing build or alongside another browser
-  session; the QA run waits for it.
+  session.
 - Green by loosening a test is not green (standards.md "Tests are the
   goalposts").
 - Diff against `<base>` from `origin/HEAD`, never a hardcoded branch.

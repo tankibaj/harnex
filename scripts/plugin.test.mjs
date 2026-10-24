@@ -52,6 +52,15 @@ test('every agent has name, description and a model the CLIs accept', () => {
   }
 });
 
+test('/qa is standalone: the /harnex workflow never runs or offers it', () => {
+  for (const f of files('skills/harnex')) {
+    const s = fs.readFileSync(f, 'utf8');
+    for (const bad of ['harnex:qa', 'harnex-qa', '../qa/SKILL.md']) {
+      assert.ok(!s.includes(bad), `${path.relative(ROOT, f)} still wires in QA (${bad})`);
+    }
+  }
+});
+
 test('skills reference their own files by relative path that exists', () => {
   for (const d of fs.readdirSync(path.join(ROOT, 'skills'))) {
     for (const f of files(path.join('skills', d))) {

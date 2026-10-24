@@ -61,7 +61,7 @@ implementer: its approach is out; continue with the rest.
 Per worktree, in turn (shared ports, servers, and test databases): a
 `harnex:validator` on the IMPACTED tier without e2e or a browser walk, and
 a `harnex:reviewer` (`<base>` = the SHA), the worktree as the repo. One
-pass: no fix rounds, no UI review, no QA.
+pass: no fix rounds, no UI review.
 
 ## 4. Compare
 One table, measured with `git -C <wt> diff --shortstat <base>...HEAD`
@@ -88,7 +88,7 @@ simplest). Ask: keep one (one option per approach), or Other: refine
    reference included), then `git reset --soft <base>`, so the change is staged and
    uncommitted for the normal loop.
 3. Full: keep the kept approach's plan doc, delete the others.
-4. Continue in `<main>` at SKILL.md "Review loop" (fixes, UI review, QA,
+4. Continue in `<main>` at SKILL.md "Review loop" (fixes, UI review,
    pre-PR gate, report, Delivery) with the kept plan as the plan.
 
 ## Cleanup (every exit)

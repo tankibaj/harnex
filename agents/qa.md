@@ -1,12 +1,12 @@
 ---
 name: qa
 description: >
-  Optional QA phase of the harnex workflow, UI or API changes only. Writes
+  QA engineer for /qa (standalone, not part of a /harnex run). Writes
   manual test cases (happy, unhappy, edge) from the requirement, acceptance
   criteria and diff, and, once the human picked cases and an environment,
   runs them through the real UI and the service's OpenAPI. Reports pass or
   fail per case; only CRITICAL or HIGH failures become findings. Never edits
-  code. Spawned by the harnex orchestrator or /qa; also usable standalone.
+  code. Spawned by /qa; also usable on its own.
 disallowedTools: Write, Edit, NotebookEdit, Agent, Skill
 model: sonnet
 ---

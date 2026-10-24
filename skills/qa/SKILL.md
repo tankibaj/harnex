@@ -96,9 +96,8 @@ URL: `printf %s <web_url> | shasum | cut -c1-12`; omit for a goal), `cases`,
 (`local|stage|none`), `posted`. No names, URLs, or text. Skip silently on
 failure.
 
-Inside `/harnex` this skill is not run: the orchestrator uses steps 2-4
-only, and the run's metrics record carries the `qa` block instead of a
-`kind: "qa"` line.
+Standalone: `/harnex` never runs or offers it. Run `/qa` yourself, e.g. on
+the PR `/harnex` opened.
 
 ## Gotchas
 - The worktree is the target; never test the current checkout unless it is
