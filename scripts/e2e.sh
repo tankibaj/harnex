@@ -57,8 +57,8 @@ e2e_opencode() {
   (cd "$proj" && npx -y skills@latest add "$REPO" -a opencode -y >/dev/null 2>&1)
   HOME="$WORK/home" node "$REPO/scripts/install-agents.mjs" --opencode >/dev/null
   # Outputs are large (every skill's content): write to files, grep the files.
-  (cd "$proj" && opencode debug skill >"$WORK/oc-skills.json" 2>&1 || true)
-  (cd "$proj" && opencode agent list >"$WORK/oc-agents.txt" 2>&1 || true)
+  (cd "$proj" && { opencode debug skill >"$WORK/oc-skills.json" 2>&1; true; })
+  (cd "$proj" && { opencode agent list >"$WORK/oc-agents.txt" 2>&1; true; })
   for s in $SKILLS; do check "skill $s" grep -q "\"name\": \"$s\"" "$WORK/oc-skills.json"; done
   for a in $AGENTS; do check "agent harnex-$a" grep -q "^harnex-$a (subagent)" "$WORK/oc-agents.txt"; done
   unset XDG_CONFIG_HOME
