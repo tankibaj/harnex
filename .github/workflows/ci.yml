@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm test
+      - name: Commit messages are Conventional Commits
+        if: github.event_name == 'pull_request'
+        run: node scripts/release.mjs --lint origin/${{ github.base_ref }}
+      - name: Plugin manifest is valid
+        run: |
+          if ! npm install -g @anthropic-ai/claude-code >/dev/null 2>&1; then
+            echo "::warning::claude CLI unavailable; manifest validation skipped"; exit 0
+          fi
+          claude plugin validate .

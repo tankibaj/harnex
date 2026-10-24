@@ -1,0 +1,11 @@
+{
+  "name": "harnex",
+  "version": "0.1.0",
+  "description": "A development workflow for AI coding agents: a short plan you approve, test-first code, independent validation and review, and a pre-PR gate, so review, QA and production find nothing. Any language, any stack.",
+  "author": { "name": "tankibaj", "url": "https://github.com/tankibaj" },
+  "homepage": "https://github.com/tankibaj/harnex",
+  "repository": "https://github.com/tankibaj/harnex",
+  "license": "MIT",
+  "keywords": ["workflow", "agents", "tdd", "code-review", "qa", "planning"],
+  "skills": ["./skills/harnex", "./skills/pr-review", "./skills/qa", "./skills/retro"]
+}

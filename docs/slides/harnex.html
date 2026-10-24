@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>harnex</title>
+<meta name="description" content="harnex for developers, in 3 minutes: the problem, how it works, how to use it.">
+<script>
+  // Apply the saved theme before first paint.
+  try { var t = localStorage.getItem('harnex-theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<style>
+:root {
+  color-scheme: light dark;
+  --bg: #ffffff; --bg2: #f5f5f7; --ink: #1d1d1f; --ink2: #6e6e73; --hair: #d2d2d7;
+  --blue: #0066cc; --orange: #c93400; --code: #f5f5f7;
+  --red: #d70015; --green: #248a3d; --indigo: #3634a3; --purple: #8944ab;
+  --orange-t: rgba(201,52,0,.09); --indigo-t: rgba(54,52,163,.07); --green-t: rgba(36,138,61,.09); --purple-t: rgba(137,68,171,.08);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme=light]) {
+    --bg: #000000; --bg2: #1c1c1e; --ink: #f5f5f7; --ink2: #98989d; --hair: #38383a;
+    --blue: #2997ff; --orange: #ff9f0a; --code: #1c1c1e;
+    --red: #ff6961; --green: #30d158; --indigo: #7d7aff; --purple: #da8fff;
+    --orange-t: rgba(255,159,10,.14); --indigo-t: rgba(125,122,255,.14); --green-t: rgba(48,209,88,.13); --purple-t: rgba(218,143,255,.13);
+  }
+}
+:root[data-theme=dark] {
+  color-scheme: dark;
+  --bg: #000000; --bg2: #1c1c1e; --ink: #f5f5f7; --ink2: #98989d; --hair: #38383a;
+  --blue: #2997ff; --orange: #ff9f0a; --code: #1c1c1e;
+    --red: #ff6961; --green: #30d158; --indigo: #7d7aff; --purple: #da8fff;
+    --orange-t: rgba(255,159,10,.14); --indigo-t: rgba(125,122,255,.14); --green-t: rgba(48,209,88,.13); --purple-t: rgba(218,143,255,.13);
+}
+:root[data-theme=light] { color-scheme: light; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%;
+  overflow: hidden; letter-spacing: -0.011em;
+}
+code, pre { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; letter-spacing: 0; }
+
+/* slides */
+.slide { position: fixed; inset: 0; display: none; overflow-y: auto; overflow-x: hidden; padding: 72px 16px 72px; }
+.slide.on { display: flex; animation: fade .35s ease; }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+.in { width: 100%; max-width: 1080px; margin: auto; }
+.eyebrow { color: var(--ink2); font-size: clamp(15px, 1.1vw + .4vh, 21px); font-weight: 600; margin: 0 0 .5em; letter-spacing: 0; }
+h1, h2 { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif; font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; margin: 0; }
+h1 { font-size: clamp(40px, 4.6vw + 1.6vh, 88px); }
+h2 { font-size: clamp(34px, 3.6vw + 1.2vh, 68px); }
+.lead { font-size: clamp(19px, 1.4vw + .7vh, 30px); color: var(--ink2); font-weight: 500; margin: .55em 0 0; line-height: 1.3; letter-spacing: -0.015em; }
+.foot { color: var(--ink2); font-size: clamp(15px, .9vw + .5vh, 19px); margin: 1.6em 0 0; }
+
+/* hairline list */
+.list { list-style: none; margin: clamp(20px, 3.5vh, 44px) 0 0; padding: 0; border-top: 1px solid var(--hair); }
+.list li { display: grid; grid-template-columns: minmax(0, 23rem) minmax(0, 1fr); gap: 4px 32px; padding: clamp(10px, 1.6vh, 18px) 0; border-bottom: 1px solid var(--hair); font-size: clamp(17px, 1vw + .7vh, 23px); line-height: 1.3; }
+.list b { font-weight: 600; }
+.list span { color: var(--ink2); }
+.list.pain b { color: var(--red); }
+.list.fix b { color: var(--green); }
+.list.plain li { grid-template-columns: 2.2em minmax(0, 1fr); }
+.list.plain i { font-style: normal; color: var(--ink2); font-variant-numeric: tabular-nums; }
+.list code { font-size: .88em; color: var(--ink); }
+
+/* shared diagram text */
+.cmd { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-weight: 600; font-size: .95em; letter-spacing: -0.01em; }
+
+/* developer flow: a git-history line in the middle; A's steps branch left, B's right */
+.flow { margin-top: clamp(14px, 2.4vh, 30px); font-size: clamp(15px, .75vw + .65vh, 20px); line-height: 1.3; }
+.r { display: grid; grid-template-columns: minmax(0,1fr) 64px minmax(0,1fr); align-items: center; padding: clamp(4px, .8vh, 8px) 0; position: relative; }
+.r::after { content: ""; position: absolute; left: 50%; margin-left: -1px; top: 0; bottom: 0; width: 2px; background: var(--hair); z-index: 0; }
+.r.h::after { top: auto; height: 50%; bottom: 0; background: linear-gradient(transparent, var(--hair)); }
+.r.last::after { bottom: 50%; }
+.r .hd { font-weight: 700; font-size: clamp(14px, .7vw + .55vh, 18px); padding: 0 16px 4px; }
+.r .hd.ha { grid-column: 1; color: var(--indigo); }
+.r .hd.hb { grid-column: 3; color: var(--purple); }
+.r .mr { grid-column: 2; justify-self: center; position: relative; z-index: 1; background: var(--bg2); color: var(--ink2); font-size: .7em; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+.node { grid-column: 2; grid-row: 1; justify-self: center; width: 16px; height: 16px; border-radius: 50%; background: var(--bg); border: 3px solid var(--c); position: relative; z-index: 1; }
+.node::before { content: ""; position: absolute; top: 50%; margin-top: -1px; height: 2px; width: 24px; background: var(--c); }
+.r.a { --c: var(--indigo); } .r.b { --c: var(--purple); }
+.r.a .node::before { right: 100%; } .r.b .node::before { left: 100%; }
+.r.a .card { grid-column: 1; grid-row: 1; } .r.b .card { grid-column: 3; grid-row: 1; }
+.r.m .node { --c: var(--ink2); background: var(--ink2); }
+.r.m .node::before { display: none; }
+.r.m .ml { grid-column: 3; grid-row: 1; color: var(--ink2); font-weight: 600; font-size: .9em; padding-left: 16px; }
+.r.m .ml span { font-weight: 400; }
+.card { border-radius: 14px; padding: clamp(10px, 1.5vh, 16px) 16px; }
+.r.a .card { background: var(--indigo-t); }
+.r.b .card { background: var(--purple-t); }
+.card span { color: var(--ink2); }
+.card .cmd { color: var(--ink); }
+.yes { display: inline-block; margin-top: 6px; background: var(--orange-t); color: var(--orange); font-weight: 600; font-size: .85em; padding: 3px 10px; border-radius: 999px; }
+.yes::before { content: "✓ "; }
+.escape { margin: clamp(14px, 2.2vh, 26px) 0 0; color: var(--ink2); font-size: clamp(14px, .7vw + .55vh, 18px); }
+.escape b { color: var(--red); font-weight: 600; }
+
+/* how /harnex works: phases, then the check-and-fix cycle as a real loop */
+.how { margin-top: clamp(14px, 2.4vh, 30px); font-size: clamp(15px, .75vw + .65vh, 20px); line-height: 1.3; }
+.row { display: grid; grid-template-columns: 7.5em minmax(0, 1fr); gap: 16px; padding: clamp(7px, 1.1vh, 12px) 0; border-bottom: 1px solid var(--hair); }
+.row:first-child { border-top: 1px solid var(--hair); }
+.ph { font-weight: 700; }
+.row span { color: var(--ink2); }
+.cycle { display: grid; grid-template-columns: 7.5em minmax(0, 1fr); gap: 16px; padding: clamp(10px, 1.5vh, 16px) 0; border-bottom: 1px solid var(--hair); }
+.loopbox { border: 2px solid var(--green); border-radius: 18px; padding: clamp(8px, 1.3vh, 14px) 16px; position: relative; }
+.loopbox .ltag { position: absolute; top: -12px; left: 14px; background: var(--bg); color: var(--green); font-weight: 700; font-size: .78em; padding: 0 8px; letter-spacing: .02em; }
+.steps { list-style: none; margin: 0; padding: 0; counter-reset: c; }
+.steps li { counter-increment: c; display: grid; grid-template-columns: 1.8em minmax(0,1fr); padding: clamp(4px, .7vh, 7px) 0; }
+.steps li::before { content: counter(c); color: var(--green); font-weight: 700; font-variant-numeric: tabular-nums; }
+.steps span { color: var(--ink2); }
+.back { margin-top: 6px; padding-top: 8px; border-top: 1px dashed var(--hair); color: var(--green); font-weight: 600; }
+.back span { color: var(--ink2); font-weight: 400; }
+.modes { display: inline-flex; gap: 6px; margin-left: 8px; vertical-align: 1px; }
+.modes i { font-style: normal; font-size: .78em; font-weight: 600; padding: 2px 10px; border-radius: 999px; background: var(--bg2); }
+.agent { color: var(--indigo); font-weight: 600; }
+.you2 { color: var(--orange); font-weight: 600; }
+
+/* modes: three columns, more checks left to right */
+.mgrid { margin-top: clamp(18px, 3vh, 36px); display: grid; grid-template-columns: 8em repeat(3, minmax(0,1fr)); font-size: clamp(14px, .7vw + .6vh, 19px); line-height: 1.3; }
+.mgrid > div { padding: clamp(8px, 1.3vh, 14px) 14px clamp(8px, 1.3vh, 14px) 0; border-bottom: 1px solid var(--hair); }
+.mgrid .mh { font-weight: 700; font-size: 1.15em; border-bottom-width: 2px; }
+.mgrid .mh small { display: block; font-weight: 500; font-size: .7em; color: var(--ink2); margin-top: 2px; }
+.mgrid .q { color: var(--green); } .mgrid .st { color: var(--blue); } .mgrid .fu { color: var(--orange); }
+.mgrid .q.mh { border-bottom-color: var(--green); } .mgrid .st.mh { border-bottom-color: var(--blue); } .mgrid .fu.mh { border-bottom-color: var(--orange); }
+.mgrid .lbl { color: var(--ink2); font-weight: 600; }
+.mgrid div:not(.mh):not(.lbl) { color: var(--ink); }
+.mgrid b.you2 { font-weight: 600; }
+.steps-up { margin: clamp(14px, 2.2vh, 24px) 0 0; color: var(--ink2); font-size: clamp(14px, .7vw + .55vh, 18px); }
+.steps-up b { color: var(--ink); font-weight: 600; }
+
+/* less code: before vs after */
+.vs { margin-top: clamp(18px, 3vh, 36px); display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); column-gap: 32px; font-size: clamp(16px, .9vw + .7vh, 22px); line-height: 1.3; }
+.vs > div { padding: clamp(9px, 1.4vh, 15px) 0; border-bottom: 1px solid var(--hair); }
+.vs > div:nth-child(odd) { color: var(--ink2); text-decoration: line-through; text-decoration-color: var(--red); text-decoration-thickness: 1.5px; }
+.vs > div:nth-child(even) { color: var(--ink); font-weight: 600; }
+.vs .vh { text-decoration: none !important; font-size: .78em; font-weight: 700; color: var(--ink2); border-bottom: 2px solid var(--hair); }
+.vs .vh.g { color: var(--green); border-bottom-color: var(--green); }
+.vs .vh.g .cmd { color: var(--green); }
+
+/* where to open your session */
+.where { margin-top: clamp(18px, 3vh, 36px); display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 16px; }
+.where > div { background: var(--bg2); border-radius: 18px; padding: clamp(16px, 2.6vh, 28px) clamp(18px, 2vw, 28px); }
+.where .k { color: var(--ink2); font-weight: 600; font-size: clamp(14px, .7vw + .55vh, 18px); }
+.where .v { font-size: clamp(20px, 1.4vw + 1vh, 32px); font-weight: 700; letter-spacing: -0.02em; margin: 6px 0 10px; }
+.where pre { margin: 0; padding: 10px 14px; background: var(--bg); font-size: clamp(14px, .7vw + .55vh, 18px); }
+.where p { margin: 10px 0 0; color: var(--ink2); font-size: clamp(14px, .7vw + .55vh, 18px); line-height: 1.35; }
+
+/* code and tables */
+pre { background: var(--code); border-radius: 14px; padding: clamp(16px, 2.4vh, 24px) clamp(18px, 2vw, 28px); margin: clamp(20px, 3.5vh, 40px) 0 0; font-size: clamp(14px, .7vw + .55vh, 19px); line-height: 1.6; white-space: pre-wrap; word-break: break-all; }
+pre .c { color: var(--ink2); }
+table { width: 100%; border-collapse: collapse; margin-top: clamp(18px, 3vh, 36px); font-size: clamp(14px, .65vw + .6vh, 19px); }
+th { text-align: left; color: var(--ink2); font-weight: 600; font-size: .82em; padding: 0 12px 10px 0; border-bottom: 1px solid var(--hair); }
+td { padding: clamp(8px, 1.3vh, 13px) 12px clamp(8px, 1.3vh, 13px) 0; border-bottom: 1px solid var(--hair); vertical-align: top; }
+td:first-child { font-weight: 600; white-space: nowrap; }
+td code { font-size: .92em; white-space: nowrap; }
+.cheat td:nth-child(2) { color: var(--ink2); }
+@media (max-width: 760px) { .cheat th:nth-child(4), .cheat td:nth-child(4) { display: none; } }
+
+/* chrome */
+.bar, .nav { position: fixed; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; z-index: 2; pointer-events: none; }
+.bar { top: 0; } .nav { bottom: 0; }
+.bar > *, .nav > * { pointer-events: auto; }
+.brand { font-weight: 600; font-size: 15px; letter-spacing: -0.01em; }
+.seg { display: inline-flex; background: var(--bg2); border-radius: 9px; padding: 2px; }
+.seg button { border: 0; background: transparent; color: var(--ink2); font: 600 13px/1 -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; padding: 7px 12px; border-radius: 7px; cursor: pointer; }
+.seg button[aria-pressed=true] { background: var(--bg); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+.count { color: var(--ink2); font-size: 13px; font-variant-numeric: tabular-nums; }
+.arrows button { width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--bg2); color: var(--ink); font-size: 17px; cursor: pointer; margin-left: 8px; }
+.arrows button:disabled { opacity: .35; cursor: default; }
+button:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+.progress { position: fixed; left: 0; top: 0; height: 2px; background: var(--blue); transition: width .3s ease; z-index: 3; }
+
+@media (max-width: 760px) {
+  .slide { padding-bottom: 88px; }
+  .list li { grid-template-columns: minmax(0, 1fr); }
+  .r { grid-template-columns: 28px minmax(0,1fr); }
+  .r::after { left: 14px; }
+  .r .hd { display: none; } .r .mr { grid-column: 1; }
+  .node { grid-column: 1; }
+  .r.a .card, .r.b .card, .r.m .ml { grid-column: 2; }
+  .r.a .node::before { left: 100%; right: auto; width: 8px; }
+  .r.b .node::before { width: 8px; }
+  .r.a .card::before { content: "Developer A"; display: block; color: var(--indigo); font-size: .75em; font-weight: 700; }
+  .r.b .card::before { content: "Developer B"; display: block; color: var(--purple); font-size: .75em; font-weight: 700; }
+  .mgrid { grid-template-columns: minmax(0,1fr); }
+  .mgrid .lbl, .mgrid .mh.blank { display: none; }
+  .vs { column-gap: 14px; }
+  .where { grid-template-columns: minmax(0,1fr); }
+  .row, .cycle { grid-template-columns: minmax(0,1fr); gap: 4px; }
+}
+@media (max-height: 820px) and (min-width: 761px) {
+  .slide { padding-top: 56px; padding-bottom: 56px; }
+  h2 { font-size: clamp(30px, 2.4vw + 1.4vh, 50px); }
+  .row { padding: 5px 0; } .steps li { padding: 2px 0; } .card { padding: 8px 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .slide.on { animation: none; }
+  .progress { transition: none; }
+}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="bar">
+  <span class="brand">harnex</span>
+  <span class="seg" role="group" aria-label="Appearance">
+    <button type="button" data-t="auto">Auto</button><button type="button" data-t="light">Light</button><button type="button" data-t="dark">Dark</button>
+  </span>
+</div>
+
+<main>
+<section class="slide" aria-label="The problem"><div class="in">
+  <p class="eyebrow">Coding with AI agents today</p>
+  <h1>Fast at writing code.<br>Painful to ship.</h1>
+  <ul class="list pain">
+    <li><b>It works on my machine.</b><span>Then code review, QA or the deployment finds what the agent missed, and it’s my name on the PR.</span></li>
+    <li><b>I can’t explain my own code.</b><span>The reviewer asks why. I scroll.</span></li>
+    <li><b>The PR is too big to review.</b><span>40 files. My reviewer skims, approves, hopes.</span></li>
+    <li><b>The plan is too big to read.</b><span>1,000 lines of Markdown. I approve it anyway.</span></li>
+    <li><b>It codes for my laptop.</b><span>It never saw the deployment environment.</span></li>
+  </ul>
+  <p class="foot">None of this is the agent’s fault. It just needs a workflow.</p>
+</div></section>
+
+<section class="slide" aria-label="harnex"><div class="in">
+  <p class="eyebrow">For developers using Claude Code, Codex or OpenCode</p>
+  <h1>/harnex</h1>
+  <p class="lead">Everything review would catch, caught before the PR.</p>
+  <ul class="list fix">
+    <li><b>Catches it first.</b><span>The checks my reviewer would run, before the PR exists.</span></li>
+    <li><b>Writes less.</b><span>The smallest change that works, readable in one pass.</span></li>
+    <li><b>Keeps PRs small.</b><span>One purpose each. Big work becomes a series.</span></li>
+    <li><b>Keeps plans short.</b><span>A few lines in chat. About 40 when it’s risky.</span></li>
+    <li><b>Tests my real setup.</b><span>My repo’s own test and build commands, not a guess.</span></li>
+    <li><b>Any language, any stack.</b><span>TypeScript, Swift, Python, Rust, Go, Bash… localhost, Docker or a local cluster.</span></li>
+  </ul>
+</div></section>
+
+<section class="slide" aria-label="Developer flow"><div class="in">
+  <p class="eyebrow">One PR, two developers, both on <span class="cmd">/harnex</span></p>
+  <h2>Developer flow.</h2>
+  <div class="flow" role="img" aria-label="One PR timeline. Developer A builds with /harnex and opens the PR. Developer B reviews with /pr-review and posts comments. Developer A fixes them with /harnex and pushes; Developer B resolves the threads. The PR is merged.">
+    <div class="r h"><div class="hd ha">Developer A</div><span class="mr">PR</span><div class="hd hb">Developer B</div></div>
+    <div class="r a"><div class="card"><span class="cmd">/harnex</span><br><span>Builds it, checks it, writes the PR.</span><br><b class="yes">You open the PR</b></div><i class="node"></i></div>
+    <div class="r b"><i class="node"></i><div class="card"><span class="cmd">/pr-review</span><br><span>A fresh review, the same checks.</span><br><b class="yes">You post the comments</b></div></div>
+    <div class="r a"><div class="card"><span class="cmd">/harnex</span> <span>with the comments</span><br><span>Fixes the ones you pick, re-checks them.</span><br><b class="yes">You push and reply</b></div><i class="node"></i></div>
+    <div class="r b"><i class="node"></i><div class="card">Resolves the threads.<br><span>More comments? Back to A.</span></div></div>
+    <div class="r m last"><i class="node"></i><div class="ml">Merged <span>by you</span></div></div>
+    
+  </div>
+  <p class="escape"><b>Anything found on a harnex PR is an escape.</b> <span class="cmd">/retro</span> turns it into a check, so the next run catches it before the PR.</p>
+</div></section>
+
+<section class="slide" aria-label="How /harnex works"><div class="in">
+  <p class="eyebrow">Inside <span class="cmd">/harnex</span></p>
+  <h2>Agents check each other.<br>You just say yes.</h2>
+  <div class="how">
+    <div class="row"><div class="ph">Ask</div><div>Your goal, or an issue URL. <span>Unclear criteria?</span> <b class="you2">You pick them.</b></div></div>
+    <div class="row"><div class="ph">Plan</div><div>harnex picks the mode for you <span class="modes"><i>Quick</i><i>Standard</i><i>Full</i></span><br><span>Automatic, from the risk of the change. More risk, more checks.</span><br>Shows you Goal, Plan, Risk. <b class="you2">You approve or refine</b><span>, or try 2–3 approaches side by side.</span></div></div>
+    <div class="cycle"><div class="ph">Build &amp; validate</div>
+      <div class="loopbox"><span class="ltag">↻ UP TO 3 ROUNDS</span>
+        <ol class="steps">
+          <li><div><span class="agent">Implementer</span> writes a failing test, then the code.</div></li>
+          <li><div><span class="agent">Validator</span> runs tests, lint, scans, a browser walk. <span>At the same time,</span> a fresh <span class="agent">reviewer</span> reads the diff.</div></li>
+          <li><div><span class="agent">UI reviewer</span> checks the screens in a real browser. <span>Only if the UI changed.</span> <span class="agent">QA</span> <span>writes test cases and, if</span> <b class="you2">you say yes,</b> <span>runs them for real.</span></div></li>
+          <li><div>Findings? Must-fix or a failing test is fixed. <span>Critical, or still failing after round 3:</span> <b class="you2">it asks you.</b></div></li>
+        </ol>
+        <div class="back">↻ Back to 2 <span>and re-check only the fix.</span></div>
+      </div></div>
+    <div class="row"><div class="ph">Gate</div><div>Your reviewer’s checklist, run before they see it.</div></div>
+    <div class="row"><div class="ph">Ship</div><div><b class="you2">You</b> commit, push, open the PR.</div></div>
+  </div>
+</div></section>
+
+<section class="slide" aria-label="Three modes"><div class="in">
+  <p class="eyebrow">Picked for you, from the risk of the change</p>
+  <h2>Three modes.</h2>
+  <div class="mgrid">
+    <div class="mh blank"></div><div class="mh q">Quick<small>a small fix</small></div><div class="mh st">Standard<small>a normal change</small></div><div class="mh fu">Full<small>risky or big</small></div>
+    <div class="lbl">When</div><div>One place. No risk area, no UI change.</div><div>One repo. No risk area.</div><div>Auth, schema, security, CI, dependencies, public API, or several repos.</div>
+    <div class="lbl">Plan</div><div>A few lines. <b class="you2">You approve it.</b></div><div>Planner agent, short plan. <b class="you2">You approve it.</b></div><div>Plan doc, max 60 lines, fact-checked. <b class="you2">You approve it.</b></div>
+    <div class="lbl">Build</div><div>harnex itself, test first.</div><div>Implementer agent, test first.</div><div>Implementer agent. Big work becomes a series of small PRs.</div>
+    <div class="lbl">Check</div><div>harnex runs the tests, lint, scans. A fresh reviewer reads it.</div><div>Validator and reviewer at once. UI reviewer if the UI changed.</div><div>The same, with the full test suite and the strongest reviewer.</div>
+  </div>
+  <p class="steps-up"><b>It only ever steps up.</b> Quick finds a risk area? It becomes Standard or Full on the spot.</p>
+</div></section>
+
+<section class="slide" aria-label="Less code"><div class="in">
+  <p class="eyebrow">So you can explain every line</p>
+  <h2>Less code.<br>Code you can explain.</h2>
+  <div class="vs">
+    <div class="vh">A typical agent</div><div class="vh g"><span class="cmd">/harnex</span></div>
+    <div>Adds a library for it.</div><div>Uses what your repo already has.</div>
+    <div>Builds it by hand.</div><div>Uses the standard library or the platform.</div>
+    <div>Adds options “for later”.</div><div>Builds only what you asked for.</div>
+    <div>Clever one-liners, vague names.</div><div>Names that say what the code does.</div>
+    <div>Catches the error and moves on.</div><div>Fails loudly, never silently.</div>
+  </div>
+  <p class="foot">The reviewer agent flags what slips through: unused code, misleading names, silent failures. Never cut: validation, security, accessibility.</p>
+</div></section>
+
+<section class="slide" aria-label="Install"><div class="in">
+  <p class="eyebrow">Install</p>
+  <h2>One line per agent.</h2>
+<pre><code><span class="c"># Claude Code</span>
+claude plugin marketplace add tankibaj/harnex &amp;&amp; claude plugin install harnex@harnex
+<span class="c"># Codex</span>
+codex plugin marketplace add tankibaj/harnex &amp;&amp; codex plugin add harnex@harnex
+<span class="c"># OpenCode and others</span>
+npx skills@latest add tankibaj/harnex -a opencode</code></pre>
+  <p class="foot">Updates itself on Claude Code and Codex. Optional: a browser MCP for UI review and QA, e.g. <code>claude mcp add playwright -- npx @playwright/mcp@latest</code>.</p>
+</div></section>
+
+<section class="slide" aria-label="Where to open your session"><div class="in">
+  <p class="eyebrow">Where to open your session</p>
+  <h2>Open it where<br>the change lives.</h2>
+  <div class="where">
+    <div><div class="k">One repo · most features and fixes</div><div class="v">That repo</div>
+<pre><code>cd ~/code/&lt;repo&gt;</code></pre>
+      <p>Its own rules (CLAUDE.md, AGENTS.md) apply.</p></div>
+    <div><div class="k">Several repos</div><div class="v">The folder that holds them</div>
+<pre><code>cd ~/code</code></pre>
+      <p>One plan. One branch and PR per repo. One reviewer across all.</p></div>
+  </div>
+  <p class="foot">A suggestion, not a rule. harnex works in any layout.</p>
+</div></section>
+
+<section class="slide" aria-label="Cheat sheet"><div class="in">
+  <p class="eyebrow">Every day</p>
+  <h2>Cheat sheet.</h2>
+  <table class="cheat">
+    <thead><tr><th>To</th><th>When</th><th>Type</th></tr></thead>
+    <tbody>
+      <tr><td>Build</td><td>You have a goal, or an issue.</td><td><code>/harnex &lt;goal or issue URL&gt;</code></td></tr>
+      <tr><td>Pick the mode</td><td>You know it’s small, or risky.</td><td><code>/harnex quick|standard|full &lt;goal&gt;</code></td></tr>
+      <tr><td>Try options</td><td>Not sure which approach is best?</td><td><code>/harnex explore &lt;goal&gt;</code></td></tr>
+      <tr><td>Review a PR</td><td>A teammate asks you to review.</td><td><code>/pr-review &lt;PR URL&gt;</code></td></tr>
+      <tr><td>Test it like QA</td><td>Want test cases, or to click through it for real?</td><td><code>/qa &lt;PR URL or goal&gt;</code></td></tr>
+      <tr><td>Learn from it</td><td>Review or QA found something anyway.</td><td><code>/retro</code> <span style="color:var(--ink2)">(or <code>/retro html</code>)</span></td></tr>
+    </tbody>
+  </table>
+  <p class="foot">Same names in Claude Code, Codex and OpenCode.</p>
+</div></section>
+
+<section class="slide" aria-label="Coming next"><div class="in">
+  <p class="eyebrow">Not built yet</p>
+  <h2>Coming next.</h2>
+  <ul class="list">
+    <li><b>Reads prod for you.</b><span>Logs, metrics and traces, before vs after a deploy.</span></li>
+    <li><b>Smoke test after every deploy.</b><span>Automatic, without being asked.</span></li>
+  </ul>
+</div></section>
+</main>
+
+<div class="nav">
+  <span class="count" id="count" aria-live="polite"></span>
+  <span class="arrows"><button type="button" id="prev" aria-label="Previous slide">←</button><button type="button" id="next" aria-label="Next slide">→</button></span>
+</div>
+
+<script>
+(function () {
+  var slides = [].slice.call(document.querySelectorAll('.slide'));
+  var n = slides.length, cur = 0;
+  var prev = document.getElementById('prev'), next = document.getElementById('next');
+  var count = document.getElementById('count'), bar = document.getElementById('progress');
+
+  function show(i) {
+    cur = Math.max(0, Math.min(n - 1, i));
+    slides.forEach(function (s, k) { s.classList.toggle('on', k === cur); });
+    count.textContent = (cur + 1) + ' / ' + n;
+    prev.disabled = cur === 0; next.disabled = cur === n - 1;
+    bar.style.width = ((cur + 1) / n * 100) + '%';
+    document.title = 'harnex: ' + slides[cur].getAttribute('aria-label');
+    if (location.hash !== '#' + (cur + 1)) history.replaceState(null, '', '#' + (cur + 1));
+  }
+  function fromHash() { var h = parseInt(location.hash.slice(1), 10); return isNaN(h) ? 0 : h - 1; }
+
+  var root = document.documentElement, modes = ['auto', 'light', 'dark'];
+  function theme() { return root.dataset.theme || 'auto'; }
+  function setTheme(t) {
+    if (t === 'auto') delete root.dataset.theme; else root.dataset.theme = t;
+    try { if (t === 'auto') localStorage.removeItem('harnex-theme'); else localStorage.setItem('harnex-theme', t); } catch (e) {}
+    [].forEach.call(document.querySelectorAll('.seg button'), function (b) { b.setAttribute('aria-pressed', String(b.dataset.t === t)); });
+  }
+  document.querySelector('.seg').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) setTheme(b.dataset.t); });
+  setTheme(theme());
+
+  prev.addEventListener('click', function () { show(cur - 1); });
+  next.addEventListener('click', function () { show(cur + 1); });
+  document.addEventListener('keydown', function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    // Space and Enter on a focused button press that button.
+    if ((e.key === ' ' || e.key === 'Enter') && e.target.closest && e.target.closest('button')) return;
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || (k === ' ' && !e.shiftKey)) { e.preventDefault(); show(cur + 1); }
+    else if (k === 'ArrowLeft' || k === 'PageUp' || (k === ' ' && e.shiftKey)) { e.preventDefault(); show(cur - 1); }
+    else if (k === 'Home') { e.preventDefault(); show(0); }
+    else if (k === 'End') { e.preventDefault(); show(n - 1); }
+    else if (k === 't' || k === 'T') { setTheme(modes[(modes.indexOf(theme()) + 1) % 3]); }
+  });
+  window.addEventListener('hashchange', function () { show(fromHash()); });
+  show(fromHash());
+})();
+</script>
+</body>
+</html>

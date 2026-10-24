@@ -1,0 +1,14 @@
+{
+  "name": "harnex",
+  "owner": { "name": "tankibaj", "url": "https://github.com/tankibaj" },
+  "description": "harnex: plan, build test-first, validate and review before the PR. Any language, any stack.",
+  "plugins": [
+    {
+      "name": "harnex",
+      "source": "./",
+      "description": "Plan you approve, test-first build, independent validation and review, pre-PR gate; plus /pr-review, /qa and /retro.",
+      "category": "development",
+      "keywords": ["workflow", "agents", "tdd", "code-review", "qa"]
+    }
+  ]
+}

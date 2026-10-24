@@ -1,0 +1,13 @@
+{
+  "name": "harnex",
+  "private": true,
+  "description": "harnex: a development workflow for AI coding agents.",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/tankibaj/harnex" },
+  "scripts": {
+    "test": "node --test scripts/*.test.mjs && PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts/tests",
+    "release:dry": "node scripts/release.mjs --dry",
+    "validate": "claude plugin validate .",
+    "agents": "node scripts/install-agents.mjs --all"
+  }
+}
