@@ -27,9 +27,9 @@ Arguments:
 
 Read:
 - **harnex run data, when the session ran `/harnex`:** the timings file
-  (`$(git rev-parse --absolute-git-dir)/harnex-timings.log` in the repo or
+  (`harnex-timings.log` in the git dir, `git rev-parse --absolute-git-dir`, of the repo or
   worktree the run used; a different checkout: skip timings and say so), the last
-  records in `${HARNEX_METRICS:-$HOME/.harnex/metrics.jsonl}` for this repo
+  records in `~/.harnex/metrics.jsonl` (or `HARNEX_METRICS`) for this repo
   (`flow`, `settings`, `rounds`, `findings`, `escaped`, `tests`,
   `red_check`; older records carry `path`: `Quick` reads as `flow: quick`,
   `Standard` and `Full` as `flow: harnex`), and on `Plan: doc` the plan
@@ -37,7 +37,7 @@ Read:
 - **Escapes:** pr-review records with `harnex_pr: true` and CRITICAL or
   MUST-FIX `findings` or `fail_rows`. For this repo's PRs: `gh pr view
   <pr_number> --json url` (GitLab: `glab mr view <pr_number> -F json` →
-  `web_url`); use it only when `printf %s <url> | shasum | cut -c1-12`
+  `web_url`); use it only when `node <this skill's folder>/../harnex/harnex.mjs key <url>`
   equals the record's `pr_key`, then `python3 <this skill's folder>/../pr-review/threads.py <url>
   --all`. No match or another repo: list the record and its `fail_rows`,
   and say so. Each one escaped `/harnex` and is the first candidate for a
@@ -104,7 +104,7 @@ other change.
 ## 4. HTML (optional)
 Only on `/retro html` or a yes to "Save as HTML?". Write one self-contained,
 human-readable page, `retro-<YYYY-MM-DD>.html`, with the same candidates:
-- **Where:** `$(git rev-parse --absolute-git-dir)/harnex/` (inside `.git`,
+- **Where:** `harnex/` inside the git dir (`git rev-parse --absolute-git-dir`;
   never committed; `mkdir -p` it) unless the user names a path. Outside a
   git repo: the current directory. Print the path, then offer `open <path>`
   (macOS; `xdg-open` elsewhere); run it only on a yes.

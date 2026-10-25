@@ -91,13 +91,13 @@ live in the tier profile (`tiers/`).
 - Mock only at process boundaries (network, clock, randomness, filesystem, third-party services). Never mock the unit under test, an in-repo module the behavior depends on, or the value asserted. Prefer a real or in-memory collaborator when it is fast.
 
 ### Independent red check
-- New behavior and bug-reproduction tests must fail without the change. The `validator` proves it: `git worktree add --detach <tmp> <base>` (reuse the checkout's dependencies, e.g. link its installed-packages directory), copy in only the new and changed test files, run them, `git worktree remove --force <tmp>`. On Quick, the failing run shown before the change is the red check.
+- New behavior and bug-reproduction tests must fail without the change. The `validator` proves it: `git worktree add --detach <tmp> <base>` (reuse the checkout's dependencies, e.g. link its installed-packages directory), copy in only the new and changed test files, run them, `git worktree remove --force <tmp>`. Worktrees unavailable or denied: `node <folder of this file>/harnex.mjs base <base> <tmp>` instead (a checkout of `<base>` through a throwaway index, no worktree), the same steps, then `node <folder of this file>/harnex.mjs clean <tmp>`. On Quick, the failing run shown before the change is the red check.
 - One that passes on `<base>` proves nothing and is a validation failure. Characterization tests are the reverse: they must pass on `<base>`. `<base>` is the merge-base with the default branch. Cannot run: NOT VERIFIED, never PASS.
 
 ### Test organization
 - Commands come from the resolved tier profile (`tiers/README.md`): the repo's `.harnex/tiers.md` if present, else `generic.md`. Use them exactly; never improvise when they exist. A profile gap is NOT VERIFIED for that tier, never a reason to add scripts or tooling to the repo outside the plan.
 - Follow the repo's existing test layout and tags; add none of your own.
-- Artifacts (screenshots, traces, `test-results/`, coverage) go to ignored paths only. Whoever runs tests records `git status --porcelain` before and after; a tracked file the runs modified (snapshots, baselines) is restored with `git checkout -- <path>` unless the plan names its update, and reported.
+- Artifacts (screenshots, traces, `test-results/`, coverage) go to ignored paths only. Whoever runs tests records `git status --porcelain` before and after; a tracked file the runs modified (snapshots, baselines) is restored with `git checkout -- <path>` unless the plan names its update, and reported. Browser tools write artifacts too (`.playwright-mcp/`, screenshots in the repo root): an untracked file a run created that git does not ignore is removed by the agent that created it before it reports, or listed in its report.
 
 ### Validation tiers
 - **IMPACTED** (default): the profile's impacted and smoke commands (fallback without smoke: build, start, main entry responds; say which ran), lint, typecheck, impacted e2e, and for webapps the browser walk.

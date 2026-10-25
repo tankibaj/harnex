@@ -58,7 +58,7 @@ Cases only, or no environment: step 5 with `QA SKIPPED (<why>)`.
 
 ## 4. Run
 Spawn `harnex:qa` in mode `run` with the picked IDs, the confirmed origin,
-and the screenshot directory `$(git rev-parse --absolute-git-dir)/harnex-qa/`
+and the screenshot directory `harnex-qa/` inside the git dir (`git rev-parse --absolute-git-dir`)
 (inside `.git`, never committed; delete it after step 6).
 - `NEEDS LOGIN`: tell the human to sign in in the open window and wait for
   "done", then re-spawn with the cases not yet run and the results so far.
@@ -91,7 +91,7 @@ attach them. No issue reference: the issue is not offered.
 ## 7. Metrics
 Append one line (`../harnex/report.md` "Metrics
 record") with `kind: "qa"`, `repo`, `pr_key` (12-character hash of the web
-URL: `printf %s <web_url> | shasum | cut -c1-12`; omit for a goal), `cases`,
+URL: `node <this skill's folder>/../harnex/harnex.mjs key <web_url>`; omit for a goal), `cases`,
 `run`, `failed`, `findings` (`{critical, high}`), `env`
 (`local|stage|none`), `posted`. No names, URLs, or text. Skip silently on
 failure.

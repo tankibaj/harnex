@@ -41,7 +41,7 @@ built before that last yes.
 
 ## 2. Build
 All paths absolute. `<main>` = the developer's checkout (stamps and its git
-dir stay there). `base=$(git -C <main> rev-parse HEAD)` once; every later
+dir stay there). Run `git -C <main> rev-parse HEAD` once; every later
 `<base>` is that SHA. Before creating anything, clear leftovers of an
 earlier run: `git -C <main> worktree prune`, then remove any
 `<main>-explore-*` directory and every branch listed by `git -C <main>

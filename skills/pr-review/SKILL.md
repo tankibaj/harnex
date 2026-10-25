@@ -171,8 +171,8 @@ raised in an open thread is not offered; cite that thread instead.
 ## 10. Metrics
 Append one line (`../harnex/report.md` "Metrics record") with
 `kind: "pr-review"`, `repo` (the last segment of the project path),
-`pr_key` (a 12-character hash of the PR's web URL: `printf %s <url> |
-shasum | cut -c1-12`; no names leave the machine), `verdict`, `findings`
+`pr_key` (a 12-character hash of the PR's web URL: `node <this skill's
+folder>/../harnex/harnex.mjs key <url>`; no names leave the machine), `verdict`, `findings`
 (`{critical, must_fix, nice}`), `criteria` (`{pass, warn, fail,
 not_checked}`), `diff_lines`, `ac_source`, `threads` (`{checked, open,
 warn, fail}`), `posted` (inline comments published), `harnex_pr` (true

@@ -7,9 +7,10 @@ doc; everything else applies to both.
 
 ## Timings (`/harnex` only)
 Stamp to a file, never to memory; each stamp is one self-contained command
-(the file sits inside `.git`, never committed):
-`echo "<label> $(date '+%F %T')" >> "$(git rev-parse --absolute-git-dir)/harnex-timings.log"`
-- `run start` before the plan phase (truncate first with `: > "$(git rev-parse --absolute-git-dir)/harnex-timings.log"`),
+(the file is `harnex-timings.log` inside `.git`, never committed):
+`node <this skill's folder>/harnex.mjs stamp <label>`
+- `run start` before the plan phase (`stamp --reset run start` starts a new file;
+  SKILL.md "Run start" also saves the untracked baseline, on both flows),
   `<phase> start|end` per phase, `wait start|end` around each user wait,
   `run end`.
 - At Completion, `cat` the file and compute every duration from it; never
@@ -47,6 +48,8 @@ line.
   yes.
 - `Guide:` the reviewer's guide (next section), shown in full after these
   lines.
+- `Headless:` headless runs only (SKILL.md "Headless"): each question, its
+  options, and the pick.
 - `Lessons:` up to 2 proposed mechanical guards (lint rule, hook, test, type,
   CLAUDE.md line) that would have caught a CRITICAL, MUST-FIX, or failing
   test from this run before review, or `none`. Propose only.
@@ -82,8 +85,8 @@ unchanged.
 ## Metrics record (both flows, passive)
 Append one JSON line, never blocking and never sent anywhere; skip silently
 if it fails:
-`f="${HARNEX_METRICS:-$HOME/.harnex/metrics.jsonl}"; mkdir -p "$(dirname "$f")" && echo '<json>' >> "$f"`
-with keys `ts`, `kind: "run"`, `repo` (basename(s)), `flow` (`quick` or
+`node <this skill's folder>/harnex.mjs record '<json>'` (adds `ts`; writes
+`~/.harnex/metrics.jsonl`, or `HARNEX_METRICS`) with keys `kind: "run"`, `repo` (basename(s)), `flow` (`quick` or
 `harnex`), `settings` (`{plan, tier, reviewer, ui}`), `wps` (count, 0 on
 Quick), `ticket` (issue
 reference, or null), `minutes` (per phase and total from the timings file; Quick: null),

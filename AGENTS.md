@@ -6,7 +6,8 @@ For agents working ON this repo. What users run lives in `skills/` and
 ## Layout
 - `skills/harnex/`: the `/harnex` orchestrator (`SKILL.md`) and its files:
   `standards.md`, `brief.md`, `explore.md`, `report.md`, `pr.md`,
-  `review-guide.md`, `input.md`, `tiers/`. Two flows, `/harnex quick` and
+  `review-guide.md`, `input.md`, `tiers/`, and `harnex.mjs` (stamp, record,
+  key, base/clean: the commands skills run). Two flows, `/harnex quick` and
   `/harnex`, with settings derived from the change; the gates (validator,
   reviewer, UI reviewer) run once on the merged result, never per WP.
 - `skills/pr-review/` (+ `threads.py`), `skills/qa/`, `skills/retro/`:
@@ -26,6 +27,9 @@ For agents working ON this repo. What users run lives in `skills/` and
 - Skills are self-contained: reference sibling files by name and other skills
   as `../<skill>/<file>`. Never `${CLAUDE_PLUGIN_ROOT}` in a skill (only
   `hooks/hooks.json` uses it). No build step.
+- No shell one-liners in skills (`$(...)`, redirects, pipes): sandboxed runs
+  deny them. Add a command to `skills/harnex/harnex.mjs` instead. A test
+  enforces the common ones.
 - A new skill: a folder under `skills/` with `SKILL.md` whose `name` matches,
   added to `plugin.json` `skills`. A test enforces it.
 - Agent frontmatter: `name`, `description`, `tools` | `disallowedTools`,
@@ -45,7 +49,7 @@ For agents working ON this repo. What users run lives in `skills/` and
   `~/.claude/skills` and `~/.agents/skills`.
 
 ## Verify
-- `npm test`: plugin layout + leak test, release, agent install (node),
+- `npm test`: plugin layout + leak test, `harnex.mjs`, release, agent install (node),
   metrics hook and `threads.py` (python).
 - `npm run validate`: `claude plugin validate .`.
 - `npm run e2e`: installs with the real Claude Code, Codex and OpenCode CLIs

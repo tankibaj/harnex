@@ -119,3 +119,23 @@ test('grounding check skips anchors for code the plan adds', () => {
   assert.match(skill, /\*\*planned\*\*/);
   assert.match(planner, /`path\s+\(new\)`/);
 });
+
+test('skills call harnex.mjs, not shell one-liners, for timings, metrics and keys', () => {
+  // Permission-restricted runs deny `$(...)`, redirects and pipes; timings and metrics were lost.
+  for (const f of files('skills').filter((x) => !/apple-design|web-design/.test(x))) {
+    const s = fs.readFileSync(f, 'utf8');
+    for (const bad of ['| shasum', '$(git ', '${HARNEX_METRICS:-']) {
+      assert.ok(!s.includes(bad), `${path.relative(ROOT, f)} still uses ${bad}`);
+    }
+  }
+});
+
+test('test-run gaps stay closed: completion reads, red-check fallback, browser artifacts, headless', () => {
+  const skill = fs.readFileSync(path.join(ROOT, 'skills/harnex/SKILL.md'), 'utf8');
+  const standards = fs.readFileSync(path.join(ROOT, 'skills/harnex/standards.md'), 'utf8');
+  const completion = skill.slice(skill.indexOf('## Completion'), skill.indexOf('## Gotchas'));
+  assert.ok(completion.includes('`review-guide.md`') && completion.includes('`../pr-review/criteria.md`'), 'Completion names the files it reads');
+  assert.match(standards, /harnex\.mjs base/, 'red check works without git worktree');
+  assert.match(standards, /\.playwright-mcp\//, 'browser artifacts are covered');
+  assert.match(skill, /\n## Headless\n/, 'headless contract');
+});

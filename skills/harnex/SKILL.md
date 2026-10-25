@@ -94,6 +94,10 @@ and run the `/harnex` flow (never auto-Quick). Never ask which
 flow to take; the brief's "Change settings" option is how the developer
 overrides it.
 
+**Run start**, both flows, before the plan: `node <this skill's
+folder>/harnex.mjs untracked save` (the baseline Completion compares
+against); `/harnex` also stamps `run start` (report.md "Timings").
+
 ## Quick
 1. Plan it yourself: the change, the root cause (bugs), the test that
    proves it, the UI scope. Show it as the brief (brief.md) and wait for
@@ -156,7 +160,8 @@ overrides it.
    refs/remotes/origin/HEAD`, else `develop`, else `main`, else `master`.
    Re-evaluate it every round.
 5. **Sequences** (the planner's `Delivery:` line): `separate PRs`: each
-   change runs steps 2-4 and Completion in order, since each merges alone.
+   change runs steps 2-4 and Completion in order, since each merges alone,
+   with `untracked save` again before each change's step 2.
    `together`: implement the changes in order, then steps 3-4 once.
 
 Webapps, both flows: start the dev server once before the first validation,
@@ -185,13 +190,37 @@ the way the repo says (standards.md "Run target"; desktop app:
   with what remains, what was tried, and a recommendation.
 
 ## Completion
-Follow report.md, including the metrics record: one report shape for both
+Read report.md, `review-guide.md`, and `../pr-review/criteria.md` now; the
+reviewer's guide and the `Criteria:` line are never skipped. Then follow
+report.md, including the metrics record: one report shape for both
 flows, timings on `/harnex` only (stamped from `run start`). Both flows: the
 reviewer's guide per `review-guide.md`, the pre-PR gate
 (report.md: the `/pr-review` criteria, so the second reviewer finds
 nothing), and delivery
 (report.md "Delivery"): commit, push, and the PR are each optional and only
 on the developer's yes; an opened PR's link is the last line.
+Before the report, `node <this skill's folder>/harnex.mjs untracked new`
+lists the untracked files this run added since `untracked save` at run start
+(report.md "Timings"); remove the artifacts among them (standards.md "Test
+organization"), or list them under `Not verified:`. Never remove a file
+that was there at run start, or one the change adds (in the plan or the
+diff).
+
+## Headless
+No one can answer: the caller says so (CI, a scripted or delegated run), or
+AskUserQuestion is unavailable.
+- Never wait. At every question (brief, open questions, escalation, skip
+  approvals) take the recommended option and record the
+  question, its options, and the pick (report.md `Headless:`). No
+  recommended option, or a CRITICAL finding: stop and report it; never
+  guess.
+- Still show the brief; it opens the report.
+- Stay on the current branch (this overrides Quick step 1 and "/harnex"
+  step 2) and never commit, push, or open a PR unless the caller said to:
+  Delivery is "nothing", whatever its recommended option.
+- A step the environment denies (a command, a browser): use the documented
+  fallback if there is one (standards.md "Independent red check"), else NOT
+  VERIFIED with the reason; never work around it.
 
 ## Gotchas
 - Handoffs are the agent's entire context. Pass docs as paths and reports
