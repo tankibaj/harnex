@@ -82,7 +82,9 @@ function clean([dir]) {
 // only the artifacts this run created, never the developer's own files.
 function untracked([mode]) {
   const top = execFileSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
-  const list = () => execFileSync('git', ['ls-files', '--others', '--exclude-standard'], { cwd: top, encoding: 'utf8' }).split('\n').filter(Boolean);
+  // Claude Code's agent worktrees are its own scratch, not this run's artifacts.
+  const list = () => execFileSync('git', ['ls-files', '--others', '--exclude-standard'], { cwd: top, encoding: 'utf8' })
+    .split('\n').filter((f) => f && !f.startsWith('.claude/worktrees/'));
   const gitDir = execFileSync('git', ['rev-parse', '--absolute-git-dir'], { encoding: 'utf8' }).trim();
   const saved = path.join(gitDir, 'harnex-untracked.txt');
   if (mode === 'save') return fs.writeFileSync(saved, list().join('\n'));

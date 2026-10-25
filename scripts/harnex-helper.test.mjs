@@ -115,6 +115,15 @@ test('untracked: new lists only untracked files created after save', () => {
   assert.deepEqual(r.stdout.trim().split('\n'), ['.playwright-mcp/shot.png']);
 });
 
+test('untracked: new skips Claude Code agent worktrees', () => {
+  const dir = repo();
+  assert.equal(run(['untracked', 'save'], { cwd: dir }).status, 0);
+  fs.mkdirSync(path.join(dir, '.claude', 'worktrees', 'agent-1'), { recursive: true });
+  fs.writeFileSync(path.join(dir, '.claude', 'worktrees', 'agent-1', 'f.js'), 'x');
+  fs.writeFileSync(path.join(dir, 'shot.png'), 'png');
+  assert.deepEqual(run(['untracked', 'new'], { cwd: dir }).stdout.trim().split('\n'), ['shot.png']);
+});
+
 test('untracked: new consumes the baseline, so a later run without save fails loudly', () => {
   const dir = repo();
   assert.equal(run(['untracked', 'save'], { cwd: dir }).status, 0);

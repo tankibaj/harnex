@@ -53,6 +53,8 @@ line.
 - `Lessons:` up to 2 proposed mechanical guards (lint rule, hook, test, type,
   CLAUDE.md line) that would have caught a CRITICAL, MUST-FIX, or failing
   test from this run before review, or `none`. Propose only.
+- `Metrics:` `written` (the "Metrics record" command ran) or `skipped:
+  <why>`.
 - `Criteria:` the pre-PR gate (next section).
 
 ## Pre-PR gate (both flows)

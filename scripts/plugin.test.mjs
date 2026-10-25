@@ -139,3 +139,9 @@ test('test-run gaps stay closed: completion reads, red-check fallback, browser a
   assert.match(standards, /\.playwright-mcp\//, 'browser artifacts are covered');
   assert.match(skill, /\n## Headless\n/, 'headless contract');
 });
+
+test('the report says whether the metrics record was written', () => {
+  // A test run skipped `record` and nothing in the report showed it.
+  const report = fs.readFileSync(path.join(ROOT, 'skills/harnex/report.md'), 'utf8');
+  assert.match(report, /- `Metrics:` `written`/);
+});
