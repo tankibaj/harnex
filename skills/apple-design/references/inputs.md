@@ -5,7 +5,7 @@ scope: Apple HIG input rules for iOS, iPadOS, macOS (Action button, Apple Pencil
 
 ## Action button ([HIG](https://developer.apple.com/design/human-interface-guidelines/action-button))
 - iPhone only (iPadOS, macOS: not supported). Runs App Shortcuts or system functions; user picks at setup, changeable in Settings.
-- Expose a set of essential app functions as App Shortcuts (e.g. "Start Egg Timer"). **Never** add a shortcut that just opens the app (system provides).
+- Expose a set of essential app functions as App Shortcuts (e.g. "Start Egg Timer"). No need for a shortcut that just opens the app (system provides).
 - Label per action: max 3 words, title-style capitalization, begins with verb, present tense, no articles/prepositions ("Start Race", not "Started Race" / "Start the Race"). Shown in Settings.
 - Let the system teach usage; don't duplicate its Settings guidance or tips.
 - Run actions without leaving context: Live Activities, custom snippets (e.g. "Set Timer" prompts duration then starts Live Activity, no Clock launch).
@@ -17,10 +17,10 @@ scope: Apple HIG input rules for iOS, iPadOS, macOS (Action button, Apple Pencil
 - Respond to tilt (altitude), force (pressure), orientation (azimuth), barrel roll: vary thickness/intensity; pressure drives continuous properties (ink opacity, brush size); keep simple.
 - Direct visual connection: Pencil visibly and immediately manipulates content it touches; no disconnected actions elsewhere on screen.
 - Support left- and right-handed use: don't put controls where a hand obscures them; allow repositioning.
-- Hover: preview of mark (size, color) before touch; avoid continuously changing preview with hover height; **never** initiate actions on hover (esp. destructive); preview near mid of dynamic range (max occludes, min invisible); consider contextual menu near marking on squeeze/modifier key; show hover preview for Pencil only, not pointing device (Adopting hover support for Apple Pencil).
+- Hover: preview of mark (size, color) before touch; avoid continuously changing preview with hover height; avoid initiating actions on hover (esp. destructive); preview near mid of dynamic range (max occludes, min invisible); consider contextual menu near marking on squeeze/modifier key; show hover preview for Pencil only, not pointing device (Adopting hover support for Apple Pencil).
 - Double tap: honor system setting (default toggle tool/eraser; alternatives previous tool, show/hide color picker, none). If system settings don't fit, may repurpose for mode toggle (e.g. mesh raise/lower).
 - Custom double-tap behavior: provide control to choose it, make it discoverable, not on by default, show current mode.
-- **Never** use double tap for content-modifying or destructive actions; prefer easily undone.
+- Prefer double tap for easily undone actions, not content-modifying or destructive ones.
 - Squeeze (Apple Pencil Pro; only when iPad screen on and Pencil not touching): user may map to App Shortcuts. Treat as single quick discrete gesture (not hold/repeat); show result promptly; reveal UI (contextual menu) near Pencil tip; nondestructive and easily undone.
 - Barrel roll (Pencil Pro): only to modify marking (e.g. rotate highlight angle); **never** for navigation or showing controls.
 - Scribble: works by default in standard text components (fields, views, search, web editable fields) except password fields. Custom fields: no tap/select needed before writing.
@@ -37,7 +37,7 @@ scope: Apple HIG input rules for iOS, iPadOS, macOS (Action button, Apple Pencil
 - Slider values need units/context (EV, %, custom string; `localizedValueFormat`).
 - Define prominent values (frequent or evenly spaced, e.g. zoom steps) for snapping (`prominentValues`).
 - Keep UI out of overlay areas (adjacent to the control, portrait and landscape); maximize viewfinder; overlay appears/disappears over it.
-- Minimize viewfinder distractions; **never** duplicate sliders/toggles in your UI while overlay is shown.
+- Minimize viewfinder distractions; avoid duplicating sliders/toggles in your UI while overlay is shown.
 - Enable/disable controls per camera mode (e.g. disable video controls for photos); cannot add/remove controls at runtime.
 - Arrange: common controls toward the middle, rare on sides; system remembers last-used control.
 - Provide a locked camera capture extension so Camera Control can launch your camera from lock screen, Home Screen, other apps (`LockedCameraCapture`).
@@ -46,7 +46,7 @@ scope: Apple HIG input rules for iOS, iPadOS, macOS (Action button, Apple Pencil
 - Not supported in iOS; applies to iPadOS and macOS (with keyboard etc.).
 - Focusing often selects; exception when selection would cause distracting context shift (opening a view).
 - Use system focus effects; custom only if absolutely necessary.
-- **Never** move focus without user interaction. Exception: user navigating with discrete directional input (keyboard, remote, controller) and focused item disappears: move focus to a nearby remaining item. Otherwise hide the focus indicator.
+- Avoid moving focus without user interaction. Exception: user navigating with discrete directional input (keyboard, remote, controller) and focused item disappears: move focus to a nearby remaining item. Otherwise hide the focus indicator.
 - iPadOS/macOS full keyboard access reaches all controls, so support focus only for content elements (list items, text fields, search fields), not buttons/sliders/toggles.
 - Platform-consistent indicator: focused list item = white text + accent-color background highlight; unfocused = standard text + gray highlight (`UICollectionView`, `NSTableView`).
 - Focus ring for text/search fields; highlight (full row) for lists/collections; ring OK for cell-filling items like photos.
@@ -63,7 +63,7 @@ scope: Apple HIG input rules for iOS, iPadOS, macOS (Action button, Apple Pencil
 - Place virtual buttons within safe areas, away from Home indicator and Dynamic Island; frequent buttons near thumb, outside circular movement/camera regions; secondary controls (menus) at top.
 - Sizes: frequent controls at least 44x44 pt; less important (menus) at least 28x28 pt.
 - **Always** visible and tactile press state (e.g. glow visible under finger), plus sound and haptics.
-- Symbols depict action (e.g. weapon for attack); **never** abstract shapes or controller names (A, X, R1) as artwork.
+- Symbols depict action (e.g. weapon for attack); avoid abstract shapes or controller names (A, X, R1) as artwork.
 - Show/hide controls with context (e.g. movement stick appears on touch).
 - Combine functionality: avoid simultaneous/sequenced presses; use double tap / touch and hold for variants; merge walk/sprint into one control.
 - Movement on left side, camera on right. Use large input areas; floating thumbstick where thumb lands for movement; direct touch pan for camera (no virtual thumbstick).
@@ -97,7 +97,7 @@ scope: Apple HIG input rules for iOS, iPadOS, macOS (Action button, Apple Pencil
 
 ## Gestures ([HIG](https://developer.apple.com/design/human-interface-guidelines/gestures))
 - Offer more than one way to act (voice, keyboard, Switch Control); never assume a specific gesture is possible.
-- Gestures behave consistently with expectations: **never** give a familiar gesture (tap, swipe) an app-unique meaning; **never** invent a custom gesture for a standard action (activate button, scroll).
+- Gestures behave consistently with expectations: avoid giving a familiar gesture (tap, swipe) an app-unique meaning, or inventing a custom gesture for a standard action (activate button, scroll).
 - Respond immediately with feedback that predicts result and shows required extent/type of movement.
 - Indicate when a gesture is unavailable (locked object, clearly distinct unavailable state) so app doesn't look frozen.
 - Custom gestures only for specialized, frequent tasks not covered (games, drawing apps). Must be discoverable, straightforward, distinct from others, **never** the only way to do an important action.
@@ -123,7 +123,7 @@ scope: Apple HIG input rules for iOS, iPadOS, macOS (Action button, Apple Pencil
 
 ## Keyboards ([HIG](https://developer.apple.com/design/human-interface-guidelines/keyboards))
 - Support Full Keyboard Access (iOS, iPadOS, macOS) where possible: navigate/activate windows, menus, controls, system features by keyboard only. Test: Accessibility in Settings; `isFullKeyboardAccessEnabled`.
-- iPadOS: keyboard navigation in text fields, text views, sidebars (APIs for collection/custom views); **never** add own keyboard navigation for controls (buttons, segmented controls, switches); leave to Full Keyboard Access (activation, all components, drag and drop).
+- iPadOS: keyboard navigation in text fields, text views, sidebars (APIs for collection/custom views); avoid adding own keyboard navigation for controls (buttons, segmented controls, switches); leave to Full Keyboard Access (activation, all components, drag and drop).
 - Respect standard shortcuts; for a unique frequent action make a custom shortcut instead of repurposing a standard one. Games: standard ones like Command-Q expected, plus customizable key bindings.
 - Repurpose standard shortcut only if its action makes no sense in your app (e.g. no text editing: Command-I as Get Info).
 - Shortcut = primary key + modifiers (Control, Option, Shift, Command). Games: key binding, often single key (see Game controls).
@@ -269,9 +269,9 @@ Input-source shortcuts (localization, layouts, input methods; not tied to menu c
 
 - Modifier needed for characters in some languages (French Option-5 = "{"): Command is usually safe; avoid extra modifiers with characters missing on some keyboards; if non-Command modifier needed, use only with alphabetic characters.
 - **Must** list multiple modifiers in order: Control, Option, Shift, Command.
-- **Never** add Shift to a shortcut using the upper character of a two-character key: Hide Status Bar = Command-Slash; Help = Command-Question mark, not Shift-Command-Slash.
+- Avoid adding Shift to a shortcut using the upper character of a two-character key: Hide Status Bar = Command-Slash; Help = Command-Question mark, not Shift-Command-Slash.
 - Let system localize and mirror shortcuts (right-to-left layouts).
-- **Never** derive a shortcut by adding a modifier to an existing one for an unrelated command (e.g. Shift-Command-Z for non-undo).
+- Avoid deriving a shortcut by adding a modifier to an existing one for an unrelated command (e.g. Shift-Command-Z for non-undo).
 - Other platforms (visionOS, tvOS, watchOS): out of scope.
 
 ## Nearby interactions ([HIG](https://developer.apple.com/design/human-interface-guidelines/nearby-interactions))
@@ -281,7 +281,7 @@ Input-source shortcuts (localization, layouts, input methods; not tied to menu c
 - Let feedback sharpen with proximity (AirTag: arrow becomes pulsing circle when near).
 - Provide continuous, uninterrupted feedback responding to movement (Find My direction/proximity).
 - Combine visual, audible, haptic feedback: visual while on screen, audio/haptic while interacting with environment.
-- **Never** make nearby interaction the only way to do a task; provide alternatives.
+- Avoid making nearby interaction the only way to do a task; provide alternatives.
 - Encourage portrait orientation (landscape reduces distance/direction accuracy and availability); give implicit visual cues instead of explicit "hold in portrait" text where possible.
 - Design for the sensor's field of view (like Ultra Wide camera, iPhone 11 and later): outside it, distance may arrive without direction.
 - Warn about obstructions (people, animals, large objects reduce accuracy/availability) in onboarding/tutorial content.
@@ -290,7 +290,7 @@ Input-source shortcuts (localization, layouts, input methods; not tied to menu c
 ## Pointing devices ([HIG](https://developer.apple.com/design/human-interface-guidelines/pointing-devices))
 - Mac: pointer + keyboard combined. iPadOS: pointer adds to touch, doesn't replace it.
 - Respond consistently to mouse/trackpad gestures (e.g. "Swipe between pages" same everywhere).
-- **Never** redefine systemwide trackpad gestures (Dock, Mission Control), even in games; Mac users can customize them.
+- Avoid redefining systemwide trackpad gestures (Dock, Mission Control), even in games; Mac users can customize them.
 - Consistent experience across gestures, pointer, keyboard (and touch).
 - Let the pointer reveal/hide auto-minimizing controls (iPadOS Safari toolbar hover; full-screen video playback controls).
 - Modifier+interaction must give same result with touch and pointer (e.g. Option-drag duplicates).
@@ -309,11 +309,11 @@ Input-source shortcuts (localization, layouts, input methods; not tied to menu c
 - Nonstandard-shaped lift element: provide corner radius/shape so pointer morphs seamlessly (`UIPointerShape.roundedRect(_:radius:)`).
 - Custom elements behaving like standard ones: use system pointer effects (else look broken).
 - Apply pointer effects consistently (same experience across all drawing areas, etc.).
-- **Never** add gratuitous decorative pointer/content effects.
+- Avoid gratuitous decorative pointer/content effects.
 - Keep custom pointer shapes simple and self-explanatory.
 - Consider custom annotations with useful info (X/Y over graph; Keynote width/height while resizing).
-- **Never** show instructional text with the pointer.
-- Custom hover: scale only where it won't crowd neighbors (not table rows; use tint instead); **never** shadow without scale (unscaled element doesn't look closer).
+- Avoid instructional text with the pointer.
+- Custom hover: scale only where it won't crowd neighbors (not table rows; use tint instead); avoid shadow without scale (unscaled element doesn't look closer).
 - macOS: standard clicks/gestures (users can customize; support them as expected):
 
 | Click/gesture | Expected behavior | Mouse | Trackpad |

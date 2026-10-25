@@ -10,15 +10,15 @@ scope: HIG component rules that transfer to web apps, translated to HTML/CSS/ARI
 - Prominent (filled, accent) style for the single most likely action; 1-2 prominent buttons per view. Show preference by style, not size; equal sizes for a related set.
 - Label: short, verb first ("Add to Cart"); icon only when universally familiar, with `aria-label` or visible text. Title-style caps for button labels in the HIG; match repo casing.
 - Roles: normal, primary (default; Enter submits), cancel, destructive (destructive color). **Never** make a destructive action the primary/default, even if most likely.
-- Non-instant action: show a spinner inside the button, change label ("Checking out…"), `aria-busy="true"`, keep width stable. Don't hide or grey out the button to signal "not ready"; explain on press.
+- Non-instant action: show a spinner inside the button, change label ("Checking out…"), `aria-busy="true"`, keep width stable. In a form, Continue/Next becomes available once the required data is in (HIG Entering data).
 - Opens another dialog/page needing more input: trailing ellipsis in label.
 - Icon-only toggles: show state through background and `aria-pressed`, not color alone.
 - Help button (circular `?`): max 1 per view, in the content, not in a toolbar.
 
 ## Toggles and switch → `<button role="switch" aria-checked>` / `<input type="checkbox">` ([HIG](https://developer.apple.com/design/human-interface-guidelines/toggles))
 - Use only for two opposing states. Choosing among options: select/radios.
-- Name what it affects with a visible label (or row context). Never rely on color alone for state; fill, shape, check or dot too.
-- Switch for a setting that applies immediately; checkbox in forms that submit. Checkbox for hierarchies of settings (indent dependents); mixed state = `aria-checked="mixed"` / `indeterminate` when children differ.
+- Name what it affects with a visible `<label>`, or `aria-labelledby` pointing at the row text (WCAG 4.1.2). Never rely on color alone for state; fill, shape, check or dot too.
+- *(house)* Switch for a setting that applies immediately; checkbox in forms that submit. Checkbox for hierarchies of settings (indent dependents); mixed state = `aria-checked="mixed"` / `indeterminate` when children differ.
 - Radio group: 2 to 5 mutually exclusive options, `<fieldset><legend>`; more than about 5: `<select>`. Multiple selections: checkboxes.
 - One on/off setting: prefer checkbox (clearer state). Horizontal radios: spacing sized to longest label.
 
@@ -30,7 +30,7 @@ scope: HIG component rules that transfer to web apps, translated to HTML/CSS/ARI
 - Entirely separate app sections: navigation, not a segmented control.
 
 ## Pop-up and pull-down buttons → `<select>` / menu button ([HIG](https://developer.apple.com/design/human-interface-guidelines/pop-up-buttons), [pull-down](https://developer.apple.com/design/human-interface-guidelines/pull-down-buttons))
-- Pop-up = flat list of mutually exclusive options, shows current value: native `<select>` (or `role="listbox"` button). Menu closes on choice.
+- Pop-up = flat list of mutually exclusive options, shows current value: native `<select>`, or a select-only combobox (`role="combobox"` trigger + `role="listbox"` popup). Menu closes on choice.
 - Pull-down = commands tied to the button's purpose (Add → types, Sort → attributes): `<button aria-haspopup="menu" aria-expanded>` opening `role="menu"`. Closes, then action runs.
 - Pop-up: pick a useful default (most likely), make effect predictable with a label before or on the button; good when space is tight. Optional "Custom" item.
 - Pull-down: at least 3 items (1-2: use buttons/toggles); not all of a view's actions in one; primary actions stay visible. Menu title only if it adds meaning.
@@ -221,7 +221,7 @@ scope: HIG component rules that transfer to web apps, translated to HTML/CSS/ARI
 - Small specific input (name, email); longer: textarea. Visible `<label>` always; placeholder is a hint ("name@example.com") that vanishes, never the label.
 - `type="password"` for sensitive data; correct `type`, `autocomplete`, `inputmode`, `enterkeyhint` (see Virtual keyboards).
 - Size to the expected text. Stack multiple fields vertically, consistent widths, spacing that pairs label and field.
-- Logical tab order (DOM order). Validate when sensible: email on blur, others as the person corrects; show the error next to the field, `aria-invalid`, `aria-describedby`. Never validate while the person is still typing the first attempt.
+- Logical tab order (DOM order). Validate when sensible: email on blur, others as the person corrects; show the error next to the field, `aria-invalid`, `aria-describedby`. Validate username and password before focus leaves the field; *(house)* don't flag a field while the person is still typing in it.
 - Numeric data: `inputmode="numeric"`/`decimal`, format by locale (`Intl.NumberFormat`); don't assume separators.
 - Overflowing text: clip, wrap or ellipsis; offer an expansion tooltip for clipped values.
 - Clear button at the trailing end for search/URL-like fields. Leading icon indicates purpose, trailing offers extras.
@@ -234,10 +234,10 @@ scope: HIG component rules that transfer to web apps, translated to HTML/CSS/ARI
 - Match the keyboard to content (`inputmode`).
 - Rich text editor: keep native undo/redo, spellcheck and standard shortcuts working.
 
-## Combo boxes → `role="combobox"` + `<datalist>` ([HIG](https://developer.apple.com/design/human-interface-guidelines/combo-boxes))
+## Combo boxes → `<input list>` + `<datalist>`, or an ARIA combobox ([HIG](https://developer.apple.com/design/human-interface-guidelines/combo-boxes))
 - Text field plus list: type a custom value or pick a predefined one; custom entries don't get added to the list.
 - Default: a meaningful list item hinting at the hidden choices (empty is fine). Intro label signals item types. Offer likely choices; list items no wider than the field.
-- Follow the ARIA combobox pattern (`aria-expanded`, `aria-controls`, `aria-activedescendant`).
+- Pick one: native `<input list>` + `<datalist>` (no ARIA), or a full ARIA combobox (`role="combobox"` input, DOM `role="listbox"`, `aria-expanded`, `aria-controls`, `aria-activedescendant`). Never mix: `aria-activedescendant` can't point at `<datalist>` options.
 
 ## Pickers → `<select>`, `<input type="date|time">` ([HIG](https://developer.apple.com/design/human-interface-guidelines/pickers))
 - Medium-to-long lists of distinct values; short lists: radios or a menu; huge sets: searchable list/table.
@@ -340,8 +340,8 @@ scope: HIG component rules that transfer to web apps, translated to HTML/CSS/ARI
 - **Never** add Shift to a shortcut that uses the upper character of a two-character key (Help is ⌘?, not ⇧⌘/).
 - **Never** derive a shortcut by adding a modifier to an existing one for an unrelated command.
 - Don't use extra modifiers with characters missing on some layouts; if a non-Command modifier is needed, use it only with letters. Use `event.key` for characters and `event.code` for physical positions; support RTL and non-US layouts.
-- Never take browser-reserved shortcuts (new/close tab, address bar, reload, find in page, history, print by default, zoom). Don't `preventDefault` them. Prefer Cmd/Ctrl+K style or single keys only when the focus is not in an input.
-- HIG standard shortcuts usually safe in a web editor/app (when focus is in your UI, not a text field you didn't build): Cmd/Ctrl+Z Undo, Shift+Cmd/Ctrl+Z Redo (Ctrl+Y on Windows), X/C/V cut/copy/paste, A select all, Shift+A deselect, B/I/U toggle bold/italic/underline in rich text, S save (only if you override page save; autosave first), G / Shift+G find next/previous, E use selection for find, J scroll to selection, ⌘? help, Esc cancel, Cmd+. cancel, Shift+Tab reverse focus, Ctrl+Tab next control group, Cmd/Ctrl+- and = (Shift) decrease/increase selection size, bracket keys for align left/right, ⌘, settings (but browsers on macOS use it for their own settings: expose a menu item too and don't rely on it).
+- Never take browser-reserved shortcuts (new/close tab, address bar, reload, find in page, history, print by default, zoom). Don't `preventDefault` them; that includes Ctrl+Tab, Cmd/Ctrl+-/= (zoom, WCAG 1.4.4), Cmd/Ctrl+G/Shift+G (find next) and Cmd/Ctrl+J (downloads), unless scoped to a focused canvas or editor surface. Prefer Cmd/Ctrl+K style or single keys only when the focus is not in an input.
+- HIG standard shortcuts usually safe in a web editor/app (when focus is in your UI, not a text field you didn't build): Cmd/Ctrl+Z Undo, Shift+Cmd/Ctrl+Z Redo (Ctrl+Y on Windows), X/C/V cut/copy/paste, A select all, Shift+A deselect, B/I/U toggle bold/italic/underline in rich text, S save (only if you override page save; autosave first), E use selection for find, ⌘? help, Esc cancel, Cmd+. cancel, Shift+Tab reverse focus, bracket keys for align left/right, ⌘, settings (but browsers on macOS use it for their own settings: expose a menu item too and don't rely on it).
 - Browsers reserve or conflict with: T, W, N, R, L, Q, P, F, H, M (Cmd/Ctrl) and F5/F11; skip those or require a non-conflicting scope (e.g. inside a custom canvas editor).
 - Discoverability: show the shortcut next to the menu/toolbar item and in tooltips; provide a "Keyboard shortcuts" help dialog (often `?`); single-key shortcuts must be remappable or disableable (WCAG 2.1.4) and only active when focus is not in a text input.
 - Keyboard users: Tab order follows reading order; arrow keys inside composite widgets; Control-style arrow moves focus between cells in grids; don't add your own navigation for standard controls (buttons, switches) beyond ARIA patterns.

@@ -1,6 +1,6 @@
 ---
 name: apple-design
-description: "Designs, builds or reviews native Apple app UI (iOS, iPadOS, macOS, Mac Catalyst) to Apple's Human Interface Guidelines: every rule, including Liquid Glass, Dynamic Type, system colors, standard components and the platform's hard numbers. Use when working on SwiftUI, UIKit or AppKit views, an Xcode project, or when asked to check an Apple app against the HIG. Not for web UI: that is web-design."
+description: "Designs, builds or reviews native Apple app UI (iOS, iPadOS, macOS, Mac Catalyst) to Apple's Human Interface Guidelines: every rule, including Liquid Glass, Dynamic Type, system colors, standard components and the platform's hard numbers. Use when working on SwiftUI, UIKit or AppKit views, an Xcode project, or when asked to check an Apple app against the HIG. Not for watchOS, tvOS or visionOS, and not for web UI (that is web-design)."
 ---
 
 # Apple design (HIG)
@@ -25,7 +25,8 @@ link to the page each rule comes from. Load only the files the task needs.
 | Touches | Load |
 |---|---|
 | Color, type, icons, images, layout, motion, dark mode, materials, a11y, copy, privacy | `references/foundations.md` |
-| A flow: forms, loading, feedback, modality, onboarding, search, settings, undo, accounts, notifications, media | `references/patterns.md` |
+| A flow: forms, loading, feedback, modality, onboarding, search, settings, undo, accounts, notifications, media, games | `references/patterns.md` |
+| A settings or form screen (SwiftUI `Form`, grouped list) | `references/patterns.md` (Settings, Entering data) + `components-layout.md` (Lists and tables) + `components-selection.md` (Toggles, Pickers, Text fields) + `foundations.md` (Writing) |
 | Charts, image or text views, web views | `references/components-content.md` |
 | Lists, tables, collections, split views, tab views, disclosure, labels | `references/components-layout.md` |
 | Buttons, menus, context menus, toolbars, menu bar, share | `references/components-menus.md` |
@@ -61,7 +62,7 @@ Walk the changed screens against the loaded files. Each finding:
 `SEVERITY  file:line (or screen)  rule  [HIG page link]  fix in one line`.
 - CRITICAL: blocks a task or excludes people (inaccessible, unreadable, a
   trap with no way back, data loss without warning).
-- MUST-FIX: breaks a **Must**/**Never** rule or a hard number.
+- MUST-FIX: breaks a **Must**/**Never** rule or goes below a hard minimum.
 - NICE-TO-HAVE: a default not followed, with a concrete user cost.
 Taste alone is not a finding.
 

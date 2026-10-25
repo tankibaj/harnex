@@ -84,12 +84,12 @@ scope: Apple HIG interaction patterns for iOS, iPadOS, macOS (charts, sharing, d
 - Launcher background: clearly distinct from accessories and title card; solid, gradient, or pattern; avoid complex images.
 - Launcher accessories: may sit in front of/behind card for depth; app name and both buttons stay clearly visible; avoid clutter; test across screen sizes and orientations.
 - Launcher animation sparingly: gentle repeating (breathe, sway).
-- File provider extension (iOS/iPadOS): list only documents appropriate to context (e.g. PDFs for PDF editor); optional info (modified date, size, local/remote); let people choose destination when exporting/moving (navigate hierarchy, add subfolders unless single directory); **never** add custom top toolbar (modal already has one).
+- File provider extension (iOS/iPadOS): list only documents appropriate to context (e.g. PDFs for PDF editor); optional info (modified date, size, local/remote); let people choose destination when exporting/moving (navigate hierarchy, add subfolders unless single directory); avoid a custom top toolbar (modal already has one).
 - macOS: use default file browser unless important reason.
 - macOS open UI: convenient extras (open recent, filters, multi-select); customize Open button title (e.g. Insert).
 - macOS save UI: let people change name, format, location; default title "Untitled"; default to logical location; format chooser if multiple formats; consider accessory view (e.g. include attachments).
 - macOS Finder Sync extension: sync status badges, custom context menu items, custom toolbar buttons.
-- macOS autosave off ("Ask to keep changes when closing documents"): show unsaved-changes dot on close button and in Window menu entry; save dialog on close, quit, log out, restart. With autosave on, **never** show the dot.
+- macOS autosave off ("Ask to keep changes when closing documents"): show unsaved-changes dot on close button and in Window menu entry; save dialog on close, quit, log out, restart. With autosave on, avoid the dot (it implies action is needed).
 - Optionally append "Edited" to title bar; remove as soon as saved/autosaved.
 
 ## Going full screen ([HIG](https://developer.apple.com/design/human-interface-guidelines/going-full-screen))
@@ -111,7 +111,7 @@ scope: Apple HIG interaction patterns for iOS, iPadOS, macOS (charts, sharing, d
 - Splash screen (branding graphic), if needed: at start of onboarding, or right after launch if no onboarding.
 - Restore previous state in detail (scroll position, window state and location).
 - Launch screen: downplay; only purpose is perceived speed. Nearly identical to first screen (avoid flash); solid-color first screen = solid-color launch screen; match device orientation and appearance mode.
-- **Never** put text on launch screen (not localizable). **Never** advertise: no logos/branding unless fixed part of first screen; no splash/About look.
+- Avoid text on launch screen (not localizable). **Never** advertise: no logos/branding unless fixed part of first screen; no splash/About look.
 - iOS/iPadOS: launch in current device orientation if both supported; single-orientation app launches in that one. Landscape-only must work for both left and right rotation.
 
 ## Live-viewing apps ([HIG](https://developer.apple.com/design/human-interface-guidelines/live-viewing-apps))
@@ -141,7 +141,7 @@ scope: Apple HIG interaction patterns for iOS, iPadOS, macOS (charts, sharing, d
 - Without Sign in with Apple: prefer passkeys (iOS/iPadOS/macOS); if passwords, add two-factor auth.
 - Name the auth method on buttons ("Sign In with Face ID", not "Sign In"). Mention only methods available on the device (`LABiometryType`).
 - Avoid in-app biometric opt-in setting (system-level already).
-- **Never** call account auth a "passcode" (device unlock term).
+- Avoid calling account auth a "passcode" (device unlock term).
 - Account created in app: **must** offer real deletion, not just deactivation; follow regional law (right to be forgotten). If law forces data retention or specific process, explain clearly.
 - Deletion initiation in-app; if not possible, direct, easy-to-find link to web page (not buried in Privacy Policy/Terms). Sign in with Apple accounts: revoke tokens on deletion.
 - Same deletion experience in-app and on web (no longer/more complex variant).
@@ -236,7 +236,7 @@ scope: Apple HIG interaction patterns for iOS, iPadOS, macOS (charts, sharing, d
 | Play and record | both, maybe simultaneously (messaging, video calls) | Ignores | Maybe | Records and plays |
 
 - Respond to external audio controls (Control Center, headphones) only when actively playing, in clear audio context, or connected to Bluetooth/AirPlay device; else don't halt other apps' audio.
-- **Never** repurpose audio controls; ignore unsupported ones.
+- Avoid repurposing audio controls; ignore unsupported ones.
 - Custom player controls only for unsupported commands (custom skip increments, related content like score).
 - After temporary audio, signal others to resume (`notifyOthersOnDeactivation`).
 - Interruptions: decide handling (e.g. recording apps can defer interruption for calls unless accepted). VoIP: end call when iPad Smart Folio closes (mic auto-mutes); **never** restart audio session on reopen (would unmute mic silently). See Handling audio interruptions.
@@ -270,7 +270,7 @@ scope: Apple HIG interaction patterns for iOS, iPadOS, macOS (charts, sharing, d
 ## Playing video ([HIG](https://developer.apple.com/design/human-interface-guidelines/playing-video))
 - Use system video player (AVKit); custom player must mirror system behavior and interface so habits carry over.
 - Default modes by aspect ratio: full-screen/aspect-fill (`resizeAspectFill`, crops edges): wide 2:1 through 2.40:1. Fit-to-screen/aspect (`resizeAspect`, letter/pillarbox): standard 4:3, 16:9, up to 2:1, and ultrawide above 2.40:1. People can switch modes; PiP supported.
-- **Always** show video at original aspect ratio; **never** embed letterbox/pillarbox padding in the video frame (shrinks video in both modes, breaks edge-to-edge contexts like iPad PiP).
+- **Always** show video at original aspect ratio; avoid embedded letterbox/pillarbox padding in the video frame (shrinks video in both modes, breaks edge-to-edge contexts like iPad PiP).
 - Add extra info (image, title, description) via `externalMetadata` only when valuable; don't obscure playback.
 - Support expected input: Space on a hardware keyboard toggles play/pause (Mac, iPhone, iPad, etc.).
 - Avoid audio mixing when switching modes (e.g. PiP video unmuted while a game plays music): handle secondary audio (`silenceSecondaryAudioHintNotification`).
@@ -291,7 +291,7 @@ scope: Apple HIG interaction patterns for iOS, iPadOS, macOS (charts, sharing, d
 - macOS: consider storing modified print settings with document; at minimum until it closes.
 
 ## Ratings and reviews ([HIG](https://developer.apple.com/design/human-interface-guidelines/ratings-and-reviews))
-- Ask only after demonstrated engagement (level done, significant task; launch count, features explored, tasks completed). **Never** on first launch or during onboarding.
+- Ask only after demonstrated engagement (level done, significant task; launch count, features explored, tasks completed). Avoid first launch and onboarding.
 - Don't interrupt tasks/gameplay; ask at natural breaks.
 - Don't pester: at least a week or two between requests, and only after more engagement.
 - Prefer system prompt (`RequestReviewAction`): single tap/click to rate or dismiss, optional written review, users can opt out for all apps; system caps at 3 displays per app per 365 days.
@@ -312,12 +312,12 @@ scope: Apple HIG interaction patterns for iOS, iPadOS, macOS (charts, sharing, d
 - Defaults serve most people; ideally no adjustment needed (games: auto-optimize performance for device).
 - Minimize number of settings.
 - iOS/iPadOS/macOS with hardware keyboard: Command-Comma (,) opens settings; games often Esc.
-- **Never** ask in settings for info you can detect (connected controller, Dark Mode).
-- Respect systemwide settings (accessibility, scrolling, authentication); **never** duplicate them in custom settings.
+- Avoid asking in settings for info you can detect (connected controller, Dark Mode).
+- Respect systemwide settings (accessibility, scrolling, authentication); avoid duplicating them in custom settings.
 - Custom settings area: general, infrequently changed options (window config, game saving, key mappings, account).
 - Task-specific options (show/hide parts of view, reorder, filter) live in the screen they affect, not in settings.
 - System Settings app: only most rarely changed options; consider button that opens it from your UI.
-- macOS: settings window opened by App menu Settings item (File menu if document-level options). **Never** add settings buttons to window toolbars.
+- macOS: settings window opened by App menu Settings item (File menu if document-level options). Avoid settings buttons to window toolbars.
 - macOS: Command-Comma opens it; dim minimize and maximize buttons.
 - macOS: settings toolbar noncustomizable, always visible, always marks active pane button; panes group related settings.
 - macOS: window title = current pane name; single pane: "App Name Settings".
@@ -329,7 +329,7 @@ scope: Apple HIG interaction patterns for iOS, iPadOS, macOS (charts, sharing, d
 - Allow multiple undo/redo; no unnecessary limit; back to last logical step (open, save).
 - Consider reverting batches (incremental changes to one property) or all changes since open/save.
 - Dedicated undo/redo buttons only if necessary; use standard system symbols, in a toolbar. Standard routes: macOS Edit menu, keyboard shortcuts (Mac, iPad), iPhone shake.
-- iOS/iPadOS: **never** redefine standard gestures (three-finger swipe, shake).
+- iOS/iPadOS: avoid redefining standard gestures (three-finger swipe, shake).
 - iOS/iPadOS: alert title = system prefix "Undo "/"Redo " + a word or two naming operation (e.g. "Undo Name", "Redo Address Change").
 - macOS: undo/redo at top of Edit menu; Command-Z undo, Shift-Command-Z redo.
 
@@ -339,3 +339,20 @@ scope: Apple HIG interaction patterns for iOS, iPadOS, macOS (charts, sharing, d
 - Summary at session end confirming completion and recorded data; discard or ask about extremely brief sessions.
 - Use Activity rings only for documented purpose (colors and meanings match Activity app).
 - Explain missing sensor data (e.g. no heart rate) in clear language.
+
+## Designing for games ([HIG](https://developer.apple.com/design/human-interface-guidelines/designing-for-games))
+- Let people play as soon as installation completes: ship as much playable content as possible in the initial install, keeping the download to 30 minutes or less.
+- Choose good defaults from the device (e.g. resolution) so people can start without changing settings.
+- Teach through play: fold configuration and onboarding into a playable tutorial; a written tutorial is a reference, never a prerequisite.
+- Defer permission requests (sensors, personal data) until the feature needs them, with a clear reason.
+- Text and buttons: platform default and minimum sizes apply in games too (`platforms/<os>.md`).
+- Prefer resolution-independent textures and graphics; otherwise match the device resolution.
+- Lay out around device features (rounded corners, camera housing) with the platform's safe areas.
+- In-game menus must stay legible and usable at every aspect ratio (e.g. 16:10, 19.5:9, 4:3).
+- Support full-screen play on macOS, iOS and iPadOS.
+- Default interaction: iOS touch (+ game controller); iPadOS touch (+ controller, keyboard, mouse, trackpad, Apple Pencil); macOS keyboard, mouse, trackpad (+ controller). Support the default; offer the others.
+- Support physical game controllers, and always offer an alternative (touch, keyboard and mouse) so a controller is never required.
+- iPhone and iPad: touch controls that work with the touchscreen (direct interaction, virtual controls only where needed); details in `inputs.md` Game controls.
+- Perceivability: never rely on color alone; give cutscenes descriptive subtitles. Let players customize type size, control mapping, motion intensity and sound balance.
+- Representation: support a wide range of identities in avatars and names; avoid stereotypes in characters and stories.
+- Consider Game Center, GameSave (resume on any device), Core Haptics and Spatial Audio (`technologies.md`).

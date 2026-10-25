@@ -1,6 +1,6 @@
 ---
 name: web-design
-description: "Designs, builds or reviews web app UI using the parts of Apple's Human Interface Guidelines that transfer to the web: the design principles, accessibility, color and dark mode, layout, typography, writing, and HIG components and patterns translated to HTML, CSS and ARIA, with a neutral (not iOS-imitating) look. Use when building or reviewing web pages, components or flows in any framework. Not for native Apple apps: that is apple-design."
+description: "Sets the behavior, accessibility, wording and structure of web app UI from the parts of Apple's Human Interface Guidelines that transfer to the web: principles, WCAG 2.2 AA accessibility, color and dark mode, layout, writing, and HIG components and patterns translated to HTML, CSS and ARIA. Use when building or reviewing web app screens, forms, dialogs, navigation or flows in any framework. Look-neutral: pairs with the repo's design system or a visual-style skill. Not for native Apple apps: that is apple-design."
 ---
 
 # Web design (HIG-derived)
@@ -11,13 +11,14 @@ behavior, accessibility, wording and structure. Where the HIG and common web
 practice disagree, this file settles it once ("Settled conflicts").
 
 ## Route
-1. Always: `../apple-design/references/principles.md` (the 8 principles).
+1. Always: `../apple-design/references/principles.md` (the 8 principles). Installed without apple-design: Purpose, Agency, Responsibility, Familiarity, Flexibility, Simplicity, Craft, Delight ([HIG](https://developer.apple.com/design/human-interface-guidelines/design-principles)).
 2. Then by what the change touches:
 
 | Touches | Load |
 |---|---|
 | Any UI (contrast, targets, keyboard, screen readers, motion, zoom) | `references/a11y.md` |
 | Buttons, dialogs, menus, nav, tabs, forms controls, lists, tables, search, progress | `references/components-web.md` |
+| A settings page or form | `references/patterns-web.md` (Settings, Entering data) + `components-web.md` (Toggles, Text fields, Lists) + `writing.md` |
 | A flow: forms, loading, feedback, modality, onboarding, search, settings, undo, accounts, permissions, notifications | `references/patterns-web.md` |
 | Labels, errors, empty states, button text, tone | `references/writing.md` |
 | Color, theming, type scale, layout, icons, images, motion, RTL | `references/foundations-web.md` |
@@ -27,11 +28,11 @@ practice disagree, this file settles it once ("Settled conflicts").
 | HIG | Web |
 |---|---|
 | Dynamic Type, text up to 200% | `rem` sizes, no fixed-height text containers; works at 200% browser zoom and a 200% default font size |
-| Min text 11 pt, body 17 pt (iOS) | Body 16-17 px; nothing under 11 px, prefer 12 px+ |
+| Min text 11 pt, body 17 pt (iOS) | Body 16-17 px; nothing under 11 px, *(house)* prefer 12 px+ |
 | 44x44 pt hit target (28x28 min) | 44x44 CSS px for primary touch targets; never under WCAG 2.2's 24x24 px |
-| Contrast 4.5:1 (text ≤17 pt), 3:1 (≥18 pt or bold) | WCAG AA, same ratios; aim for 7:1 on small custom text |
+| Contrast 4.5:1 (text ≤17 pt), 3:1 (≥18 pt or bold) | WCAG 1.4.3 thresholds, not the HIG's pt ones: 4.5:1 under 24 px (bold under 18.66 px), 3:1 at or above; aim for 7:1 on small custom text |
 | Light / Dark / Increase Contrast | `prefers-color-scheme`, `prefers-contrast: more`; tokens for each |
-| Reduce Motion, Reduce Transparency | `prefers-reduced-motion`, `prefers-reduced-transparency` |
+| Reduce Motion, Reduce Transparency | `prefers-reduced-motion`, `prefers-reduced-transparency` (Chromium-only; also honor `prefers-contrast: more`) |
 | Materials, Liquid Glass | Optional `backdrop-filter` on floating controls only, solid fallback (`@supports`), off under reduced transparency; never on content |
 | Safe areas | `viewport-fit=cover` + `env(safe-area-inset-*)` |
 | Size classes, not devices | Container and width queries; never sniff the device |

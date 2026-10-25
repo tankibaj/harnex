@@ -98,11 +98,11 @@ scope: app shortcuts, controls, live activities, notifications, snippets, status
 - Get consent before sending. People set styles and delivery times in Settings.
 - Styles: banner/view (Lock Screen, Home Screen, desktop), app icon badge, Notification Center item. Direct-communication notifications show contact image/avatar and group name instead of app icon.
 - Concise, informative content.
-- **Never** send multiple notifications for same thing, even without response (fills Notification Center; people disable all).
+- Avoid multiple notifications for same thing, even without response (fills Notification Center; people disable all).
 - Don't tell people to perform in-app tasks; offer notification actions for simple tasks instead.
 - Errors: use alert, not notification.
 - Foreground: system doesn't show notification; handle info discoverably but not intrusively (badge increment, insert into current view; Mail adds to list).
-- **Never** include sensitive/personal/confidential info.
+- Avoid sensitive/personal/confidential info.
 - Title: short, contextual (headline, event name, email subject); title-style caps, no ending punctuation. Generic title (e.g. "New Document"): let system show app name. Communication: system shows sender name; noncommunication without title: app name.
 - Body: complete sentences, sentence case, punctuation; don't truncate (system does).
 - Hidden-previews placeholder: generic descriptive body ("Friend request", "New comment", "Reminder", "Shipment"), sentence-style caps. API: `hiddenPreviewsBodyPlaceholder`. System shows only icon and "Notification" when previews are hidden.
@@ -130,7 +130,7 @@ scope: app shortcuts, controls, live activities, notifications, snippets, status
 - iOS/iPadOS only (not macOS). Top edge: time, carrier, battery, etc.
 - Transparent by default; content beneath hampers readability and looks interactive. Keep readable; don't imply content behind is interactive. Prefer scroll edge effect (blurred view behind status bar) (`ScrollEdgeEffectStyle`, `UIScrollEdgeEffect`).
 - Consider temporarily hiding for full-screen media (Photos).
-- **Never** hide permanently; give simple discoverable gesture to redisplay (Photos: single tap).
+- Avoid hiding it permanently; give simple discoverable gesture to redisplay (Photos: single tap).
 - API: `UIStatusBarStyle`, `preferredStatusBarStyle`.
 
 ## Widgets ([HIG](https://developer.apple.com/design/human-interface-guidelines/widgets))
@@ -140,7 +140,7 @@ scope: app shortcuts, controls, live activities, notifications, snippets, status
 
 | Size | iPhone | iPad | Mac |
 |---|---|---|---|
-| System small | Home Screen, Today View, StandBy, CarPlay | Home Screen, Today View, Lock Screen | Desktop, Notification Center |
+| System small | Home Screen, Today View, StandBy | Home Screen, Today View, Lock Screen | Desktop, Notification Center |
 | System medium | Home Screen, Today View | Home Screen, Today View | Desktop, Notification Center |
 | System large | Home Screen, Today View | Home Screen, Today View | Desktop, Notification Center |
 | System extra large | Not supported | Home Screen, Today View | Desktop, Notification Center |
@@ -183,7 +183,7 @@ scope: app shortcuts, controls, live activities, notifications, snippets, status
 - iOS/iPadOS Lock Screen widgets: follow complication principles; useful info, not an app launcher; styles: inline text above clock, circular and rectangular below clock. Design with complications in tandem.
 - Always-On display (iPhone): reduced luminance; enough gray contrast, stay legible.
 - Offer Live Activities for real-time updates (widgets aren't real-time); develop in tandem.
-- StandBy/CarPlay: two small system widgets side by side, scaled up; supporting StandBy also covers CarPlay (small widget, background removed). Large text/glanceability matters (CarPlay). Limit rich images/color for meaning; scale and rearrange text for distance reading. Mark widget background removable for StandBy. API: widget background display.
+- StandBy: two small system widgets side by side, scaled up (CarPlay reuses this; out of scope). Large text/glanceability matters. Limit rich images/color for meaning; scale and rearrange text for distance reading. Mark widget background removable for StandBy. API: widget background display.
 - macOS: no additional considerations beyond above.
 - iOS dimensions (pt):
 

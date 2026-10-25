@@ -13,14 +13,14 @@ scope: action sheets, alerts, page controls, panels, popovers, scroll views, she
 - API: SwiftUI `confirmationDialog` (all platforms); UIKit `UIAlertController.Style.actionSheet`.
 - macOS: no additional considerations.
 - iOS/iPadOS: use action sheet, not menu, for action-related choices (people expect menu only when they reveal it).
-- iOS/iPadOS: **Never** let an action sheet scroll; more buttons = slower choice, accidental taps.
+- iOS/iPadOS: Avoid a scrolling action sheet; more buttons = slower choice, accidental taps.
 - Other platforms: out of scope.
 
 ## Alerts ([HIG](https://developer.apple.com/design/human-interface-guidelines/alerts))
 - Use sparingly. Only essential info and useful actions.
 - Never use alert merely to inform (non-actionable). Show info in context instead (e.g. Mail connection indicator people can tap).
 - Skip alerts for common, undoable actions, even destructive (delete email/file with undo). Alert for uncommon, destructive, non-undoable actions.
-- **Never** show an alert at app start. Make info discoverable; on startup problem (no network) show cached/placeholder data plus nonintrusive label.
+- Avoid an alert at app start. Make info discoverable; on startup problem (no network) show cached/placeholder data plus nonintrusive label.
 - Content: title, optional informative text, up to 3 buttons. iOS/iPadOS/macOS alert can include text field; macOS can add icon, accessory view, suppression checkbox, Help button.
 - Copy: direct, neutral, approachable. Not oblique, accusatory, or masking severity.
 - Title: clear, succinct, specific; what happened, context, why. No "Error" / "Error 329347 occurred". No more than 2 lines.
@@ -55,7 +55,7 @@ scope: action sheets, alerts, page controls, panels, popovers, scroll views, she
 - Not supported in macOS.
 - iOS/iPadOS: current dot highlighted; with overflow, side dots shrink to hint more pages (e.g. 9 dots: center 5 default size, 2nd/8th about half, 1st/9th about one quarter).
 - iOS/iPadOS interaction: tap (leading/trailing side of current indicator = prev/next; iPadOS pointer can target specific indicator) and scrub (touch and drag; past edge jumps to first/last).
-- Animate scrolling transition only for tap; **never** for scrubbing (lag, flashes).
+- Animate scrolling transition only for tap; avoid it for scrubbing (lag, flashes).
 - Background styles (`backgroundStyle`): Automatic = shown only during interaction (page control not primary nav); Prominent = always shown (only when primary navigational control); Minimal = never shown (position display only).
 - Avoid scrubber with minimal style (no scrub feedback); use automatic or prominent to allow scrubbing.
 - API: `UIPageControl`, `PageTabViewStyle`.
@@ -90,7 +90,7 @@ scope: action sheets, alerts, page controls, panels, popovers, scroll views, she
 - Size only as big as contents plus pointing to source; system may adjust size.
 - Animate size changes (condensed/expanded views) so it doesn't look like replacement.
 - Don't say "popover" in help docs; refer to task/selection.
-- **Never** use a popover for warnings (easy to miss/dismiss); use alert.
+- Avoid a popover for warnings (easy to miss/dismiss); use alert.
 - iOS/iPadOS: avoid popovers in compact views. Adapt to size class; popovers for wide views, sheet/full-screen modal for compact.
 - macOS: popover can be detachable (drag out to become panel, stays visible). Consider offering. Keep appearance changes minimal when detached.
 - API: SwiftUI `popover(isPresented:attachmentAnchor:arrowEdge:content:)`, `UIPopoverPresentationController`, `NSPopover`.
@@ -119,7 +119,7 @@ scope: action sheets, alerts, page controls, panels, popovers, scroll views, she
 - Complex/prolonged flows: consider alternatives. iOS/iPadOS full-screen modal (`UIModalPresentationStyle.fullScreen`) for video/photo/camera or multistep editing. macOS: new window or full screen (self-contained task like document editing -> window).
 - One sheet at a time from main interface. If a sheet triggers another, close first, optionally re-show after.
 - Use nonmodal view for supplementary items affecting parent task: macOS panel; iOS/iPadOS nonmodal sheet.
-- Provide alternative to Done: pair with Cancel or Back. Done alone implies no exit. **Never** show Cancel, Done and Back together.
+- Provide alternative to Done: pair with Cancel or Back. Done alone implies no exit. Avoid showing Cancel, Done and Back together.
 - iOS/iPadOS single-view sheet: Cancel leading edge of top toolbar, Done trailing.
 - Multi-step: first step Cancel (leading) + inactive Done (trailing); subsequent steps Back (leading) + inactive Done; final step Back + Done.
 - Resizable sheet: expands on scroll content or grabber drag; sizes via detents. System detents: large (fully expanded; automatic) and medium (about half). Medium only = cannot expand to full. Custom detents allowed. API: `detents`.
@@ -140,7 +140,7 @@ scope: action sheets, alerts, page controls, panels, popovers, scroll views, she
 - Windows adapt fluidly to different sizes for multitasking/multiwindow (see Layout, Multitasking).
 - Open a new window at the right moment (Mail Compose keeps message and email visible). Avoid new windows as default; clutter and confusion.
 - Consider optional "open in new window" via context menu or File menu. API: `OpenWindowAction`.
-- **Never** build custom window frames/controls or imitate system look; imperfect copies feel broken.
+- Avoid custom window frames/controls; never imitate the system look; imperfect copies feel broken.
 - Say "window" in user-facing text (not "scene").
 - iPadOS: two modes by Multitasking & Gestures setting: full screen (windows fill screen, switch via app switcher) and windowed (free resize, multiple onscreen, system remembers size/placement).
 - iPadOS windowed: window controls at leading edge of toolbar; ensure they don't overlap toolbar items. Move leading buttons inward when controls appear.

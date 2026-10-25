@@ -6,7 +6,7 @@ scope: Apple HIG menu, button, action and toolbar components (activity views, bu
 ## Activity views ([HIG](https://developer.apple.com/design/human-interface-guidelines/activity-views))
 - iOS, iPadOS only (share sheet; sheet or popover by device/orientation). macOS has none, but supports share/action extensions.
 - App-specific activities listed before system-wide ones; people can edit the list.
-- **Never** duplicate common system actions (Print, Copy). For similar custom functionality, give a distinct title ("Print Transaction").
+- Avoid duplicating common system actions (Print, Copy). For similar custom functionality, give a distinct title ("Print Transaction").
 - Prefer a symbol for custom activity. Custom interface icon: centered in about 70x70 px area.
 - Custom action title: succinct, single verb or short verb phrase; no company/product name (wraps/truncates when long). Share activity title (typically company name) shows under its icon.
 - Exclude inapplicable system activities (can't reorder them); choose which custom tasks show per context.
@@ -23,7 +23,7 @@ scope: Apple HIG menu, button, action and toolbar components (activity views, bu
 
 ## Buttons ([HIG](https://developer.apple.com/design/human-interface-guidelines/buttons))
 - Button = instantaneous action. Combines style (size/color/shape), content (symbol/icon, text, or both), role.
-- **Must** give hit region at least 44x44 pt (any input: finger, pointer).
+- Hit region at least 44x44 pt as a general rule (any input). Per-platform defaults and minimums (macOS 28x28 pt default): `platforms/<os>.md`.
 - Leave enough space around buttons to tell them apart and activate them.
 - **Must** include a press state for custom buttons.
 - Prominent style for most likely action in a view (system applies accent color to background). Keep to one or two prominent buttons per view.
@@ -244,7 +244,7 @@ scope: Apple HIG menu, button, action and toolbar components (activity views, bu
 
 ### Dynamic menu items
 - Change behavior with a modifier key (Control, Option, Shift, Command), e.g. Minimize -> Minimize All.
-- **Never** make a dynamic item the only way to do a task (hidden by default); use for advanced shortcuts.
+- Avoid making a dynamic item the only way to do a task (hidden by default); use for advanced shortcuts.
 - Use primarily in menu bar menus; not in context or Dock menus (even less discoverable).
 - Require a single modifier key only (`isAlternate`).
 - macOS sizes menu width to widest item incl. dynamic ones.

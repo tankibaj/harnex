@@ -11,7 +11,7 @@ scope: HIG interaction patterns that transfer to web apps, translated to HTML/CS
 - Prefer choices (select, radios, segmented, date picker) to free text.
 - Validate dynamically, give feedback as soon as a problem is detectable and the person has finished the field (blur or pause); correct inline, next to the field (`aria-invalid`, `aria-describedby`, error summary for long forms).
 - Numeric data: constrain with `type`/`inputmode`/`pattern`; display decimals, percent, currency by locale (`Intl.NumberFormat`).
-- Required data: mark it clearly (text, not only an asterisk); enable Next/Continue only when required fields are complete, or keep it enabled and explain what is missing on press (see components-web.md Buttons).
+- Required data: mark it clearly (text, not only an asterisk); enable Next/Continue only when required fields are complete.
 - Expansion tooltip or wrap for clipped field text.
 
 ## Feedback ([HIG](https://developer.apple.com/design/human-interface-guidelines/feedback))
@@ -57,7 +57,7 @@ scope: HIG interaction patterns that transfer to web apps, translated to HTML/CS
 - Settings area: general, infrequently changed options (account, notifications, integrations, shortcuts). Task-specific options (show/hide columns, sort, filter, reorder) live on the screen they affect.
 - Reachable from a stable place (account/profile menu); **never** a settings button in a content toolbar's action cluster. Keyboard shortcut optional (see components-web.md Keyboard shortcuts; `⌘,` conflicts with browser settings on macOS).
 - Group related settings into sections/pages; page title = current section; remember the last visited section.
-- Apply immediately with feedback (autosave) for toggles; explicit Save only for transactions or multi-field forms.
+- *(house)* Apply immediately with feedback (autosave) for toggles; explicit Save only for transactions or multi-field forms.
 - Notification choice **must** be changeable here (see Managing notifications).
 
 ## Undo and redo ([HIG](https://developer.apple.com/design/human-interface-guidelines/undo-and-redo))

@@ -81,7 +81,7 @@ scope: color wells, combo boxes, image wells, pickers, segmented controls, slide
 - Size field to anticipated text quantity.
 - Multiple fields: stack vertically when possible, consistent widths, enough spacing so labels clearly pair with fields (e.g. first/last name one width, address/city another).
 - Tab order logical (system usually handles it).
-- Validate when sensible: email on switching fields; username/password before switching fields. Alert on invalid input (e.g. non-digits).
+- Validate when sensible: email on switching fields; username/password before switching fields. Tell people about invalid input (e.g. non-digits), next to the field.
 - Use number formatter for numeric data (restricts to numbers; decimals, percent, currency). Don't assume presentation; formats vary by locale.
 - Line breaks: default clips overflow; can wrap at character/word, or truncate (ellipsis) at beginning/middle/end.
 - Consider expansion tooltip on pointer hover for clipped/truncated text.
@@ -96,7 +96,7 @@ scope: color wells, combo boxes, image wells, pickers, segmented controls, slide
 - Choose between a pair of opposing states (on/off), distinct appearance per state. Styles: switch, checkbox; also buttons that behave like toggles (`ToggleStyle`).
 - Use only for two opposing values affecting content/view state. Choosing from a list: pop-up button instead.
 - Clearly identify what it affects (context usually enough; macOS often adds a label). Toggle-button: use interface icon, change background by state.
-- Make state differences obvious (fill, background shape, checkmark/dot). **Never** rely on color alone.
+- Make state differences obvious (fill, background shape, checkmark/dot). Avoid relying on color alone.
 - iOS/iPadOS: switch style only inside a list row; no label needed (row content gives context).
 - iOS/iPadOS: change default green only if necessary (e.g. accent color); ensure enough contrast with the uncolored (off) appearance.
 - iOS/iPadOS: outside a list, use a toggle-behaving button, not a switch (Phone filter button gets blue highlight when active). Don't add a label explaining it; icon + background states suffice (`changesSelectionAsPrimaryAction`).
@@ -123,7 +123,7 @@ scope: color wells, combo boxes, image wells, pickers, segmented controls, slide
 - Custom keyboard (app extension, iOS/iPadOS): usable in any app except secure text fields and phone number fields; multiple allowed. Use for systemwide unique input or unsupported languages; app-only need: custom input view instead.
 - Custom keyboard: provide obvious easy way to switch keyboards (Globe key convention).
 - Custom keyboard: don't duplicate system Emoji/Globe and Dictation keys (shown beneath keyboard; app can't affect them).
-- Custom keyboard: consider tutorial in app (choose, activate, use, switch back); **never** show help inside the keyboard.
+- Custom keyboard: consider tutorial in app (choose, activate, use, switch back); avoid help inside the keyboard.
 - iOS/iPadOS: use keyboard layout guide so keyboard integrates with layout and keeps key UI visible (don't let keyboard cover fields/buttons). API: `UIKeyboardLayoutGuide`.
 - iOS/iPadOS: custom controls above keyboard (input accessory view): keep relevant to current task. Liquid Glass: if other views use it or view looks out of place, apply Liquid Glass to the container; a standard toolbar adopts it automatically. Use keyboard layout guide and standard padding. API: `inputAccessoryView`.
 - Other platforms: out of scope.

@@ -24,7 +24,7 @@ scope: gauges, progress indicators, rating indicators, activity rings for iOS, i
 - Report advancement accurately and evenly paced (90 percent in 5 seconds then last 10 percent in 5 minutes feels deceptive).
 - Keep indicator moving (stationary = stalled/frozen). On stall, explain problem and what people can do.
 - Switch indeterminate bar to determinate once duration becomes known.
-- **Never** switch circular style to bar style (different shapes/sizes disrupt layout).
+- Avoid switching circular style to bar style (different shapes/sizes disrupt layout).
 - Optional description: accurate, succinct; avoid vague "loading"/"authenticating".
 - Display in a consistent location.
 - Allow halting when feasible: Cancel button. If interruption has side effects (lost partial download), also offer Pause.

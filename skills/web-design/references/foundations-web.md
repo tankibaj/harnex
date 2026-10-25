@@ -42,7 +42,7 @@ scope: HIG foundations that transfer to web apps, translated to HTML/CSS; neutra
 - Handle: width and height changes, orientation, resizable windows, browser zoom, text-size changes, locale (RTL, date/number formats, text length). Test smallest and largest first.
 - Safe areas: `<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">` and `padding: env(safe-area-inset-top)` etc. **Must** keep controls and content out of notches, rounded corners, home indicator.
 - Never `user-scalable=no` or `maximum-scale=1` (WCAG 1.4.4).
-- Readable measure: cap running text around 60-80 characters (`max-inline-size: 70ch`); wider columns hurt reading.
+- *(house)* Readable measure: cap running text around 60-80 characters (`max-inline-size: 70ch`); wider columns hurt reading.
 - Text-size change: stack inline items (icon, timestamp, badges) under text; fewer columns; rows grow, never clip. Use `min-block-size`, never fixed `height`, on text containers.
 - Reflow at 320 CSS px wide (400% zoom) without two-dimensional scroll, except data tables, maps, code (WCAG 1.4.10).
 - Never truncate in scrollable regions unless a view exposes the rest; allow wrap, avoid `text-overflow: ellipsis` on primary content.
@@ -51,11 +51,11 @@ scope: HIG foundations that transfer to web apps, translated to HTML/CSS; neutra
 
 ## Typography ([HIG](https://developer.apple.com/design/human-interface-guidelines/typography))
 - Neutral font stack (`system-ui, sans-serif` or the repo's brand font). Do not mimic Apple's fonts. Few typefaces; too many blur hierarchy.
-- Sizes in `rem`, never `px`, so user font-size settings apply. Body 16-17 px; **nothing under 11 px**, prefer 12 px+.
+- Sizes in `rem`, never `px`, so user font-size settings apply. Body 16-17 px; **nothing under 11 px**, *(house)* prefer 12 px+.
 - Avoid weights below 400 (no Thin/Light/Ultralight): use 400, 500, 600, 700. If a thin custom face is mandatory, go larger than the table below.
 - Hierarchy through weight, size, color; keep relative hierarchy when text scales. Not every word must grow: tab labels and chrome may stay put while content scales.
 - Custom fonts must stay legible at all sizes, honor user zoom, and survive bold-text preferences (no fixed-width boxes). `font-display: swap`; fallback metrics close to the web font.
-- Leading: loose (1.5+) for long passages and wide columns; tight (about 1.2-1.3) only for height-constrained single lines (list row, button); **never** tight for 3+ lines.
+- Leading: loose for long passages and wide columns (*(house)* 1.5+); tight (*(house)* about 1.2-1.3) only for height-constrained single lines (list row, button); **never** tight for 3+ lines.
 - WCAG 1.4.12: layout must survive line-height 1.5, paragraph spacing 2x, letter-spacing .12em, word-spacing .16em without clipping.
 - Suggested ramp, derived from iOS Large (default) sizes; a suggestion, not a rule. Scale as a whole for your brand.
 
@@ -160,7 +160,7 @@ scope: HIG foundations that transfer to web apps, translated to HTML/CSS; neutra
 - Fast blinking or flashing: **never** more than 3 flashes per second (WCAG 2.3.1); see a11y.md.
 
 ## Materials ([HIG](https://developer.apple.com/design/human-interface-guidelines/materials))
-- Optional. Rules and fallbacks: SKILL.md (translation table: floating controls only, `@supports` solid fallback, off under `prefers-reduced-transparency`).
+- Optional. Rules and fallbacks: SKILL.md (translation table: floating controls only, `@supports` solid fallback, off under `prefers-reduced-transparency`). That query is Chromium-only: also go solid under `prefers-contrast: more`.
 - **Never** apply glass/blur in the content layer (page background, cards, reading surfaces); only to the functional layer that floats above it (nav bars, toolbars, popovers).
 - Use sparingly: most important floating controls only; overuse distracts.
 - Regular: blurs and adjusts luminosity behind; use when the surface holds lots of text or background may hurt legibility (popovers, menus, sidebars, dialogs).
@@ -182,7 +182,7 @@ scope: HIG foundations that transfer to web apps, translated to HTML/CSS; neutra
 - **Never** mirror:
   - Logos, trademarks, universal marks (checkmark, plus, x).
   - Photos, illustrations, artwork (meaning and copyright); make a new version if tied to direction.
-  - Controls naming a real direction or place ("right"), maps, clocks, media transport (play/pause), real-world objects, right-handed tools.
+  - Controls naming a real direction or place ("right"), maps, clocks, *(house)* media transport (play/pause), real-world objects, right-handed tools.
   - Numerals themselves; code and URLs (wrap in `dir="ltr"`).
 - Balance scripts: Arabic/Hebrew look small beside Latin caps; raise RTL font size by about 2 px.
 - Complex icons: judge components and balance; a badge that modifies meaning (plus on a cart) moves with the base.

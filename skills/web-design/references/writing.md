@@ -19,9 +19,9 @@ scope: HIG writing, inclusion, alerts, offering-help and generative-AI copy rule
 - Examples below use sentence case.
 
 ### Buttons and links
-- Start with a verb; 1-2 words; describe the result: "Save draft", "Add to cart", "Delete draft". Name the object when several actions share a screen.
+- Start with a verb and describe the result (dialog buttons: 1-2 words): "Save draft", "Add to cart", "Delete draft". Name the object when several actions share a screen.
 - Plain over clever: "Send", not "Let's do it!".
-- **Never** "OK", "Yes", "No", "Submit" when a verb fits; OK only in a purely informational dialog. Cancel always cancels.
+- **Never** "OK", "Yes", "No" when a verb fits; prefer a specific verb over a generic "Submit"; OK only in a purely informational dialog. Cancel always cancels.
 - Dialog: confirm label repeats the action from the title ("Delete draft" / "Cancel"). Destructive: label states the destruction.
 - **Never** "Click here" or "Read more" alone: link text describes the destination and works out of context ("View billing history"). Use "select"/"tap"/"press" by device, or neutral "go to"; do not say "click" on touch.
 - Icon-only buttons: `aria-label` in the same verb form.
@@ -88,7 +88,7 @@ scope: HIG writing, inclusion, alerts, offering-help and generative-AI copy rule
 ## Inclusion ([HIG](https://developer.apple.com/design/human-interface-guidelines/inclusion))
 - Plain, direct, respectful language. Review copy for exclusion and tone from several perspectives (an academic tone implies a high-education reader).
 - Define technical or specialized terms before use; make definitions easy to find (tooltip, glossary link). Plain words translate and read better.
-- Replace colloquial phrases and idioms ("peanut gallery", "grandfathered in", "hit it out of the park", "sanity check", "whitelist/blacklist"): culture-specific, hard to translate, sometimes carry exclusionary history. Prefer "allowlist/blocklist", "legacy exception".
+- Replace colloquial phrases and idioms ("peanut gallery", "grandfathered in", "hit it out of the park", "sanity check", "whitelist/blacklist"): culture-specific, hard to translate, sometimes carry exclusionary history. *(house)* Prefer "allowlist/blocklist", "legacy exception".
 - Humor: think twice; subjective, hard to translate, can confuse or insult. Never in errors and sensitive flows.
 - Gender: avoid unneeded references ("Subscribers can post recipes", not "his or her recipes"); helps localization into gendered-pronoun languages. Gender-neutral human figures. Collect gender only when needed, with inclusive options and decline-to-answer.
 - People-first, never use disability as a negative quality ("blind spot", "crippled", "insane"). Use the language a community uses for itself when specific.

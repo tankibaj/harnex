@@ -205,7 +205,7 @@ scope: HIG foundations (accessibility through writing) for native iOS, iPadOS, m
 - Systemwide dark palette; people expect all apps to respect it. System may also raise perceptual contrast.
 
 ### Best practices
-- Never offer an app-specific appearance setting (extra work, looks broken).
+- Avoid an app-specific appearance setting (extra work, looks broken).
 - Must look good in light and dark; Auto setting can switch while app runs.
 - Test legibility in both modes, incl. Increase Contrast and Reduce Transparency (separately and together); dark text on dark background can get less legible.
 - Dark-only appearance only in rare cases (e.g. immersive media viewing where UI should recede).

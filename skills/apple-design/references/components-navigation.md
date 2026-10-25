@@ -40,7 +40,7 @@ scope: Apple HIG navigation/search components (path controls, search fields, sid
 - Let people customize sidebar contents/order when possible.
 - Use disclosure controls to group hierarchy in content-heavy apps.
 - Prefer familiar SF Symbols; custom icon: custom symbol rather than bitmap.
-- Let people hide the sidebar via platform-native interactions (iPadOS edge swipe; macOS show/hide button or Show Sidebar/Hide Sidebar in View menu). **Never** hide by default (discoverability).
+- Let people hide the sidebar via platform-native interactions (iPadOS edge swipe; macOS show/hide button or Show Sidebar/Hide Sidebar in View menu). Avoid hiding it by default (discoverability).
 - Max two hierarchy levels; deeper: split view with content list between sidebar and detail. Two levels: succinct group titles, no unnecessary words.
 - Sidebar icon colors must serve a purpose. Default: app accent color. macOS: people set a system accent color and expect sidebar icons to follow it; fixed colors only sparingly for meaning/emphasis (Mail VIP yellow).
 - iOS, iPadOS: `sidebarAdaptable` tab view style: choose sidebar or tab bar at launch; button toggles; adapts to platform, rotation, window width. Sidebar only: `NavigationSplitView` in primary pane or `UISplitViewController`.
@@ -48,7 +48,7 @@ scope: Apple HIG navigation/search components (path controls, search fields, sid
 - Without SwiftUI: `UICollectionLayoutListConfiguration.Appearance.sidebar`.
 - macOS: row height, text, glyph size depend on sidebar size (small, medium, large); set programmatically, people can change in General settings.
 - macOS: consider auto-hide/reveal on window resize (Mail viewer collapses sidebar when small).
-- macOS: **never** put critical info/actions at sidebar bottom (windows often moved so bottom edge is hidden).
+- macOS: avoid critical info/actions at sidebar bottom (windows often moved so bottom edge is hidden).
 - Other platforms: out of scope.
 
 ## Tab bars ([HIG](https://developer.apple.com/design/human-interface-guidelines/tab-bars))
