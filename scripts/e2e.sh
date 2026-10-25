@@ -9,7 +9,7 @@ set -euo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
-SKILLS="harnex pr-review qa retro"
+SKILLS="harnex pr-review qa retro apple-design web-design"
 AGENTS="implementer planner qa reviewer suite-runner ui-ux-reviewer validator"
 fail=0
 ok()  { echo "  ok   $*"; }
@@ -24,7 +24,7 @@ e2e_claude() {
   claude plugin marketplace add "$REPO" >/dev/null
   claude plugin install harnex@harnex >/dev/null
   local d; d="$(claude plugin details harnex@harnex 2>&1 || true)"
-  check "skills $SKILLS" grep -q 'Skills (4)  harnex, pr-review, qa, retro' <<<"$d"
+  check "skills $SKILLS" grep -q 'Skills (6)  apple-design, harnex, pr-review, qa, retro, web-design' <<<"$d"
   for a in $AGENTS; do check "agent harnex:$a" grep -qE "Agents \(7\).*\b$a\b" <<<"$d"; done
   check "metrics hooks" grep -q 'Hooks (2)  PreToolUse, UserPromptSubmit' <<<"$d"
   local log="$WORK/metrics.jsonl"

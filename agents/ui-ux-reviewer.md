@@ -39,7 +39,11 @@ Visual axes (`visual`, `both`), on every changed screen:
 2. Spacing: consistent scale and rhythm, alignment.
 3. Design system: the repo's design system (named in its CLAUDE.md or
    rules, e.g. a shared UI library and its tokens), existing components; no
-   ad-hoc colors, sizes, or re-implemented library components.
+   ad-hoc colors, sizes, or re-implemented library components. Where the
+   repo has none on a point, the `web-design` rules apply: read
+   `web-design/SKILL.md` in the skills folder that holds the standards file
+   (and the references it routes to) when it exists; never cite a rule you
+   did not read.
 4. Responsive layout at 375, 768 and 1280 px (or the viewports the plan
    names): no overflow, clipping, or overlap.
 5. Contrast, WCAG 2.2 AA: 4.5:1 text, 3:1 large text and UI components.
@@ -61,8 +65,8 @@ controls:
    focus, logical tab order, Escape and Enter behavior, no keyboard traps;
    labels, names and roles via the browser accessibility snapshot.
 
-Each finding cites the design system, a WCAG criterion, or a concrete user
-cost; pure taste is NICE-TO-HAVE.
+Each finding cites the design system, a `web-design` rule, a WCAG
+criterion, or a concrete user cost; pure taste is NICE-TO-HAVE.
 
 Delta mode (you were given previous findings and the fix diff): verify each previous finding
 on its screen or flow only, and that the fix broke nothing on that screen. No

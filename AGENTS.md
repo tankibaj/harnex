@@ -9,6 +9,10 @@ For agents working ON this repo. What users run lives in `skills/` and
   `review-guide.md`, `input.md`, `tiers/`.
 - `skills/pr-review/` (+ `threads.py`), `skills/qa/`, `skills/retro/`:
   standalone skills, never part of the `/harnex` run.
+- `skills/apple-design/`, `skills/web-design/`: design skills distilled from
+  Apple's Human Interface Guidelines (native: every rule; web: what
+  transfers). Each `references/*.md` carries `last-checked:` and HIG page
+  links; re-check against the HIG change logs when refreshing.
 - `agents/`: the 7 phase agents. Claude Code loads them from the plugin;
   `scripts/install-agents.mjs` converts them for Codex and OpenCode.
 - `hooks/hooks.json` + `scripts/metrics.py`: passive metrics.
@@ -25,7 +29,8 @@ For agents working ON this repo. What users run lives in `skills/` and
 - Agent frontmatter: `name`, `description`, `tools` | `disallowedTools`,
   `model` (`inherit|sonnet|haiku|opus`).
 - Stay generic: no employer, team, product, or person names; no stack
-  assumptions. A leak test enforces the common ones.
+  assumptions. A leak test enforces the common ones. Exception: the two
+  design skills are platform-specific by design and load only on UI work.
 - Never bump `version` by hand: the Release workflow does it from
   Conventional Commits (`feat` minor; `fix`/`refactor`/`perf` patch) when a
   commit touches shipped paths (`skills/`, `agents/`, `hooks/`,

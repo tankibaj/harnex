@@ -49,7 +49,7 @@ jobs:
         run: |
           # Strip colour codes; each skill name is printed on a line of its own.
           out="$(npx -y skills@latest add . --list 2>&1 | sed -E 's/\x1b\[[0-9;?]*[a-zA-Z]//g')"
-          for s in harnex pr-review qa retro; do
+          for s in harnex pr-review qa retro apple-design web-design; do
             grep -qE "[[:space:]]$s[[:space:]]*$" <<<"$out" || { echo "$out"; echo "skills.sh does not list $s"; exit 1; }
           done
 

@@ -61,6 +61,23 @@ test('/qa is standalone: the /harnex workflow never runs or offers it', () => {
   }
 });
 
+test('design skills: every reference file is dated and cites the HIG', () => {
+  for (const d of ['apple-design', 'web-design']) {
+    const refs = files(path.join('skills', d, 'references')).filter((f) => f.endsWith('.md'));
+    assert.ok(refs.length > 0, `skills/${d}/references is empty`);
+    for (const f of refs) {
+      const s = fs.readFileSync(f, 'utf8');
+      assert.match(s, /\nlast-checked: \d{4}-\d{2}-\d{2}\n/, `${path.relative(ROOT, f)} has no last-checked date`);
+      assert.ok(s.includes('developer.apple.com/design/human-interface-guidelines/'), `${path.relative(ROOT, f)} cites no HIG page`);
+    }
+    // SKILL.md routes to `references/...md`; a renamed file must not break the route.
+    const skill = fs.readFileSync(path.join(ROOT, 'skills', d, 'SKILL.md'), 'utf8');
+    for (const m of skill.matchAll(/`(references\/[a-zA-Z0-9_./-]+\.md)`/g)) {
+      assert.ok(fs.existsSync(path.join(ROOT, 'skills', d, m[1])), `skills/${d}/SKILL.md -> ${m[1]}`);
+    }
+  }
+});
+
 test('skills reference their own files by relative path that exists', () => {
   for (const d of fs.readdirSync(path.join(ROOT, 'skills'))) {
     for (const f of files(path.join('skills', d))) {

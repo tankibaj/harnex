@@ -7,5 +7,5 @@
   "repository": "https://github.com/tankibaj/harnex",
   "license": "MIT",
   "keywords": ["workflow", "agents", "tdd", "code-review", "qa", "planning"],
-  "skills": ["./skills/harnex", "./skills/pr-review", "./skills/qa", "./skills/retro"]
+  "skills": ["./skills/harnex", "./skills/pr-review", "./skills/qa", "./skills/retro", "./skills/apple-design", "./skills/web-design"]
 }

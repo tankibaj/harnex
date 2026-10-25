@@ -57,6 +57,7 @@ opencode mcp add          # then: playwright, local, npx @playwright/mcp@latest
 | `/harnex explore <goal>` | Not sure which approach is best: builds 2–3 side by side, you keep one. |
 | `/pr-review <PR URL>` | Review any PR (GitLab MRs too): criteria, a fresh review, questions on the risky lines. |
 | `/qa <PR URL or goal>` | Manual test cases; on your yes, runs them in a real browser and against the OpenAPI. Standalone: run it on the PR `/harnex` opened. |
+| `/apple-design`, `/web-design` | Build or review UI to Apple's Human Interface Guidelines: native apps (iOS, iPadOS, macOS) follow every rule; web apps get the rules that transfer. Your agent also loads them on its own for UI work. |
 | `/retro` | Something slipped through. Proposes the check that would have caught it. `/retro html` saves a readable report. |
 
 Input is mostly your goal in plain words. An issue URL (GitHub or GitLab)
