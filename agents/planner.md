@@ -101,7 +101,9 @@ repo, with the contract change ordered provider-first.
 
 Ground every claim about existing code (a function, signature, field, value,
 default, or caller) in a `path:line` you read this run. What you could not
-read goes under `Assumptions:`, never stated as fact.
+read goes under `Assumptions:`, never stated as fact. A `path:line` anchor
+points only at code that exists now; cite code the plan adds as `path (new)`
+and a line it rewrites as `path:line (changes)`.
 
 Never guess at an unclear requirement. Decide trivial ones yourself and record
 them under Decisions; list blocking ones as open questions. A missing e2e

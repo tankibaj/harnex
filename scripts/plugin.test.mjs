@@ -111,3 +111,11 @@ test('Reviewer: default spawns with no model override', () => {
   const skill = fs.readFileSync(path.join(ROOT, 'skills/harnex/SKILL.md'), 'utf8');
   assert.match(skill, /`default`\s+means\s+no\s+`model`\s+override/);
 });
+
+test('grounding check skips anchors for code the plan adds', () => {
+  // A test run counted three anchors to not-yet-written code as mismatches.
+  const skill = fs.readFileSync(path.join(ROOT, 'skills/harnex/SKILL.md'), 'utf8');
+  const planner = fs.readFileSync(path.join(ROOT, 'agents/planner.md'), 'utf8');
+  assert.match(skill, /\*\*planned\*\*/);
+  assert.match(planner, /`path\s+\(new\)`/);
+});

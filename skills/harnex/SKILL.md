@@ -120,11 +120,15 @@ overrides it.
    `Plan: doc`: a plan over 60 lines (checklist and WPs excluded; `wc -l`)
    or a change estimated over about 400 lines goes back to the planner once
    to cut or split it before the grounding check. Then the grounding check
-   (spawn `Explore`, `model: "haiku"`, with the plan path: confirm each
-   cited `path:line` and each `Assumptions:` line; return anchors checked,
-   mismatches, assumptions confirmed or refuted), fix the plan, then show
-   the brief with the plan path and `Grounding: N anchors, M fixed, K
-   unverified`, and wait for "Looks good".
+   (spawn `Explore`, `model: "haiku"`, with the plan path: sort each cited
+   anchor as **confirmed** (existing code matches the claim), **mismatch**
+   (existing code differs), or **planned** (marked `(new)` or `(changes)`,
+   or code the plan itself adds: skipped, never a mismatch); check each
+   `Assumptions:` line; return anchors checked, mismatches, planned skipped,
+   assumptions confirmed or refuted), fix the mismatches, then show the
+   brief with the plan path and `Grounding: N anchors, M fixed, K
+   unverified` (N counts existing-code anchors only), and wait for "Looks
+   good".
 2. **Implement** (`harnex:implementer`): branch first, in every target repo.
    Input: the plan (path, or the chat plan verbatim) and its WP path. One
    implementer per WP (no WPs: one implementer). WPs the planner marks
