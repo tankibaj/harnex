@@ -2,16 +2,10 @@
 
 Loaded by the `harnex` orchestrator at Completion.
 
-## Quick
-Report four lines, no timings file: `Path:`, `Tests (orchestrator):`
-(commands, numbers, and the failing-before run), `Review:` (verdict and
-model), `Not verified:` (or `nothing`), plus the `Criteria:` line of the
-pre-PR gate. Then the short reviewer's guide, the metrics record, and
-Delivery.
+One report shape for both flows. Quick has no timings file and no plan
+doc; everything else applies to both.
 
-Everything below applies to Standard and Full.
-
-## Timings
+## Timings (`/harnex` only)
 Stamp to a file, never to memory; each stamp is one self-contained command
 (the file sits inside `.git`, never committed):
 `echo "<label> $(date '+%F %T')" >> "$(git rev-parse --absolute-git-dir)/harnex-timings.log"`
@@ -19,25 +13,26 @@ Stamp to a file, never to memory; each stamp is one self-contained command
   `<phase> start|end` per phase, `wait start|end` around each user wait,
   `run end`.
 - At Completion, `cat` the file and compute every duration from it; never
-  estimate. Report waits separately. Full: a `## Timings` section in the
-  plan. Standard: one line (`Timings: plan 4m, implement 12m,
-  validate+review 6m, fixes 0, total 27m`).
+  estimate. Report waits separately. `Plan: doc`: a `## Timings` section in
+  the plan. `Plan: chat`: one line (`Timings: plan 4m, implement 12m,
+  gates 6m, fixes 0, total 27m`).
 
-## Full plan doc
+## Plan doc (`Plan: doc`)
 Set the plan (and WP docs) to `Done` once every checklist item is `[x]` or an
 approved `[~] skipped`, validation passed, and every reviewer approved.
 Accepted findings go to a `## Follow-ups` section: severity, file:line, one
 line.
 
 ## Final report lines (none dropped)
-- `Path:` the path, why, and any override warning.
-- `Timings:` from the timings file.
-- `Tests (<who>):` commands and numbers (`validator`, or `orchestrator`
-  after inline fixes), plus the red check (or NOT VERIFIED).
+- `Flow:` the flow and the settings line, why, and any override warning.
+- `Timings:` from the timings file (`/harnex` only).
+- `Tests (<who>):` commands and numbers (`validator`, or `orchestrator` on
+  Quick and after inline fixes), plus the red check (or NOT VERIFIED; Quick:
+  the failing-before run).
 - `Review:` each reviewer's verdict and the model it ran on.
 - `UI review:` the `ui-ux-reviewer` verdict, or `UI scope none` checked
   against the changed-file set. UI scope with no UI review means not done.
-- `Checklist:` every plan item with its evidence (command and result, test
+- `Checklist:` every plan item (Quick: the chat plan's) with its evidence (command and result, test
   name, reviewer line) or `[~] skipped: <reason>`. Skipped gates (e2e,
   browser walk, red check) are listed, never omitted. An item with neither
   is not done: do it, or ask the user to approve the skip.
@@ -56,14 +51,15 @@ line.
   test from this run before review, or `none`. Propose only.
 - `Criteria:` the pre-PR gate (next section).
 
-## Pre-PR gate (every path)
+## Pre-PR gate (both flows)
 The same bar `/pr-review` applies, so the second reviewer finds
 nothing. Fill rows 1–12 of
 `../pr-review/criteria.md` from this run's
 evidence, as its "In /harnex" column says; re-derive nothing an agent
 already proved. On Quick, you are the validator and the chat plan is the
 plan: rows 2, 3, 5, and 6 come from your own test and scan output and the
-fresh reviewer; rows 7 and 8 are n/a (Quick has no risk area or UI scope).
+fresh reviewer. On either flow, row 7 is n/a only when no risk area is
+touched, row 8 only when no UI is touched.
 - Row 4 is the tier result (no pipeline yet). Rows 8 and 12 are judged on
   the draft PR title and description you will propose at Delivery. A
   text-only run with no issue: the issue reference in row 12 is n/a.
@@ -76,17 +72,19 @@ fresh reviewer; rows 7 and 8 are n/a (Quick has no risk area or UI scope).
   to accept it with a reason; an accepted WARN goes into the PR
   description's `Not verified`.
 
-## Reviewer's guide (every path)
+## Reviewer's guide (both flows)
 Build it per `review-guide.md` from
 this run's plan, implementer report, validator output, and the reviewer's
 final `Risk hunks:`. Quick: the short form. It goes into the PR description
 unchanged.
 
-## Metrics record (every path, passive)
+## Metrics record (both flows, passive)
 Append one JSON line, never blocking and never sent anywhere; skip silently
 if it fails:
 `f="${HARNEX_METRICS:-$HOME/.harnex/metrics.jsonl}"; mkdir -p "$(dirname "$f")" && echo '<json>' >> "$f"`
-with keys `ts`, `kind: "run"`, `repo` (basename(s)), `path`, `ticket` (issue
+with keys `ts`, `kind: "run"`, `repo` (basename(s)), `flow` (`quick` or
+`harnex`), `settings` (`{plan, tier, reviewer, ui}`), `wps` (count, 0 on
+Quick), `ticket` (issue
 reference, or null), `minutes` (per phase and total from the timings file; Quick: null),
 `waits_min`, `rounds`, `findings` (`{critical, must_fix, nice}` across all
 reviewers), `escaped` (findings reviewers raised that the validator's tests
@@ -95,7 +93,7 @@ missed, count), `tests` (`PASS|FAIL|NOT VERIFIED`), `red_check`
 file contents, requirement text, or names. `/pr-review`
 and `/qa` write their own kinds with the keys their skills list.
 
-## Delivery (every path, always ask first)
+## Delivery (both flows, always ask first)
 Opening the PR is optional and needs the developer's yes; never push or open
 one on your own. Host per standards.md "Hosting" (`gh` first, `glab` on
 GitLab, where it is an MR).

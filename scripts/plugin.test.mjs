@@ -88,3 +88,12 @@ test('skills reference their own files by relative path that exists', () => {
     }
   }
 });
+
+test('harnex runs two flows: no stray Quick/Standard/Full mode wording ships', () => {
+  // `/harnex quick` and `/harnex` replaced the three modes; old words would steer agents back.
+  const STRAY = [/\bStandard\b/, /\bFull path\b/i, /quick\\?\|standard\\?\|full/i, /Change mode/, /Risk decides the path/];
+  for (const f of ['skills/harnex', 'agents', 'README.md', 'docs/slides/harnex.html'].flatMap(files)) {
+    const s = fs.readFileSync(f, 'utf8');
+    for (const re of STRAY) assert.ok(!re.test(s), `${path.relative(ROOT, f)} still says ${re}`);
+  }
+});

@@ -30,8 +30,10 @@ Read:
   (`$(git rev-parse --absolute-git-dir)/harnex-timings.log` in the repo or
   worktree the run used; a different checkout: skip timings and say so), the last
   records in `${HARNEX_METRICS:-$HOME/.harnex/metrics.jsonl}` for this repo
-  (`rounds`, `findings`, `escaped`, `tests`, `red_check`), and on the Full
-  path the plan doc's `Follow-ups` and the run's `Lessons:`.
+  (`flow`, `settings`, `rounds`, `findings`, `escaped`, `tests`,
+  `red_check`; older records carry `path`: `Quick` reads as `flow: quick`,
+  `Standard` and `Full` as `flow: harnex`), and on `Plan: doc` the plan
+  doc's `Follow-ups` and the run's `Lessons:`.
 - **Escapes:** pr-review records with `harnex_pr: true` and CRITICAL or
   MUST-FIX `findings` or `fail_rows`. For this repo's PRs: `gh pr view
   <pr_number> --json url` (GitLab: `glab mr view <pr_number> -F json` →

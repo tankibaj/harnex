@@ -119,8 +119,8 @@ h2 { font-size: clamp(34px, 3.6vw + 1.2vh, 68px); }
 .agent { color: var(--indigo); font-weight: 600; }
 .you2 { color: var(--orange); font-weight: 600; }
 
-/* modes: three columns, more checks left to right */
-.mgrid { margin-top: clamp(18px, 3vh, 36px); display: grid; grid-template-columns: 8em repeat(3, minmax(0,1fr)); font-size: clamp(14px, .7vw + .6vh, 19px); line-height: 1.3; }
+/* flows: two columns, more agents left to right */
+.mgrid { margin-top: clamp(18px, 3vh, 36px); display: grid; grid-template-columns: 8em repeat(2, minmax(0,1fr)); font-size: clamp(14px, .7vw + .6vh, 19px); line-height: 1.3; }
 .mgrid > div { padding: clamp(8px, 1.3vh, 14px) 14px clamp(8px, 1.3vh, 14px) 0; border-bottom: 1px solid var(--hair); }
 .mgrid .mh { font-weight: 700; font-size: 1.15em; border-bottom-width: 2px; }
 .mgrid .mh small { display: block; font-weight: 500; font-size: .7em; color: var(--ink2); margin-top: 2px; }
@@ -260,12 +260,12 @@ button:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
   <h2>Agents check each other.<br>You just say yes.</h2>
   <div class="how">
     <div class="row"><div class="ph">Ask</div><div>Your goal, or an issue URL. <span>Unclear criteria?</span> <b class="you2">You pick them.</b></div></div>
-    <div class="row"><div class="ph">Plan</div><div>harnex picks the mode for you <span class="modes"><i>Quick</i><i>Standard</i><i>Full</i></span><br><span>Automatic, from the risk of the change. More risk, more checks.</span><br>Shows you Goal, Plan, Risk. <b class="you2">You approve or refine</b><span>, or try 2–3 approaches side by side.</span></div></div>
+    <div class="row"><div class="ph">Plan</div><div>Two flows <span class="modes"><i>/harnex quick</i><i>/harnex</i></span><br><span>Settings come from the change: a plan doc when it’s big, the full suite and strongest reviewer when it’s risky.</span><br>Shows you Goal, Plan, Risk. <b class="you2">You approve or refine</b><span>, or try 2–3 approaches side by side.</span></div></div>
     <div class="cycle"><div class="ph">Build &amp; validate</div>
       <div class="loopbox"><span class="ltag">↻ UP TO 3 ROUNDS</span>
         <ol class="steps">
-          <li><div><span class="agent">Implementer</span> writes a failing test, then the code.</div></li>
-          <li><div><span class="agent">Validator</span> runs tests, lint, scans, a browser walk. <span>At the same time,</span> a fresh <span class="agent">reviewer</span> reads the diff.</div></li>
+          <li><div><span class="agent">Implementers</span>, one per work package, in parallel: a failing test, then the code, then their own tests.</div></li>
+          <li><div><span>Once, on the merged change:</span> <span class="agent">validator</span> runs tests, lint, scans, a browser walk. <span>At the same time,</span> a fresh <span class="agent">reviewer</span> reads the whole diff.</div></li>
           <li><div><span class="agent">UI reviewer</span> checks the screens in a real browser. <span>Only if the UI changed.</span></div></li>
           <li><div>Findings? Must-fix or a failing test is fixed. <span>Critical, or still failing after round 3:</span> <b class="you2">it asks you.</b></div></li>
         </ol>
@@ -276,17 +276,17 @@ button:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
   </div>
 </div></section>
 
-<section class="slide" aria-label="Three modes"><div class="in">
-  <p class="eyebrow">Picked for you, from the risk of the change</p>
-  <h2>Three modes.</h2>
+<section class="slide" aria-label="Two flows"><div class="in">
+  <p class="eyebrow">Settings come from the change, not a mode you pick</p>
+  <h2>Two flows.</h2>
   <div class="mgrid">
-    <div class="mh blank"></div><div class="mh q">Quick<small>a small fix</small></div><div class="mh st">Standard<small>a normal change</small></div><div class="mh fu">Full<small>risky or big</small></div>
-    <div class="lbl">When</div><div>One place. No risk area, no UI change.</div><div>One repo. No risk area.</div><div>Auth, schema, security, CI, dependencies, public API, or several repos.</div>
-    <div class="lbl">Plan</div><div>A few lines. <b class="you2">You approve it.</b></div><div>Planner agent, short plan. <b class="you2">You approve it.</b></div><div>Plan doc, max 60 lines, fact-checked. <b class="you2">You approve it.</b></div>
-    <div class="lbl">Build</div><div>harnex itself, test first.</div><div>Implementer agent, test first.</div><div>Implementer agent. Big work becomes a series of small PRs.</div>
-    <div class="lbl">Check</div><div>harnex runs the tests, lint, scans. A fresh reviewer reads it.</div><div>Validator and reviewer at once. UI reviewer if the UI changed.</div><div>The same, with the full test suite and the strongest reviewer.</div>
+    <div class="mh blank"></div><div class="mh q">/harnex quick<small>a small fix</small></div><div class="mh st">/harnex<small>everything else</small></div>
+    <div class="lbl">When</div><div>One place, one repo. No risk area. UI is fine.</div><div>Several places or repos, big work, or a risk area: auth, schema, security, CI, dependencies, public API.</div>
+    <div class="lbl">Plan</div><div>A few lines in chat. <b class="you2">You approve it.</b></div><div>Planner agent: a chat plan, or a plan doc (max 60 lines, fact-checked) with work packages. <b class="you2">You approve it.</b></div>
+    <div class="lbl">Build</div><div>harnex itself, test first.</div><div>One implementer per work package, in parallel. Each runs its own tests.</div>
+    <div class="lbl">Check</div><div>harnex runs the tests, lint, scans. A fresh reviewer reads it; the UI reviewer if the UI changed.</div><div>Once, on the merged change: validator and reviewer at once, then the UI reviewer. Risky: full suite, strongest reviewer.</div>
   </div>
-  <p class="steps-up"><b>It only ever steps up.</b> Quick finds a risk area? It becomes Standard or Full on the spot.</p>
+  <p class="steps-up"><b>It only ever steps up.</b> Quick spans repos or grows past 400 lines? It becomes <span class="cmd">/harnex</span> on the spot. The checks run once, on the merged result.</p>
 </div></section>
 
 <section class="slide" aria-label="Less code"><div class="in">
@@ -336,7 +336,7 @@ npx skills@latest add tankibaj/harnex -a opencode</code></pre>
     <thead><tr><th>To</th><th>When</th><th>Type</th></tr></thead>
     <tbody>
       <tr><td>Build</td><td>You have a goal, or an issue.</td><td><code>/harnex &lt;goal or issue URL&gt;</code></td></tr>
-      <tr><td>Pick the mode</td><td>You know it’s small, or risky.</td><td><code>/harnex quick|standard|full &lt;goal&gt;</code></td></tr>
+      <tr><td>Go quick</td><td>Small and low-risk, or you want speed.</td><td><code>/harnex quick &lt;goal&gt;</code></td></tr>
       <tr><td>Try options</td><td>Not sure which approach is best?</td><td><code>/harnex explore &lt;goal&gt;</code></td></tr>
       <tr><td>Review a PR</td><td>A teammate asks you to review.</td><td><code>/pr-review &lt;PR URL&gt;</code></td></tr>
       <tr><td>Test it like QA</td><td>Want test cases, or to click through it for real?</td><td><code>/qa &lt;PR URL or goal&gt;</code></td></tr>

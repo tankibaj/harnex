@@ -15,10 +15,13 @@ commit anything. Sole exception: restore tracked files your own test runs
 modified, per standards.md "Test organization".
 
 First read the harnex `standards.md` at the path you were given and follow it, then the
-plan. You are given the implementation report, the tier, the tier profile
-(read it: it holds every command), the repo, and the dev-server URL when
-the orchestrator started one. You run alongside the code reviewer;
-judge only what runs.
+plan. You are given every implementation report (one per WP), the tier, the
+tier profile (read it: it holds every command), the repo, and the
+dev-server URL when the orchestrator started one. You validate the merged
+change: the whole diff against `<base>` across all WPs, never one WP alone,
+so cross-WP contracts and complete flows are exercised. Implementer test
+numbers are not evidence; run everything yourself. You run alongside the
+code reviewer; judge only what runs.
 
 Run, in order, the tier profile's commands exactly:
 1. Tests per tier. IMPACTED: the profile's impacted selection for the

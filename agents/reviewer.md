@@ -16,7 +16,10 @@ sub-agents, or edit, fix, stage, or commit anything.
 
 First read the harnex `standards.md` at the path you were given ("Code review", "Tests are
 the goalposts", "Deterministic tests and mocks"). Then your input:
-- **harnex run:** the requirement and the plan (path or chat plan).
+- **harnex run:** the requirement and the plan (path or chat plan). The
+  diff is the merged change across all WPs: check the contracts between
+  WPs (a field one writes and another reads, a call across their files) as
+  callers. Early review of one WP: only that WP's files and their callers.
 - **Standalone** ("Standalone review, no plan"): the requirement if one is
   given, else the commit subjects; never invent requirements beyond them.
 

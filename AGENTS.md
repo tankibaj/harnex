@@ -6,7 +6,9 @@ For agents working ON this repo. What users run lives in `skills/` and
 ## Layout
 - `skills/harnex/`: the `/harnex` orchestrator (`SKILL.md`) and its files:
   `standards.md`, `brief.md`, `explore.md`, `report.md`, `pr.md`,
-  `review-guide.md`, `input.md`, `tiers/`.
+  `review-guide.md`, `input.md`, `tiers/`. Two flows, `/harnex quick` and
+  `/harnex`, with settings derived from the change; the gates (validator,
+  reviewer, UI reviewer) run once on the merged result, never per WP.
 - `skills/pr-review/` (+ `threads.py`), `skills/qa/`, `skills/retro/`:
   standalone skills, never part of the `/harnex` run.
 - `skills/apple-design/`, `skills/web-design/`: design skills distilled from
@@ -31,6 +33,9 @@ For agents working ON this repo. What users run lives in `skills/` and
 - Stay generic: no employer, team, product, or person names; no stack
   assumptions. A leak test enforces the common ones. Exception: the two
   design skills are platform-specific by design and load only on UI work.
+- No three-mode wording (`Standard`, `Full path`, `quick|standard|full`,
+  `Change mode`, `Risk decides the path`) in
+  `skills/harnex`, `agents`, `README.md` or the deck. A test enforces it.
 - Never bump `version` by hand: the Release workflow does it from
   Conventional Commits (`feat` minor; `fix`/`refactor`/`perf` patch) when a
   commit touches shipped paths (`skills/`, `agents/`, `hooks/`,
@@ -46,5 +51,8 @@ For agents working ON this repo. What users run lives in `skills/` and
 - `npm run e2e`: installs with the real Claude Code, Codex and OpenCode CLIs
   into throwaway config dirs and checks every skill and agent is found.
 - `npm run lint`: shellcheck and ruff.
+- Flow changes (SKILL.md, the phase agents): also dry-run `/harnex quick`
+  and `/harnex` in a scratch repo and count the agent spawns against the
+  flow; that is the manual check.
 - Private words that must never ship go in the git-ignored `.leakwords`
   (one per line); the leak test adds them locally. CI checks the public list.

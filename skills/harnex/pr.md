@@ -35,7 +35,7 @@ how dangerous merging it is; the reviewer's guide then says how to read it.
 - **Evidence:** before and after, best first: a screenshot pair for a
   visible change; else the test that failed before and passes now (the
   validator's red check, or the failing test the orchestrator wrote first on
-  the Quick path), with the test name and the command; else command output.
+  Quick), with the test name and the command; else command output.
   No red check: say `red check NOT VERIFIED`.
 - **Merge danger:**
   - **Door:** `two-way` when reverting the PR fully undoes it; `one-way` when
@@ -48,7 +48,7 @@ how dangerous merging it is; the reviewer's guide then says how to read it.
     consumers, layouts, jobs, data. Use the reviewer's `Risk hunks:`.
 - **Reviewer's guide:** per
   `review-guide.md`, unchanged; its own
-  *Not verified* section is the only one in the description. Quick path: the
+  *Not verified* section is the only one in the description. Quick: the
   guide's short form has none, so add `## Not verified` after it; wrap only
   the guide (never Summary, Evidence, or Merge danger) as
   `<details><summary>Reviewer's guide</summary>`, a blank line, the guide, a
@@ -59,7 +59,7 @@ how dangerous merging it is; the reviewer's guide then says how to read it.
 ## Template
 
 ````markdown
-<!-- harnex:run <run start, YYYY-MM-DDTHH:MM> <Quick|Standard|Full> -->
+<!-- harnex:run <run start, YYYY-MM-DDTHH:MM> <quick|harnex> -->
 ## Summary
 <one sentence: what changed and why> · Issue: <#123 or none>
 

@@ -1,7 +1,7 @@
 # harnex Standards
 
 Loaded by the `harnex` skill. Applies to the orchestrator and every phase
-agent. Paths, review loop, and escalation live in SKILL.md; test commands
+agent. Flows, settings, review loop, and escalation live in SKILL.md; test commands
 live in the tier profile (`tiers/`).
 
 ## Ground rules
@@ -33,13 +33,13 @@ live in the tier profile (`tiers/`).
   with why.
 
 ## Planning
-- Full: a plan doc at `docs/plan/<feature-slug>-<YYYYMMDD-HHmm>.md`, about 40 lines (checklist and WPs excluded), never over 60: a person approves it in a minute. Quick and Standard: a chat plan.
-- **Reviewable size:** each change in the plan stays under about 400 changed lines (lockfiles and generated files excluded). Bigger work is a sequence of small changes, each its own PR, planned up front, never split after the code exists.
+- `Plan: doc` (SKILL.md "Settings"): a plan doc at `docs/plan/<feature-slug>-<YYYYMMDD-HHmm>.md`, about 40 lines (checklist and WPs excluded), never over 60: a person approves it in a minute. `Plan: chat` and Quick: a chat plan.
+- **Reviewable size:** each change in the plan stays under about 400 changed lines (lockfiles and generated files excluded). Bigger work is a sequence of small changes, planned up front, never split after the code exists; the plan says whether they ship as separate PRs (each gated alone) or together (gated once at the end).
 - **Done checks:** every definition-of-done item names its proof: a test name, a command with its expected result, or a browser step with what must render. An item with no runnable proof goes under `Not building:`. Unproven at the end means NOT VERIFIED.
 - Mermaid diagram only when the change alters control flow, data flow, state, or architecture across components.
 - **Spikes:** when uncertainty blocks a credible plan, spike first (read-only sub-agent or throwaway branch, timeboxed), findings at `docs/spike/<feature-slug>-<YYYYMMDD-HHmm>.md`. Spike code never ships.
 - **Small changes:** one change, one purpose; refactors ship separately from behavior changes. Work that cannot be reviewed as one coherent diff becomes a sequence of changes in dependency order.
-- **Work packages:** only for truly independent areas: `docs/wp/wp<N>-<slug>.md` with goal, owned files (disjoint), dependencies, tests, done checks.
+- **Work packages:** only for truly independent areas: `docs/wp/wp<N>-<slug>.md` with goal, owned files (disjoint), dependencies, `parallel: yes|no`, tests, done checks. The gates run once on the merged WPs, never per WP; `early-review: yes` only on a risk-area WP that later WPs build on.
 
 ### Open questions
 - Never guess at an unclear requirement. **Blocking** (a CRITICAL or security risk, or an answer the implementation depends on): an open question with 2-4 options and one recommendation. **Trivial** (naming, defaults with no behavioral or security weight): decide it and record it under Decisions. When unsure, it is blocking.
@@ -80,7 +80,7 @@ live in the tier profile (`tiers/`).
 - Test first: write the failing test, then the code. Changes with no behavior change skip TDD but still run the tier.
 - E2E for new or changed user-facing workflows, critical paths only. No e2e suite in the repo: the planner decides (never asks) to cover the flow with integration tests through real controls plus the browser walk, and adds `TODO(<ticket>): add an e2e journey for <flow>, when an e2e suite is introduced`.
 - **API endpoints:** every new or changed endpoint (REST/HTTP handler, RPC, GraphQL resolver) gets a done check per operation it exposes (create, read, update, delete, list, or its own verbs), plus its validation (a rejected input), its main error cases (not found, conflict, unauthorized or forbidden), and tenant isolation in a multi-tenant service. Each is proven by an integration test that calls the real endpoint through the repo's own HTTP test setup and asserts the status and the response body or the persisted state; a test that calls the handler class directly does not count. An operation the change does not touch keeps its existing test. No integration-test setup in the repo: unit tests on the handler plus `TODO(<ticket>): add API integration test for <endpoint>, when an HTTP test setup is introduced`, and those checks are NOT VERIFIED.
-- Who runs the tier: on Standard and Full, the numbers come from the `validator`, never the `implementer`. On Quick, the orchestrator implements and its own run counts, backed by the failing-test-first evidence and the fresh `reviewer`. Never run a full regression in the main context.
+- Who runs the tier: on `/harnex`, the `validator` runs it once, on the merged change across all WPs; the numbers come from it, never the `implementer`. Each implementer runs an inner loop (failing test first, its WP's impacted tests, lint, typecheck on its owned files) and fixes what fails; those numbers are not authoritative. On Quick, the orchestrator implements and its own run counts (on `Tier: full`, the `validator` runs the tier), backed by the failing-test-first evidence and the fresh `reviewer`. Never run a full regression in the main context.
 
 ### Tests are the goalposts
 - Never delete, skip (`.skip`, `.only`, `xit`, `@pytest.mark.skip`, `xfail`), or `@flaky`-tag an existing test, loosen an assertion, change an expected value, accept a regenerated snapshot or golden file, or raise a timeout or retry count to get green.

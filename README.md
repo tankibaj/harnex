@@ -46,14 +46,15 @@ opencode mcp add          # then: playwright, local, npx @playwright/mcp@latest
 ```text
 /harnex add a dark mode toggle to the settings page
 /harnex https://github.com/you/app/issues/42
-/harnex full migrate sessions to the new token format
+/harnex migrate sessions to the new token format
+/harnex quick fix the typo in the signup error
 /harnex explore cache the search results
 ```
 
 | Command | When |
 |---|---|
-| `/harnex <goal or issue URL>` | Build something. It picks the mode, shows Goal · Plan · Risk, and waits for your yes. |
-| `/harnex quick\|standard\|full <goal>` | You already know it's small, or risky. |
+| `/harnex <goal or issue URL>` | Build something. It derives the settings from the change, shows Goal · Plan · Risk, and waits for your yes. |
+| `/harnex quick <goal>` | Small and low-risk, or you want speed. |
 | `/harnex explore <goal>` | Not sure which approach is best: builds 2–3 side by side, you keep one. |
 | `/pr-review <PR URL>` | Review any PR (GitLab MRs too): criteria, a fresh review, questions on the risky lines. |
 | `/qa <PR URL or goal>` | Manual test cases; on your yes, runs them in a real browser and against the OpenAPI. Standalone: run it on the PR `/harnex` opened. |
@@ -67,11 +68,11 @@ adds its text. Another tracker (Jira, Linear…) works if its MCP is connected.
 
 ```mermaid
 flowchart TD
-  ask["Your goal, or an issue URL"] --> plan["Plan: harnex picks the mode<br/>Quick · Standard · Full"]
+  ask["Your goal, or an issue URL"] --> plan["Plan: /harnex quick or /harnex<br/>settings from the change"]
   plan --> brief["Brief: Goal · Plan · Risk<br/>you approve or refine"]
   brief -- "refine" --> plan
-  brief -- "looks good" --> build["1 · Implementer: failing test, then code"]
-  build --> check["2 · Validator + fresh reviewer, at the same time"]
+  brief -- "looks good" --> build["1 · Implementers, one per work package, in parallel:<br/>failing test, then code, own tests"]
+  build --> check["2 · Once, on the merged change:<br/>validator + fresh reviewer, at the same time"]
   check --> ui["3 · UI reviewer, if the UI changed"]
   ui --> found{"4 · Findings?"}
   found -- "must-fix or failing test<br/>(up to 3 rounds)" --> fix["Fix, re-check only the fix"] --> check
@@ -79,12 +80,17 @@ flowchart TD
   found -- "clean" --> gate["Pre-PR gate: /pr-review's checks, now"] --> ship["You: commit, push, open the PR"]
 ```
 
-| | Quick | Standard | Full |
-|---|---|---|---|
-| **When** | One place, no risk area, no UI change | One repo, no risk area | Auth, schema, security, CI, dependencies, public API, several repos, or big work |
-| **Plan** | harnex: change, root cause, proving test | Planner, short chat plan | Planner, plan doc (≤ 60 lines), fact-checked |
-| **You approve** | The [brief](skills/harnex/brief.md): Goal, Plan, Risk | The brief | The brief + the plan doc |
-| **Check** | harnex runs tests, lint, scans; fresh reviewer | Validator + reviewer at once; UI reviewer if UI changed | Same, with the full test suite |
+| | `/harnex quick` | `/harnex` |
+|---|---|---|
+| **When** | One place, one repo, no risk area; picked on its own for small fixes | Everything else |
+| **Plan** | harnex itself: change, root cause, proving test | Planner: a chat plan, or a plan doc (≤ 60 lines, fact-checked) with work packages |
+| **You approve** | The [brief](skills/harnex/brief.md): Goal, Plan, Risk | The brief (+ the plan doc) |
+| **Build** | harnex itself, test first | One implementer per work package, in parallel, each running its own tests |
+| **Check** | harnex runs tests, lint, scans; fresh reviewer; UI reviewer if UI changed | Once, on the merged change: validator + reviewer at once, then the UI reviewer if UI changed |
+
+Settings come from the change, one line in the brief: `Plan: doc · Tier: full · Reviewer: default · UI: yes`.
+Plan doc for split, big (> 400 lines), multi-repo or unclear work; full test suite and the strongest
+reviewer for auth, schema, security, CI, dependencies or a public API; UI review when screens change.
 
 - **Any stack:** commands come from your repo (README, CLAUDE.md/AGENTS.md, CI, package scripts). Pin them in `.harnex/tiers.md` if you like ([tiers](skills/harnex/tiers/README.md)).
 - **Any run target:** localhost, `docker compose up`, a local cluster; whatever the repo says.

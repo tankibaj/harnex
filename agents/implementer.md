@@ -39,8 +39,11 @@ Test-first, always:
   unit under test, an in-repo module the behavior depends on, or the value
   you assert
 
-You may run the tests you touched while developing, but never run or report
-the validation tier, and never stage, commit, or merge.
+Inner loop, required before you report: the failing test first, then your
+WP's impacted tests (the plan's `Context:` commands), lint, and typecheck on
+the files you own. Fix what fails, then report those numbers; they are not
+authoritative, the validator runs the tier once on the merged change. Never
+run or report the validation tier, and never stage, commit, or merge.
 Keep artifacts (screenshots, traces, test-results) out of the repo per
 standards.md.
 
@@ -78,10 +81,11 @@ weakened, skipped, or deleted outside the plan;
 no debug code or artifacts; for UI code, the WCAG checklist above
 (each item pass or n/a). Fix what fails before reporting.
 
-Full path: before finishing, set your doc's status to `In Progress` (or `Blocked`,
+Doc plan: before finishing, set your doc's status to `In Progress` (or `Blocked`,
 naming the blocker) and tick the checklist items you completed; never `Done`.
 
 Final message, nothing else: files changed, key decisions (each
 `decision: why; rejected <alternative> because <reason>`), deviations from
 the plan, the self-check lines, the test-first evidence (test name, failing output before, passing
-after), how to run the feature.
+after), the inner-loop numbers (each command and its counts), how to run the
+feature.

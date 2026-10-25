@@ -120,7 +120,7 @@ cites its evidence. If you cannot check a row, mark it
 
 ## 7. Render
 Output exactly `output.md`, with the reviewer's guide built per
-`../harnex/review-guide.md` (path `PR review`).
+`../harnex/review-guide.md` (flow `PR review`).
 Recommendation:
 - `NEEDS CHANGES`: any CRITICAL or MUST-FIX finding, or any FAIL.
 - `NEEDS DISCUSSION`: any WARN, or `NOT CHECKED` on the requirement or a

@@ -1,16 +1,15 @@
 # harnex: Explore (several solutions, you pick one)
 
-Loaded by the `harnex` orchestrator for `/harnex explore [standard|full]
-<requirement>`, or when the developer picks "Try alternatives" on a brief.
+Loaded by the `harnex` orchestrator for `/harnex explore <requirement>`, or
+when the developer picks "Try alternatives" on a brief.
 Code is cheap; picking the wrong approach is not. Build up to 3 approaches
 side by side, compare them, keep one.
 
 ## When
-- **Offered** on a Standard or Full brief (brief.md) only when the plan has
+- **Offered** on a `/harnex` brief (brief.md) only when the plan has
   an `Approaches:` field with 2 or more options, and the change is in one
   repo. Never on Quick, never across several repos.
-- **Forced:** `/harnex explore <requirement>`; a mode word may follow
-  `explore` (`/harnex explore full <requirement>`). Quick-sized or one
+- **Forced:** `/harnex explore <requirement>`. Quick-sized or one
   obvious approach: say so in one line and run the normal flow. Several
   repos: say explore is single-repo, run the normal flow.
 - **Clean start:** the developer's checkout must have no uncommitted or
@@ -23,7 +22,8 @@ Reuse the plan's `Approaches:`; only on a forced explore spawn
 in brief.md's format, with Goal shared and one block per approach:
 
 ```
-Mode: <Standard | Full> (<reason>)
+Flow: harnex (<reason>)
+Plan: <chat | doc> · Tier: <impacted | full> · Reviewer: <sonnet | default> · UI: <yes | no>
 Goal: <shared, 1–2 sentences>
 A: <name> · Plan: <max 3 bullets> · Trade-off: <one line> · Risk: <or none>
 B: ...
@@ -32,11 +32,11 @@ Cost: about N× the time and tokens of one.
 
 Ask (wait stamps around it), `multiSelect: true`, one option per approach:
 two or three picked: build them; exactly one: no explore, the normal flow
-with that approach's plan; Other: stop or refine. Full: before any build,
+with that approach's plan; Other: stop or refine. `Plan: doc`: before any build,
 the planner writes one plan doc per picked approach
 (`docs/plan/<feature-slug>-<x>-<YYYYMMDD-HHmm>.md` in the checkout), each
-through the size check and the grounding check (SKILL.md "Standard and
-Full" step 1); show the `Grounding:` lines and ask once more. Nothing is
+through the size check and the grounding check (SKILL.md "/harnex"
+step 1); show the `Grounding:` lines and ask once more. Nothing is
 built before that last yes.
 
 ## 2. Build
@@ -52,7 +52,7 @@ Per picked approach X: `git -C <main> worktree add -b explore/<slug>-x
 standards.md "Independent red check" does (e.g. a link to its installed-packages directory).
 In one message, one `harnex:implementer` per worktree (the worktree path is
 its repo; no `isolation` option), the shared requirement, and only its own
-plan (Full: its plan doc path). When each returns, commit its work in its
+plan (`Plan: doc`: its plan doc path). When each returns, commit its work in its
 worktree, leaving the dependency link out: `git -C <wt> add -A -- .
 ':(exclude)<link>' && git -C <wt> commit -qm "wip: explore <x>"`. A failed
 implementer: its approach is out; continue with the rest.
@@ -87,7 +87,7 @@ simplest). Ask: keep one (one option per approach), or Other: refine
    branch> explore/<slug>-<kept>` (standards.md "Branches", issue
    reference included), then `git reset --soft <base>`, so the change is staged and
    uncommitted for the normal loop.
-3. Full: keep the kept approach's plan doc, delete the others.
+3. `Plan: doc`: keep the kept approach's plan doc, delete the others.
 4. Continue in `<main>` at SKILL.md "Review loop" (fixes, UI review,
    pre-PR gate, report, Delivery) with the kept plan as the plan.
 
@@ -102,5 +102,5 @@ developer's other branches or files.
 `explore: {rounds, built, kept}` (`built`: approaches built across rounds;
 `kept`: the letter, or `null`). Kept: it goes into the normal run record
 at Completion. Stopped or failed: write the run record now (report.md
-"Metrics record", `path` the mode, `tests: "NOT VERIFIED"`, other keys
+"Metrics record", `flow` and `settings` as briefed, `tests: "NOT VERIFIED"`, other keys
 null).

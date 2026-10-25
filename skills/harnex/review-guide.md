@@ -28,7 +28,7 @@ decisions to judge, where the risk is, and what proves each done item.
 - **Proof per done item:** one row per plan `Done checks:` item (PR review:
   per acceptance criterion). The result says who ran it (`validator`,
   `orchestrator`, `CI run <id>`), or NOT VERIFIED.
-- Quick path: only *Read in this order* and *Proof per done item*.
+- Quick: only *Read in this order* and *Proof per done item*.
 - Stay under about 40 lines; the point is less to read, not more.
 
 ## Template
@@ -36,7 +36,7 @@ decisions to judge, where the risk is, and what proves each done item.
 ````markdown
 ## Reviewer's guide
 **Change:** <one sentence: what changed and why>
-**Issue:** <#123 or none> · **Size:** <n> files, +<add>/−<del> · **Path:** <Quick|Standard|Full|PR review>
+**Issue:** <#123 or none> · **Size:** <n> files, +<add>/−<del> · **Flow:** <quick|harnex|PR review>
 
 ### Read in this order
 1. `<path>:<from>-<to>`: <what it does; why read it first>

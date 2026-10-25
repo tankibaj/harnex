@@ -1,6 +1,6 @@
 # harnex: Requirement from text, an issue, or both
 
-Loaded by the `harnex` orchestrator before choosing the path, and by
+Loaded by the `harnex` orchestrator before choosing the flow, and by
 `/pr-review` (step 3) and `/qa`. The result is the requirement every phase
 works from, plus its acceptance criteria.
 
