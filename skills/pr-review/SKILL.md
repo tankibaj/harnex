@@ -77,7 +77,7 @@ description as the text. For a PR:
 Spawn `harnex:reviewer` with: `Standalone review, no plan.`, the standards
 file `../harnex/standards.md`, the requirement from step 3, the worktree
 path as the repo, `<base>` = the base SHA, and the changed file list.
-Model: your default when a risk area is touched (auth, schema or
+Model: your default (no `model` override) when a risk area is touched (auth, schema or
 migrations, secrets, CI/build config, dependencies, a public contract);
 otherwise `sonnet`.
 

@@ -74,7 +74,10 @@ past about 400 changed lines, or hits an open question.
   spans several repos, or has an open question; else `chat`. Quick: always
   `chat`.
 - **Tier:** `full` for a risk area or a shared core module; else `impacted`.
-- **Reviewer:** `default` model for a risk area; else `sonnet`.
+- **Reviewer:** `default` model for a risk area; else `sonnet`. `default`
+  means no `model` override: the reviewer inherits the session's model,
+  never a named alias (it may not be served); `sonnet` passes `model:
+  "sonnet"`.
 - **UI:** `yes` when UI scope is not `none` (standards.md "UI and UX
   review"), re-evaluated against the changed files every round.
 

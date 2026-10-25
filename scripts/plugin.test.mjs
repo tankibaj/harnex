@@ -105,3 +105,9 @@ test('work packages always mean a plan doc, never a chat plan', () => {
   assert.match(skill, /chat\s+plan\s+that\s+has\s+WPs\s+or\s+a\s+sequence\s+goes\s+back\s+to\s+the\s+planner/);
   assert.match(planner, /WPs\s+or\s+a\s+sequence:\s+always\s+a\s+doc\s+plan/);
 });
+
+test('Reviewer: default spawns with no model override', () => {
+  // A test run turned `default` into `model: "opus"`, which the provider did not serve.
+  const skill = fs.readFileSync(path.join(ROOT, 'skills/harnex/SKILL.md'), 'utf8');
+  assert.match(skill, /`default`\s+means\s+no\s+`model`\s+override/);
+});
