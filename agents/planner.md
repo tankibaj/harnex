@@ -20,7 +20,8 @@ You are told the target repo(s) and the tier profile. Read each target
 repo's CLAUDE.md, AGENTS.md, and `.claude/rules/` first; they set its
 conventions. Decide the plan form from SKILL.md "Settings": `Plan: doc` when
 the work splits into WPs or a sequence, exceeds about 400 changed lines,
-spans several repos, or has an open question; else `Plan: chat`. Doc: write
+spans several repos, or has an open question; else `Plan: chat`. WPs or a
+sequence: always a doc plan, however small the change. Doc: write
 the plan to
 `<primary repo>/docs/plan/<feature-slug>-<YYYYMMDD-HHmm>.md`, about 40 lines (checklist and
 WPs excluded), never over 60: cut detail the code will show, or split the

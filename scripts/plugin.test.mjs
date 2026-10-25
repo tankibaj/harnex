@@ -97,3 +97,11 @@ test('harnex runs two flows: no stray Quick/Standard/Full mode wording ships', (
     for (const re of STRAY) assert.ok(!re.test(s), `${path.relative(ROOT, f)} still says ${re}`);
   }
 });
+
+test('work packages always mean a plan doc, never a chat plan', () => {
+  // A test run planned 3 WPs in a chat plan and skipped the plan doc and grounding check.
+  const skill = fs.readFileSync(path.join(ROOT, 'skills/harnex/SKILL.md'), 'utf8');
+  const planner = fs.readFileSync(path.join(ROOT, 'agents/planner.md'), 'utf8');
+  assert.match(skill, /chat\s+plan\s+that\s+has\s+WPs\s+or\s+a\s+sequence\s+goes\s+back\s+to\s+the\s+planner/);
+  assert.match(planner, /WPs\s+or\s+a\s+sequence:\s+always\s+a\s+doc\s+plan/);
+});

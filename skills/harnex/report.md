@@ -25,7 +25,8 @@ line.
 
 ## Final report lines (none dropped)
 - `Flow:` the flow and the settings line, why, and any override warning.
-- `Timings:` from the timings file (`/harnex` only).
+- `Timings:` from the timings file (`/harnex` only; Quick leaves the line
+  out).
 - `Tests (<who>):` commands and numbers (`validator`, or `orchestrator` on
   Quick and after inline fixes), plus the red check (or NOT VERIFIED; Quick:
   the failing-before run).

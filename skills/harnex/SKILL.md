@@ -111,8 +111,9 @@ overrides it.
    tier profile, and today's timestamp. Ask its open questions in one
    AskUserQuestion call, recommended option first; any open question means
    `Plan: doc` (re-spawn the planner with the answers). Derive the settings
-   from its `Risk areas:`, `UI scope`, WPs, sequence, and size estimate.
-   `Plan: chat`: show the brief (brief.md) and wait for "Looks good".
+   from its `Risk areas:`, `UI scope`, WPs, sequence, and size estimate. A
+   chat plan that has WPs or a sequence goes back to the planner for the
+   doc, however small. `Plan: chat`: show the brief (brief.md) and wait for "Looks good".
    `Plan: doc`: a plan over 60 lines (checklist and WPs excluded; `wc -l`)
    or a change estimated over about 400 lines goes back to the planner once
    to cut or split it before the grounding check. Then the grounding check
