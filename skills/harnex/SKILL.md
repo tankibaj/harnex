@@ -199,7 +199,8 @@ reviewer's guide per `review-guide.md`, the pre-PR gate
 nothing), and delivery
 (report.md "Delivery"): commit, push, and the PR are each optional and only
 on the developer's yes; an opened PR's link is the last line.
-Before the report, `node <this skill's folder>/harnex.mjs untracked new`
+Before the report, run `node <this skill's folder>/harnex.mjs untracked new`
+once (it uses up the baseline; a second call fails with "no baseline"). It
 lists the untracked files this run added since `untracked save` at run start
 (report.md "Timings"); remove the artifacts among them (standards.md "Test
 organization"), or list them under `Not verified:`. Never remove a file

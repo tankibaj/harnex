@@ -100,7 +100,8 @@ file contents, requirement text, or names. `/pr-review`
 and `/qa` write their own kinds with the keys their skills list.
 
 ## Delivery (both flows, always ask first)
-Opening the PR is optional and needs the developer's yes; never push or open
+Headless runs skip this section: Delivery is "nothing" (SKILL.md
+"Headless"). Opening the PR is optional and needs the developer's yes; never push or open
 one on your own. Host per standards.md "Hosting" (`gh` first, `glab` on
 GitLab, where it is an MR).
 - **Ask** with AskUserQuestion, one question:

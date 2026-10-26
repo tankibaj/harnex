@@ -145,3 +145,11 @@ test('the report says whether the metrics record was written', () => {
   const report = fs.readFileSync(path.join(ROOT, 'skills/harnex/report.md'), 'utf8');
   assert.match(report, /- `Metrics:` `written`/);
 });
+
+test('untracked new runs once, and Delivery defers to Headless', () => {
+  // A rerun called `untracked new` twice and read the Delivery question as a conflict.
+  const skill = fs.readFileSync(path.join(ROOT, 'skills/harnex/SKILL.md'), 'utf8');
+  const report = fs.readFileSync(path.join(ROOT, 'skills/harnex/report.md'), 'utf8');
+  assert.match(skill, /untracked new`\s+once/);
+  assert.match(report, /## Delivery[^\n]*\n[^#]*Headless/);
+});
