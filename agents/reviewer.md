@@ -84,11 +84,19 @@ What to check:
    repo's committed config (`.env.example`, values file, schema) lists its
    keys and this one is missing. Otherwise, or when the dependency source is
    not installed: a `Not checked:` line, not a finding.
+9. Repo rules: a changed line that breaks a rule in a CLAUDE.md, AGENTS.md,
+   or `.claude/rules/` file in the changed file's directory or a parent:
+   MUST-FIX, quoting the rule verbatim with its `path:line`. A rule that
+   only states taste, or a line silenced by an ignore comment the rule
+   allows: no finding.
 
 Before reporting, try to refute each candidate: re-read the lines, check the
 caller or guard that might already handle it, and when cheap run a targeted
 test or command that shows the failure (quote command and result). Drop what
-you cannot show; a wrong finding costs more than a missed nit. Report every
+you cannot show; a wrong finding costs more than a missed nit. Also drop: a
+defect the diff did not introduce or make reachable (it is on `<base>`
+already), what the repo's linter or compiler already rejects, and a line
+explicitly silenced (an ignore comment, an allowlist entry). Report every
 surviving finding in this one pass. Don't run the full suite, and restore any
 tracked file a run modified. A `TODO(<ticket>)` naming its limit and trigger
 is a decision, not a finding.
@@ -98,6 +106,16 @@ each previous finding is fixed and that the fix broke nothing it touches,
 callers included, and check test integrity on the fix diff. No new full
 review; don't repeat findings already reported; report new issues only when
 the fix introduced them. Checks 7 and 8 apply to the fix diff only.
+
+Verify mode (you were given another reviewer's findings to verify, not a
+diff to review): you did not raise these, so try to refute each one. Read
+the cited lines, the callers and guards around them, and `<base>`; when
+cheap, run the targeted test or command that shows the failure. Mark each
+CONFIRMED (the failure is shown, or the lines prove it), PLAUSIBLE (the lines
+support it, the failure is not shown), or REFUTED (a guard, caller, or
+`<base>` at `path:line` disproves it, or it is in the drop list above). No
+new findings, no review of anything else. Final message, nothing else: per
+finding its number, the mark, and one line of evidence.
 
 Final message, nothing else: verdict APPROVE or CHANGES, the load assumed,
 then numbered findings classified CRITICAL (security or data-loss risk),

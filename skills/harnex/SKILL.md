@@ -171,6 +171,12 @@ the way the repo says (standards.md "Run target"; desktop app:
 ## Review loop
 - Only CRITICAL, MUST-FIX, and failing tests open a round. Any other label
   counts as MUST-FIX; NICE-TO-HAVE goes to the report.
+- **Verify first** (`/harnex` with `Reviewer: default`, the gate review
+  only, not early or delta reviews): when it returns CRITICAL or MUST-FIX
+  findings, spawn one more fresh `harnex:reviewer` (no `model` override) in
+  verify mode with those findings, the requirement, and `<base>`. REFUTED:
+  dropped, counted in the report. PLAUSIBLE MUST-FIX: NICE-TO-HAVE.
+  CONFIRMED, and any CRITICAL not REFUTED: kept. Nothing kept: APPROVE.
 - **Escalate and wait** instead of fixing when a finding is CRITICAL, a fix
   would change scope, architecture, a public contract, or an existing test
   the plan doesn't name, a new dependency is copyleft, or the plan doesn't

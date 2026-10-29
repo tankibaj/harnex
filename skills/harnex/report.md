@@ -31,7 +31,8 @@ line.
 - `Tests (<who>):` commands and numbers (`validator`, or `orchestrator` on
   Quick and after inline fixes), plus the red check (or NOT VERIFIED; Quick:
   the failing-before run).
-- `Review:` each reviewer's verdict and the model it ran on.
+- `Review:` each reviewer's verdict and the model it ran on; when the
+  verify pass ran, `verified: N confirmed, M plausible, K refuted`.
 - `UI review:` the `ui-ux-reviewer` verdict, or `UI scope none` checked
   against the changed-file set. UI scope with no UI review means not done.
 - `Checklist:` every plan item (Quick: the chat plan's) with its evidence (command and result, test
@@ -93,7 +94,8 @@ if it fails:
 Quick), `ticket` (issue
 reference, or null), `minutes` (per phase and total from the timings file; Quick: null),
 `waits_min`, `rounds`, `findings` (`{critical, must_fix, nice}` across all
-reviewers), `escaped` (findings reviewers raised that the validator's tests
+reviewers), `refuted` (findings the verify pass dropped, 0 when it did
+not run), `escaped` (findings reviewers raised that the validator's tests
 missed, count), `tests` (`PASS|FAIL|NOT VERIFIED`), `red_check`
 (`proven|n/a|NOT VERIFIED`), `ui_review` (`APPROVE|CHANGES|none`), `explore` (`{rounds, built, kept}`, explore runs only, also when none was kept). No code,
 file contents, requirement text, or names. `/pr-review`

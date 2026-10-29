@@ -74,7 +74,15 @@ description as the text. For a PR:
   `NOT CHECKED: <why>`.
 
 ## 4. Correctness review
-Spawn `harnex:reviewer` with: `Standalone review, no plan.`, the standards
+Prior run first: run step 5's `threads.py` call now and look for threads
+whose notes contain `(pr-review)`. None: a full review. Their newest
+`commented_at` is the head SHA: say this head was already reviewed and ask
+once, show those findings or review again. An older SHA: ask once, delta
+(Recommended: the reviewer in delta mode with those findings as its previous
+findings and `git diff <commented_at> <head sha>` as the fix diff) or a
+full review.
+
+Full review: spawn `harnex:reviewer` with: `Standalone review, no plan.`, the standards
 file `../harnex/standards.md`, the requirement from step 3, the worktree
 path as the repo, `<base>` = the base SHA, and the changed file list.
 Model: your default (no `model` override) when a risk area is touched (auth, schema or
@@ -88,6 +96,13 @@ in the background and do steps 5 and 6 and the requirement work meanwhile.
 Timebox: 10 minutes. Still running then: stop it, and render with the
 correctness findings `NOT CHECKED: reviewer timed out` and criterion 2 at
 most WARN; offer to rerun it on fewer files.
+
+Verify: when it returns CRITICAL or MUST-FIX findings, spawn one more fresh
+`harnex:reviewer` (same model) in verify mode with those findings, the
+requirement, the worktree path, and `<base>`; treat the marks as
+`../harnex/SKILL.md` "Review loop" says (REFUTED dropped, PLAUSIBLE MUST-FIX
+becomes NICE-TO-HAVE). Timebox: 5 minutes; timed out: keep the findings as
+reported and add `Not checked: verify pass timed out`.
 
 ## 5. Existing threads
 `python3 <this skill's folder>/threads.py <PR or MR URL> --all` (the
@@ -159,7 +174,10 @@ raised in an open thread is not offered; cite that thread instead.
   yes. A draft command fails: delete the drafts you made (`glab mr note
   draft delete <draft-note-id> <iid> -R <project>`) and put the findings in
   the summary note instead.
-- **Body:** severity, the concrete case, the fix, and `(pr-review)`.
+- **Body:** severity, the concrete case, the fix, and `(pr-review)`. On
+  GitHub, a fix of at most 5 lines on the commented lines that fully fixes
+  the finding goes in a ```` ```suggestion ```` block; any other fix stays
+  prose.
 - **Summary note:** write the body to a temp file, post it, delete the
   file. GitHub: `gh pr comment <n> -R <host>/<owner>/<repo> --body-file
   <file>`.
@@ -175,7 +193,7 @@ Append one line (`../harnex/report.md` "Metrics record") with
 folder>/../harnex/harnex.mjs key <url>`; no names leave the machine), `verdict`, `findings`
 (`{critical, must_fix, nice}`), `criteria` (`{pass, warn, fail,
 not_checked}`), `diff_lines`, `ac_source`, `threads` (`{checked, open,
-warn, fail}`), `posted` (inline comments published), `harnex_pr` (true
+warn, fail}`), `refuted` (findings the verify pass dropped), `posted` (inline comments published), `harnex_pr` (true
 when the description has the `<!-- harnex:run` marker: its `findings` and
 criteria FAILs on rows 1-3 and 5-12 escaped the harnex run; rows 4 and 13
 happen after the push), `fail_rows` (the failing row numbers), `pr_number`,
