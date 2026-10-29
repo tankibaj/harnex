@@ -1,7 +1,6 @@
 ---
 name: pr-review
-description: "harnex PR review: checks any open GitHub PR (or GitLab MR) against every review criterion and its existing review threads, gets a fresh correctness review, renders the reviewer's guide, asks the questions a reviewer should be able to answer before approving, and posts the findings you pick as inline comments. Runs only when the user types /pr-review [PR URL | number | branch]."
-disable-model-invocation: true
+description: "harnex PR review: checks any open GitHub PR (or GitLab MR) against every review criterion and its existing review threads, gets a fresh correctness review, renders the reviewer's guide, asks the questions a reviewer should be able to answer before approving, and posts the findings you pick as inline comments (nothing posted without a yes). Use when the user asks to review a specific PR or MR and gives its URL, number, or branch; not for local changes with no PR. Also /pr-review [PR URL | number | branch]."
 ---
 
 # harnex PR review
