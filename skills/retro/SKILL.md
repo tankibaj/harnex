@@ -1,7 +1,6 @@
 ---
 name: retro
-description: "harnex retro: reviews a coding session (default: the current one) and proposes environment improvements (navigation pointers, automated checks, reviewer rules, steering-file cleanups, tool economy, information access), ranked by severity. Markdown in chat, or a self-contained HTML page on request. Propose only. Runs only when the user types /retro [session | run] [html]."
-disable-model-invocation: true
+description: "harnex retro: reviews a coding session (default: the current one) and proposes environment improvements (navigation pointers, automated checks, reviewer rules, steering-file cleanups, tool economy, information access), ranked by severity. Markdown in chat, or a self-contained HTML page on request. Propose only. Use when the user asks to review how a coding session went or how to improve the environment, or types /retro [session | run] [html]."
 ---
 
 # harnex retro

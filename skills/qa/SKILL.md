@@ -1,7 +1,6 @@
 ---
 name: qa
-description: "harnex QA: writes manual test cases for a PR (GitLab: MR) or a goal from its requirement, acceptance criteria and diff, then (on your yes) runs the ones you pick against a local or non-prod environment through the real UI and the service's OpenAPI, and reports pass/fail. Report only; never edits code. Runs only when the user types /qa [PR URL | goal]."
-disable-model-invocation: true
+description: "harnex QA: writes manual test cases for a PR (GitLab: MR) or a goal from its requirement, acceptance criteria and diff, then (on your yes) runs the ones you pick against a local or non-prod environment through the real UI and the service's OpenAPI, and reports pass/fail. Report only; never edits code. Use when the user asks for manual test cases or a QA pass on a PR, MR, or goal, or types /qa [PR URL | goal]."
 ---
 
 # harnex QA

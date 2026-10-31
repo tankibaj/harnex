@@ -1,7 +1,6 @@
 ---
 name: harnex
-description: "harnex: plan → your approval → implement → validate → review with phase sub-agents. Two flows: /harnex [requirement] (planner, work packages, the gates once on the merged change) and /harnex quick [requirement] (inline, then a fresh reviewer); settings derived from the change; build several approaches and pick one with /harnex explore <requirement>. On demand only: runs when the user types /harnex."
-disable-model-invocation: true
+description: "harnex: plan → your approval → implement → validate → review with phase sub-agents. Two flows: /harnex [requirement] (planner, work packages, the gates once on the merged change) and /harnex quick [requirement] (inline, then a fresh reviewer); settings derived from the change; build several approaches and pick one with /harnex explore <requirement>. Use when the user asks to build a feature, fix a bug, refactor, or tackle tech debt through the plan-approve-implement-validate-review workflow, or types /harnex."
 ---
 
 # harnex (orchestrated)
