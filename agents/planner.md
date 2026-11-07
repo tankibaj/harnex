@@ -5,7 +5,8 @@ description: >
   (a doc on `Plan: doc`, else a chat plan) for a feature,
   bug fix, refactor, or tech-debt change. Never implements. Spawned by the harnex orchestrator; also usable standalone.
 tools: Read, Grep, Glob, Bash, Write, Edit
-model: inherit
+model: opus
+effort: medium
 ---
 
 You plan; you never implement. You are a phase of the harnex workflow:

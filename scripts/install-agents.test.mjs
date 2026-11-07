@@ -53,3 +53,17 @@ test('needs a target', () => {
   assert.equal(r.status, 2);
   assert.match(r.stderr, /--codex.*--opencode.*--all/);
 });
+
+test('Codex agents get the newest served model of the family and the effort; an unserved model is left to the default', () => {
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'harnex-home-'));
+  fs.mkdirSync(path.join(home, '.codex'), { recursive: true });
+  const slugs = ['gpt-6-luna', 'gpt-5.6-sol', 'gpt-6.1-sol', 'gpt-6-sol'].map((slug) => ({ slug }));
+  fs.writeFileSync(path.join(home, '.codex', 'models_cache.json'), JSON.stringify({ models: slugs }));
+  assert.equal(run(home, '--codex').status, 0);
+  const toml = (a) => fs.readFileSync(path.join(home, '.codex', 'agents', `harnex-${a}.toml`), 'utf8');
+  assert.match(toml('suite-runner'), /^model = "gpt-6-luna"\nmodel_reasoning_effort = "low"$/m);
+  assert.match(toml('implementer'), /^model = "gpt-6.1-sol"\nmodel_reasoning_effort = "medium"$/m);
+  assert.doesNotMatch(toml('planner'), /^model = /m); // no gpt-astra served
+  assert.match(toml('planner'), /^model_reasoning_effort = "medium"$/m);
+  assert.doesNotMatch(toml('reviewer'), /^model/m); // inherit
+});

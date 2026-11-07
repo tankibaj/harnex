@@ -91,6 +91,23 @@ past about 400 changed lines, or hits an open question.
 Once code is written, settings only grow: a newly found risk area adds
 `Tier: full` and `Reviewer: default` with a one-line note.
 
+## Models and effort
+One table; the agents' frontmatter carries the first three rows
+(`scripts/install-agents.mjs` maps them to Codex), the last two are
+spawn-time overrides (`model` and `effort` on the spawn). Models are
+families, not versions (haiku, opus, sonnet; gpt-luna, gpt-astra, gpt-sol):
+the tool picks its newest served version. A family the tool does not serve:
+no override, the session's model, same effort. The
+reviewer is not in the table (see "Settings").
+
+| Work | Claude Code | Codex | Effort |
+|---|---|---|---|
+| Read-only exploration, docs lookup, test-output summaries (`Explore`, `harnex:suite-runner`) | haiku | gpt-luna | low |
+| Planning (`harnex:planner`) | opus | gpt-astra | medium |
+| Implementation, independent validation, UI review (`harnex:implementer`, `validator`, `ui-ux-reviewer`) | sonnet | gpt-sol | medium |
+| Reproducible failure (a failing test or finding the implementer fixes in "Review loop") | sonnet | gpt-sol | high |
+| Confirmed high-risk issue still open after the high-effort attempt | opus | gpt-astra | high |
+
 `/harnex quick <requirement>` forces Quick: the first word is the flow, the
 rest is the requirement. The word alone: ask for the goal once, then build
 the requirement from the answer (Requirement first). Forcing Quick onto a
@@ -133,7 +150,7 @@ an earlier run's lines never mix in.
    `Plan: doc`: a plan over 60 lines (checklist and WPs excluded; `wc -l`)
    or a change estimated over about 400 lines goes back to the planner once
    to cut or split it before the grounding check. Then the grounding check
-   (spawn `Explore`, `model: "haiku"`, with the plan path: sort each cited
+   (spawn `Explore` ("Models and effort": exploration row), with the plan path: sort each cited
    anchor as **confirmed** (existing code matches the claim), **mismatch**
    (existing code differs), or **planned** (marked `(new)` or `(changes)`,
    or code the plan itself adds: skipped, never a mismatch); check each
@@ -225,6 +242,9 @@ could not as `Not verified:`; no helper check. No `Journeys:` line
   verify mode with those findings, the requirement, and `<base>`. REFUTED:
   dropped, counted in the report. PLAUSIBLE MUST-FIX: NICE-TO-HAVE.
   CONFIRMED, and any CRITICAL not REFUTED: kept. Nothing kept: APPROVE.
+- **High-risk, still open:** a confirmed CRITICAL or risk-area MUST-FIX that
+  survives the high-effort fix gets one more `harnex:implementer` attempt
+  on the last row of "Models and effort", then "Escalate and wait".
 - **Escalate and wait** instead of fixing when a finding is CRITICAL, a fix
   would change scope, architecture, a public contract, or an existing test
   the plan doesn't name, a new dependency is copyleft, or the plan doesn't
@@ -233,7 +253,8 @@ could not as `Not verified:`; no helper check. No `Journeys:` line
   test: fix it yourself. Otherwise route each failure and finding to the
   `harnex:implementer` of the WP that owns its file (a file no WP owns:
   the WP whose change caused it; no WPs: one implementer), each with only
-  its own list. The WPs are merged, so in one
+  its own list, at the "reproducible failure" row of "Models and effort"
+  (`effort: high`). The WPs are merged, so in one
   repo they run one after another.
 - **Re-check the delta only:** the reviewer gets its previous findings and
   the fix diff and verifies those, not the whole change. Re-run the tests

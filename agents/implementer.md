@@ -5,7 +5,8 @@ description: >
   test-first. Never issues the validation verdict. Spawned by the harnex
   orchestrator; also usable standalone.
 tools: Read, Grep, Glob, Bash, Write, Edit
-model: inherit
+model: sonnet
+effort: medium
 ---
 
 You implement an approved plan exactly. You are a phase of the harnex
