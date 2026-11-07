@@ -141,3 +141,60 @@ test('unknown command: usage and exit 2', () => {
   assert.equal(r.status, 2);
   assert.match(r.stderr, /usage/);
 });
+
+test('coverage: exits 0 only when every journey id is walked; prints each gap', () => {
+  const ok = run(['coverage', 'J1,J2', 'Coverage: J1=walked J2=walked']);
+  assert.equal(ok.status, 0, ok.stderr);
+  const gaps = run(['coverage', 'J1,J2,J3,J4', 'Coverage: J1=walked J2=skipped(no seed data) J3=blocked(login) J1=blocked']);
+  assert.equal(gaps.status, 1);
+  assert.deepEqual(gaps.stdout.trim().split('\n'), ['J1 blocked', 'J2 skipped', 'J3 blocked', 'J4 missing']);
+});
+
+test('coverage: needs ids and a line', () => {
+  assert.equal(run(['coverage', 'J1']).status, 1);
+});
+
+test('coverage: reason text never reads as an entry, case and spaces are tolerated', () => {
+  const r = run(['coverage', 'J1, J2,J3', 'Coverage: J3=blocked(needs J2=walked first, can\'t log in) J1 = Walked']);
+  assert.equal(r.status, 1);
+  assert.deepEqual(r.stdout.trim().split('\n'), ['J2 missing', 'J3 blocked']);
+});
+
+test('coverage: walked with a reason is partial, a gap', () => {
+  const r = run(['coverage', 'J1', 'Coverage: J1=walked(partial)']);
+  assert.equal(r.status, 1);
+  assert.equal(r.stdout.trim(), 'J1 partial');
+});
+
+test('coverage: agent-added J<n>+ ids must be walked too', () => {
+  assert.equal(run(['coverage', 'J1', 'Coverage: J1=walked J4+=walked']).status, 0);
+  const r = run(['coverage', 'J1', 'Coverage: J1=walked J4+=blocked(no data)']);
+  assert.equal(r.status, 1);
+  assert.equal(r.stdout.trim(), 'J4+ blocked');
+});
+
+test('coverage: a re-run line checked on its own clears the gap', () => {
+  assert.equal(run(['coverage', 'J2', 'Coverage: J2=walked']).status, 0);
+  assert.equal(run(['coverage', 'J1,J2', 'Coverage: J1=blocked(x) J2=walked J1=walked']).status, 1);
+});
+
+test('coverage: walked with a spaced or unterminated reason, and bare partial, are gaps', () => {
+  for (const line of ['J1=walked (state X untested)', 'J1=walked(', 'J1=partial']) {
+    const r = run(['coverage', 'J1', line]);
+    assert.equal(r.status, 1, line);
+    assert.equal(r.stdout.trim(), 'J1 partial');
+  }
+});
+
+test('coverage: an ids argument with no ids fails instead of passing', () => {
+  assert.equal(run(['coverage', ',', 'Coverage: J1=walked']).status, 1);
+  assert.equal(run(['coverage', ' ', 'Coverage: J1=walked']).status, 1);
+});
+
+test('coverage: nested parentheses stay inside the reason; glued status text is no entry', () => {
+  const r = run(['coverage', 'J1,J2,J3', 'Coverage: J3=blocked(see (SSO) J2=walked) J1=walked-partial']);
+  assert.equal(r.status, 1);
+  assert.deepEqual(r.stdout.trim().split('\n'), ['J1 missing', 'J2 missing', 'J3 blocked']);
+  const open = run(['coverage', 'J1,J2', 'Coverage: J1=blocked( J2=walked']);
+  assert.deepEqual(open.stdout.trim().split('\n'), ['J1 blocked', 'J2 missing']);
+});

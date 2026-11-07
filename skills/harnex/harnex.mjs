@@ -9,6 +9,7 @@
 //   node harnex.mjs base <ref> <dir>          check out <ref> into a new <dir>, no worktree (red check)
 //   node harnex.mjs clean <dir>               remove a <dir> that base created
 //   node harnex.mjs untracked save|new        save the untracked files now | list the ones added since
+//   node harnex.mjs coverage <ids> <line>     check a `Coverage:` line walked every journey id (J1,J2); exit 1 on gaps
 //
 // record never fails the caller: metrics are passive.
 import crypto from 'node:crypto';
@@ -97,6 +98,43 @@ function untracked([mode]) {
   fs.rmSync(saved);
 }
 
+// A gate agent's `Coverage: J1=walked J2=blocked(reason) J3=partial(reason)` line
+// against the plan's journey ids. Only a bare `walked` counts. A missing id,
+// blocked, skipped, partial, or `walked` carrying a reason (even `walked (x)` or
+// an unterminated `walked(`) is a gap, and so is any agent-added `J<n>+` id that
+// is not walked. A status glued to more text (`walked-partial`) is no entry. A
+// reason is skipped to its matching parenthesis (nested ones included, an
+// unterminated one runs to the end), so its text never reads as an entry. An id
+// seen twice stays a gap unless every occurrence is walked. Prints one line per gap.
+function coverage([ids, ...line]) {
+  if (!ids || !line.length) throw new Error('coverage needs <ids> <coverage line>');
+  const want = new Set(ids.split(',').map((id) => id.trim().toUpperCase()).filter(Boolean));
+  if (!want.size) throw new Error('coverage needs at least one journey id');
+  const text = line.join(' ');
+  const re = /\b(J\d+\+?)\s*=\s*(walked|partial|blocked|skipped)(?![\w\-/:])/gi;
+  const seen = new Map();
+  for (let m; (m = re.exec(text));) {
+    let i = re.lastIndex;
+    while (/\s/.test(text[i] ?? '')) i++;
+    const reason = text[i] === '(';
+    if (reason) {
+      for (let depth = 0; i < text.length; i++) {
+        if (text[i] === '(') depth++;
+        else if (text[i] === ')' && --depth === 0) { i++; break; }
+      }
+      re.lastIndex = i;
+    }
+    const id = m[1].toUpperCase();
+    const word = m[2].toLowerCase();
+    const status = reason && word === 'walked' ? 'partial' : word;
+    if (!seen.has(id) || seen.get(id) === 'walked') seen.set(id, status);
+  }
+  for (const id of seen.keys()) if (id.endsWith('+')) want.add(id);
+  const gaps = [...want].filter((id) => seen.get(id) !== 'walked');
+  for (const id of gaps) console.log(`${id} ${seen.get(id) ?? 'missing'}`);
+  if (gaps.length) process.exitCode = 1;
+}
+
 const [cmd, ...args] = process.argv.slice(2);
 try {
   if (cmd === 'stamp') stamp(args);
@@ -105,8 +143,9 @@ try {
   else if (cmd === 'base') base(args);
   else if (cmd === 'clean') clean(args);
   else if (cmd === 'untracked') untracked(args);
+  else if (cmd === 'coverage') coverage(args);
   else {
-    console.error('usage: harnex.mjs stamp [--reset] <label> | record <json> | key <url> | base <ref> <dir> | clean <dir> | untracked save|new');
+    console.error('usage: harnex.mjs stamp [--reset] <label> | record <json> | key <url> | base <ref> <dir> | clean <dir> | untracked save|new | coverage <ids> <line>');
     process.exitCode = 2;
   }
 } catch (e) {

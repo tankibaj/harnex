@@ -11,6 +11,8 @@ Terse; grammar sacrificed for concision. Plain words, no file dumps.
 Flow: <quick | harnex> (<one-line reason: the risk area, if any>)
 Plan: <chat | doc> · Tier: <impacted | full> · Reviewer: <sonnet | default> · UI: <yes | no>
 Goal: <1–2 sentences: what changes and why, from the requirement>
+Early UI review: <off (candidates: WP1) | on (WP1)>   (only when the plan has candidates)
+Journeys: <J1 name, J2 name... what a user can do end to end (`ui` or `no-ui`), or none>
 Plan:
 - <at most 5 bullets: what will change, in order>
 Risk: <only real high risks, one line each; else none>
@@ -19,6 +21,12 @@ Risk: <only real high risks, one line each; else none>
 - **Flow reason** names the risk area behind `Tier: full` or `Reviewer:
   default` (auth, a new dependency, CI config...), so those never sit next
   to an unexplained `Risk: none`.
+- **Early UI review** is off by default. The planner's `Early UI candidates:`
+  are the foundation UI WPs others build on; "Change settings" can turn it
+  on (SKILL.md "Settings"). Omit the line when there are none.
+- **Journeys** are the plan's `Journeys:` ids with a few words each: the
+  list every gate must walk. Approving the brief approves that coverage; a
+  missing journey is the cheapest thing to catch here.
 - **Settings line** per SKILL.md "Settings"; never ask for it.
 - **Risk** lists only what could hurt badly if the plan is wrong: security or
   data loss (CRITICAL), or breaking callers, a public contract, or stored
@@ -32,8 +40,10 @@ Risk: <only real high risks, one line each; else none>
 One AskUserQuestion, two or three options, recommended first; its free-text "Other"
 answer is the refine:
 - **Looks good, implement** (Recommended)
-- **Change settings**: then one more question, multiSelect: flow (quick or
-  harnex), Plan doc, Tier full, Reviewer default, UI review.
+- **Change settings**: then one more AskUserQuestion call with two
+  multiSelect questions (four options at most each): Workflow (flow quick or
+  harnex, Plan doc, Tier full) and Reviews (Reviewer default, UI review,
+  Early UI review, only with candidates).
 - **Try alternatives**: only when the plan has an `Approaches:` field with 2
   or more options, `/harnex` flow, one repo; runs explore.md.
 - Other (free text): what to change.
