@@ -177,3 +177,16 @@ test('coverage: a re-run line checked on its own clears the gap', () => {
   assert.equal(run(['coverage', 'J2', 'Coverage: J2=walked']).status, 0);
   assert.equal(run(['coverage', 'J1,J2', 'Coverage: J1=blocked(x) J2=walked J1=walked']).status, 1);
 });
+
+test('coverage: walked with a spaced or unterminated reason, and bare partial, are gaps', () => {
+  for (const line of ['J1=walked (state X untested)', 'J1=walked(', 'J1=partial']) {
+    const r = run(['coverage', 'J1', line]);
+    assert.equal(r.status, 1, line);
+    assert.equal(r.stdout.trim(), 'J1 partial');
+  }
+});
+
+test('coverage: an ids argument with no ids fails instead of passing', () => {
+  assert.equal(run(['coverage', ',', 'Coverage: J1=walked']).status, 1);
+  assert.equal(run(['coverage', ' ', 'Coverage: J1=walked']).status, 1);
+});

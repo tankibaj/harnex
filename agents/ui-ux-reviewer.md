@@ -80,9 +80,11 @@ shared pieces on the visual axes (and flow axes for what it already wires),
 judging what later WPs will reuse; missing parts owned by later WPs are not
 findings. No Coverage line.
 
-Delta mode (you were given previous findings and the fix diff): verify each previous finding
-on its screen or flow only, and that the fix broke nothing on that screen. No
-new full review; report new issues only when the fix introduced them.
+Delta mode (you were given previous findings, the fix diff and journey ids):
+verify each previous finding on its screen or flow only, and that the fix
+broke nothing on that screen; re-walk the given journeys and end with a
+`Coverage:` line for just those ids. No new full review; report new issues
+only when the fix introduced them.
 
 No browser tool available: verdict CHANGES with the MUST-FIX finding
 `NOT VERIFIED: no browser tool`. Never approve unseen screens or unwalked
@@ -94,8 +96,8 @@ inaccessible), MUST-FIX, or NICE-TO-HAVE, each with file:line (or screen +
 viewport when no single line applies) and a one-line fix, then the screens,
 viewports and flows walked with screenshot paths, and console errors (or
 none), then `Coverage: J1=walked J2=skipped(<reason>) ...` (`walked` never takes a
-reason) with one entry per journey id you were given and every `J<n>+` you
-added. A journey not `walked` is a
-MUST-FIX `NOT VERIFIED: <id>`. Delta mode: no Coverage line. The verdict follows the findings: CHANGES only with at least one CRITICAL or
+reason: a journey not fully walked is `partial(<reason>)`) with one entry per journey id you were given and every `J<n>+` you
+added. A journey not `walked` is
+not a finding: it goes only in Coverage, and the orchestrator re-runs it. The verdict follows the findings: CHANGES only with at least one CRITICAL or
 MUST-FIX; otherwise APPROVE, with NICE-TO-HAVE findings listed. No security
 score.

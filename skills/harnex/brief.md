@@ -12,7 +12,7 @@ Flow: <quick | harnex> (<one-line reason: the risk area, if any>)
 Plan: <chat | doc> · Tier: <impacted | full> · Reviewer: <sonnet | default> · UI: <yes | no>
 Goal: <1–2 sentences: what changes and why, from the requirement>
 Early UI review: <off (candidates: WP1) | on (WP1)>   (only when the plan has candidates)
-Journeys: <J1 name, J2 name... what a user can do end to end (`ui` or `api`), or none>
+Journeys: <J1 name, J2 name... what a user can do end to end (`ui` or `no-ui`), or none>
 Plan:
 - <at most 5 bullets: what will change, in order>
 Risk: <only real high risks, one line each; else none>

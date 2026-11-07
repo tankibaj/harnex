@@ -98,21 +98,23 @@ function untracked([mode]) {
   fs.rmSync(saved);
 }
 
-// A gate agent's `Coverage: J1=walked J2=blocked(reason) J4+=skipped(reason)` line
-// against the plan's journey ids. Only `walked` without a reason counts; a
-// missing id, blocked, skipped, or `walked(...)` is a gap, and so is any
-// agent-added `J<n>+` id that is not walked. Parentheses are consumed with their
-// entry, so reason text never reads as an entry. An id seen twice stays a gap
-// unless every occurrence is walked. Prints one line per gap.
+// A gate agent's `Coverage: J1=walked J2=blocked(reason) J3=partial(reason)` line
+// against the plan's journey ids. Only a bare `walked` counts. A missing id,
+// blocked, skipped, partial, or `walked` carrying a reason (even `walked (x)` or
+// an unterminated `walked(`) is a gap, and so is any agent-added `J<n>+` id that
+// is not walked. A reason is consumed with its entry, so its text never reads as
+// an entry. An id seen twice stays a gap unless every occurrence is walked.
+// Prints one line per gap.
 function coverage([ids, ...line]) {
   if (!ids || !line.length) throw new Error('coverage needs <ids> <coverage line>');
+  const want = new Set(ids.split(',').map((id) => id.trim().toUpperCase()).filter(Boolean));
+  if (!want.size) throw new Error('coverage needs at least one journey id');
   const seen = new Map();
-  for (const [, id, word, reason] of line.join(' ').matchAll(/\b(J\d+\+?)\s*=\s*(walked|blocked|skipped)\b(\([^)]*\))?/gi)) {
+  for (const [, id, word, reason] of line.join(' ').matchAll(/\b(J\d+\+?)\s*=\s*(walked|partial|blocked|skipped)\b(\s*\([^)]*\)?)?/gi)) {
     const key = id.toUpperCase();
     const status = reason && word.toLowerCase() === 'walked' ? 'partial' : word.toLowerCase();
     if (!seen.has(key) || seen.get(key) === 'walked') seen.set(key, status);
   }
-  const want = new Set(ids.split(',').map((id) => id.trim().toUpperCase()).filter(Boolean));
   for (const id of seen.keys()) if (id.endsWith('+')) want.add(id);
   const gaps = [...want].filter((id) => seen.get(id) !== 'walked');
   for (const id of gaps) console.log(`${id} ${seen.get(id) ?? 'missing'}`);

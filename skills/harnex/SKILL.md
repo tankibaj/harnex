@@ -147,7 +147,8 @@ against); `/harnex` also stamps `run start` (report.md "Timings").
    `early-review: yes` on a WP: spawn a `harnex:reviewer` on that WP's diff
    when it returns, and fix its findings ("Review loop") before the WPs
    that depend on it start.
-   Early UI review, only when the developer turned it on at the brief for
+   Early UI review (after the early code review and its fixes when the WP has
+   both), only when the developer turned it on at the brief for
    the plan's `Early UI candidates:`: after that WP is merged into the
    feature branch (the dev server runs from the merged checkout), spawn
    `harnex:ui-ux-reviewer` in early mode on that WP's diff and screens, and
@@ -159,9 +160,11 @@ against); `/harnex` also stamps `run start` (report.md "Timings").
    and `harnex:reviewer` (requirement, plan, model per settings), both on
    the whole diff across all WPs. Multi-repo: one validator per repo, one
    reviewer across all of them (the contracts between WPs and repos are the
-   point). Pass each validator the plan's `Journeys:` whose WPs (`journeys:`,
-   `repo:`) sit in its repo, never the whole list; check its `Coverage:`
-   line ("Journey coverage").
+   point). A journey belongs to its entry's repo (the planner prefixes the
+   entry with `<repo>:` on a multi-repo plan): pass each validator only
+   those, and it walks them end to end through the other repos' running
+   services. A chat plan is one repo, so one validator gets every journey.
+   Check each `Coverage:` line ("Journey coverage").
 4. **UI review** (`harnex:ui-ux-reviewer`), once, after the validator
    passes, when `UI: yes`, over every changed screen. Scope is the plan's
    `UI scope` widened by the changed files (standards.md "UI and UX
@@ -181,9 +184,11 @@ would not hot-reload), the way the repo says (standards.md "Run target"; desktop
 `preview_start`), pass its URL on, stop it at Completion.
 
 ## Journey coverage
-After every full run of a gate agent that returns a `Coverage:` line: the
-validator (`/harnex` always; Quick only on `Tier: full`) and the UI reviewer;
-not after early, delta, or `harnex:reviewer` runs. Take its line, drop every
+After every run, full or delta, of a gate agent that returns a `Coverage:`
+line: the validator (`/harnex` always; Quick only on `Tier: full`) and the UI
+reviewer; not after early or `harnex:reviewer` runs. Delta runs after a fix
+get only the journeys of the WPs whose files the fix touched (no WPs: all),
+so a fix to J2's screen re-walks J2 again. Take its line, drop every
 `(reason)`, and run `node <this skill's folder>/harnex.mjs coverage
 <J1,J2,...> '<J1=walked J2=blocked ...>'` with the ids that agent was given
 (the `ui: yes` ones for the UI reviewer). Pass only those tokens, never a
@@ -271,10 +276,12 @@ AskUserQuestion is unavailable.
   downgrade a finding yourself.
 - A failing test reported by a reviewer is a validation failure, not a
   review finding.
-- A validator or UI reviewer full run that says PASS or APPROVE without a
+- A journey not `walked` in a Coverage line is an environment gap, not a code
+  defect: re-run it per "Journey coverage", never a fix round or the implementer.
+- A validator or UI reviewer run that says PASS or APPROVE without a
   `Coverage:` line covering its journeys has not finished: run "Journey
-  coverage", never accept the verdict. Early and delta runs and the code
-  reviewer have no Coverage line.
+  coverage", never accept the verdict. Early runs and the code reviewer have
+  no Coverage line.
 - `NOT VERIFIED: no browser tool` is an environment gap: fix the tool and
   re-run that reviewer. It is not a fix round and never goes to the
   implementer.

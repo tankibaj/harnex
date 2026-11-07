@@ -37,7 +37,8 @@ forms:
   "UI and UX review"; `flow` when a user flow, form, navigation, or its
   empty/error/loading state changes, and a journey with `ui: yes` raises `none` to `flow` and `visual` to `both`)
 - `Journeys:` one line per end-user journey the change builds or alters,
-  ids `J1`, `J2`...: `J<n> | <actor> | <entry> | <steps> | states: <happy,
+  ids `J1`, `J2`... (multi-repo: `<entry>` is `<repo>:<entry>`, the repo that owns
+  the journey): `J<n> | <actor> | <entry> | <steps> | states: <happy,
   empty, error, loading as they apply> | ui: yes|no | src: <AC cited |
   requirement | code>`. Source order: every acceptance criterion a user can
   exercise maps to a journey; with none given, each functionality the
