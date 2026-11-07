@@ -119,6 +119,10 @@ live in the tier profile (`tiers/`).
 ### E2E must verify the real flow
 - Assert the observable effect, not a flag already true. Drive actions through visible controls (API calls only for setup and outcome checks). Green with a broken screenshot means the test is wrong.
 
+### Live smoke
+- Green tests that fake the host edge (OS, device, input, network, the services the app calls) can all pass while the headline action does nothing. Each plan with user-reachable behavior names one `Live smoke:`: the change's headline user action, run once through the real entry point with nothing faked at that edge, and its observable effect asserted. The validator walks it for real.
+- It cannot run (tool, permission, account missing): NOT VERIFIED, never PASS. Only the developer waives it, at the brief; a waiver stays visible as `Live smoke: waived` there and as `Not verified: live smoke` in the report.
+
 ## Code review
 - A FRESH sub-agent reviews; it never wrote or edits the code. `reviewer` reports correctness only; `ui-ux-reviewer` covers UI and UX.
 - Every finding names a concrete case: this input or situation leads to this wrong result. No case, no finding; no taste or style findings, except the reviewer's mechanical checks for an unused addition, a silent failure, and a misleading name (reviewer checks 7, 4, 2), each proven by a grep or the lines.

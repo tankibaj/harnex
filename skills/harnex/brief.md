@@ -13,6 +13,7 @@ Plan: <chat | doc> · Tier: <impacted | full> · Reviewer: <sonnet | default> ·
 Goal: <1–2 sentences: what changes and why, from the requirement>
 Early UI review: <off (candidates: WP1) | on (WP1)>   (only when the plan has candidates)
 Journeys: <J1 name, J2 name... what a user can do end to end (`ui` or `no-ui`), or none>
+Live smoke: <the headline action run for real, and the effect asserted | waived | none: <reason>>
 Plan:
 - <at most 5 bullets: what will change, in order>
 Risk: <only real high risks, one line each; else none>
@@ -28,6 +29,12 @@ Risk: <only real high risks, one line each; else none>
   list every gate must walk. Approving the brief approves that coverage; a
   missing journey is the cheapest thing to catch here.
 - **Settings line** per SKILL.md "Settings"; never ask for it.
+- **Live smoke** is the plan's `Live smoke:` line, shown so the developer
+  sees the one real-world proof the gates will run; the developer may waive
+  it here (`Live smoke: waived`), never anyone else.
+- **Tools:** only when a gate needs a tool the run may lack (SKILL.md
+  "Tool preflight"): `Tools: <tool> unavailable: <what is lost, the fallback>`.
+  Omit the line when all are present.
 - **Risk** lists only what could hurt badly if the plan is wrong: security or
   data loss (CRITICAL), or breaking callers, a public contract, or stored
   data. Take them from the plan's risks; never invent one. None at that

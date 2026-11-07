@@ -53,6 +53,11 @@ endpoint or CLI, and each `ui: yes` journey's happy state once through the
 visible controls (a smoke: the UI reviewer walks every state of those). A journey you
 cannot walk is `blocked(<reason>)`, never dropped.
 
+Live smoke (standards.md "Live smoke"): walk the plan's `Live smoke:` for
+real, once: the real entry point, nothing faked at the host edge, and assert
+the effect. Report what you did and saw. It cannot run: NOT VERIFIED naming
+the missing tool or permission; never substitute a faked-boundary test.
+
 Early mode (you were given one WP, a risk-area foundation WP that later WPs
 build on): that WP only, not the merged change. Run its impacted tests,
 lint, typecheck and a smoke launch (the profile's smoke, else start the app

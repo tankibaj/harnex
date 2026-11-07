@@ -36,7 +36,7 @@ forms:
   (risk area or shared core: `Tier: full`; risk area: `Reviewer: default`)
 - `UI scope: none | visual | flow | both` with a one-line reason (standards.md
   "UI and UX review"; `flow` when a user flow, form, navigation, or its
-  empty/error/loading state changes, and a journey with `ui: yes` raises `none` to `flow` and `visual` to `both`)
+  empty/error/loading state changes, and a journey with `ui: yes` raises `none` to `flow` and `visual` to `both`; a desktop or native UI also lists its minimum, default and large window sizes)
 - `Journeys:` one line per end-user journey the change builds or alters,
   ids `J1`, `J2`... (multi-repo: `<entry>` is `<repo>:<entry>`, the repo that owns
   the journey): `J<n> | <actor> | <entry> | <steps> | states: <happy,
@@ -48,6 +48,10 @@ forms:
   journey backed by an endpoint with no screen is `ui: no`. Backend-only
   change with no user-visible journey: "none". The gates walk exactly this list
   (standards.md "Journeys")
+- `Live smoke:` the headline user action of the change, run once through the
+  real entry point with nothing faked at the host edge, and the effect to
+  assert (standards.md "Live smoke"); or `none: <reason>` when nothing is
+  user-reachable. A tool or permission it needs goes under `Assumptions:`
 - requirement restated
 - for a bug: root-cause note (what breaks, why, where)
 - for a refactor/tech debt: the behavior the characterization tests must pin
@@ -75,7 +79,9 @@ forms:
 - `Done checks:` one item per acceptance criterion you were given (cite
   it), plus your own definition-of-done items, each with its proof (standards.md
   "Done checks"): a test name, a command and its expected result, or a
-  browser step and what must render. Add, as `QA:` items, the cases a
+  browser step and what must render. Each WP's done check includes one test
+  through the real entry point or composition root (not the unit alone), so a
+  piece built but never wired in fails it. Add, as `QA:` items, the cases a
   tester would try first, only for what this change introduces: a new input
   gets an invalid-input case, a new permission- or tenant-scoped read or
   action gets a denied case, a new list or query gets an empty case. Each

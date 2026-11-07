@@ -52,7 +52,8 @@ Visual axes (`visual`, `both`), on every changed screen:
    (and the references it routes to) when it exists; never cite a rule you
    did not read.
 4. Responsive layout at 375, 768 and 1280 px (or the viewports the plan
-   names): no overflow, clipping, or overlap.
+   names; a desktop app: its minimum, default and large window sizes, with
+   optional panels or features enabled): no overflow, clipping, or overlap.
 5. Contrast, WCAG 2.2 AA: 4.5:1 text, 3:1 large text and UI components.
 6. Dark theme: checked only when the app ships one; then the changed screens
    must be correct in dark (and in light too when the app ships both). New

@@ -123,15 +123,23 @@ against); `/harnex` also runs `stamp --reset run start` (report.md "Timings"), s
 an earlier run's lines never mix in. One run per checkout at a time: the
 timings file and the untracked baseline are one file each.
 
+**Tool preflight**, both flows, when `UI: yes` or the plan has journeys: before
+the brief, check that the tools the gates need exist (a browser tool for
+the validator's walk and the UI reviewer; for a desktop app, whatever drives
+and captures its windows, with the permissions it needs). A missing one goes
+on the brief's `Tools:` line with the fallback (a scripted UI test, or the
+journeys as `NOT VERIFIED`), so the developer decides before approval, not
+after the UI review.
+
 ## Quick
 1. Plan it yourself: the change, the root cause (bugs), the test that
    proves it, the UI scope, the journeys (the planner's `Journeys:` format,
-   standards.md "UI and UX review"). Show it as the brief (brief.md) and wait for
+   standards.md "UI and UX review"), the live smoke (standards.md "Live smoke"). Show it as the brief (brief.md) and wait for
    "Looks good". Then branch off the default branch if on it.
 2. Bugs and new behavior: write the test, show it failing, then the change.
 3. Run the profile's impacted tests, lint, typecheck, and the secret scan
-   yourself; add smoke if a smoke-covered path is touched. Webapps: walk
-   every journey, each state. `Tier: full`: spawn `harnex:validator` on the
+   yourself; add smoke if a smoke-covered path is touched. Run the live
+   smoke for real. Webapps: walk every journey, each state. `Tier: full`: spawn `harnex:validator` on the
    full tier instead (never a full regression in the main context).
 4. Spawn a fresh `harnex:reviewer` (model per settings) with the
    requirement, the chat plan, and your test output. `UI: yes`: after your
@@ -167,7 +175,9 @@ timings file and the untracked baseline are one file each.
    `isolation: "worktree"`, its worktree linked to the checkout's installed
    dependencies the way standards.md "Independent red check" does; WPs in
    different repos run concurrently without it; a WP with `depends:` starts
-   after those it names. Each implementer runs its inner loop (failing test
+   after those it names. Resume an implementer only for a fix round on its
+   own WP; any other task (an integration pass, a new kind of test) gets a
+   fresh one, since a worker's context only grows. Each implementer runs its inner loop (failing test
    first, its WP's impacted tests, lint, typecheck) and reports numbers that
    are not authoritative. Merge every WP back before the gates. A worktree
    WP returns uncommitted (implementers never commit). To merge it: commit
@@ -181,7 +191,9 @@ timings file and the untracked baseline are one file each.
    implementer resolves the markers (no commit), then `git add -- <those
    files>` and `git commit --no-edit`. After the last WP, `git reset --soft
    <start>` (per repo) leaves the change staged and uncommitted for the
-   gates and Delivery.
+   gates and Delivery. Between merges run at most the merged WPs' impacted
+   tests (a build when WPs share files); the full suite runs once, in the
+   validator.
    **WP review**, plans with WPs only (no WPs: the gate review in step 3 is
    the only review): when a WP returns, spawn one `harnex:reviewer` on that
    WP's diff (its files and their callers), parallel WPs in parallel, and
@@ -295,8 +307,11 @@ could not as `Not verified:`; no helper check. No `Journeys:` line
   previous findings. A wording-only fix gets the impacted tests re-run, no
   browser session. A UI fix that touched non-UI code gets the validator on
   the plan's tier too.
-- **Cap: 3 rounds**, inline fixes included. Still failing: stop and escalate
-  with what remains, what was tried, and a recommendation.
+- **Cap: 3 rounds** per run, every gate's fix passes together, inline fixes
+  included; a round is one fix pass plus its re-check. A fix that opens a
+  new finding in the same code as the previous round: escalate after round
+  2, do not spend the third. Still failing: stop and escalate with what
+  remains, what was tried, and a recommendation.
 
 ## Completion
 Read report.md, `review-guide.md`, and `../pr-review/criteria.md` now; the

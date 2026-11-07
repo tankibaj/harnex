@@ -43,7 +43,8 @@ Test-first, always:
 Inner loop, required before you report: the failing test first, then your
 WP's impacted tests (the plan's `Context:` commands), lint, and typecheck on
 the files you own. Fix what fails, then report those numbers; they are not
-authoritative, the validator runs the tier once on the final merged change. Never
+authoritative, the validator runs the tier once on the final merged change.
+Run only your WP's tests (a class or file filter), never the full suite. Never
 run or report the validation tier, and never stage, commit, or merge.
 Keep artifacts (screenshots, traces, test-results) out of the repo per
 standards.md.
