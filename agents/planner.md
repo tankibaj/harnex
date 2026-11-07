@@ -35,7 +35,7 @@ forms:
   (risk area or shared core: `Tier: full`; risk area: `Reviewer: default`)
 - `UI scope: none | visual | flow | both` with a one-line reason (standards.md
   "UI and UX review"; `flow` when a user flow, form, navigation, or its
-  empty/error/loading state changes, and always when a journey has `ui: yes`)
+  empty/error/loading state changes, and a journey with `ui: yes` raises `none` to `flow` and `visual` to `both`)
 - `Journeys:` one line per end-user journey the change builds or alters,
   ids `J1`, `J2`...: `J<n> | <actor> | <entry> | <steps> | states: <happy,
   empty, error, loading as they apply> | ui: yes|no | src: <AC cited |

@@ -106,8 +106,8 @@ against); `/harnex` also stamps `run start` (report.md "Timings").
 2. Bugs and new behavior: write the test, show it failing, then the change.
 3. Run the profile's impacted tests, lint, typecheck, and the secret scan
    yourself; add smoke if a smoke-covered path is touched. Webapps: walk
-   the flow. `Tier: full`: spawn `harnex:validator` on the full tier
-   instead (never a full regression in the main context).
+   every journey, each state. `Tier: full`: spawn `harnex:validator` on the
+   full tier instead (never a full regression in the main context).
 4. Spawn a fresh `harnex:reviewer` (model per settings) with the
    requirement, the chat plan, and your test output. `UI: yes`: after your
    tests pass, `harnex:ui-ux-reviewer` per "/harnex" step 4. Then "Review
@@ -159,8 +159,9 @@ against); `/harnex` also stamps `run start` (report.md "Timings").
    and `harnex:reviewer` (requirement, plan, model per settings), both on
    the whole diff across all WPs. Multi-repo: one validator per repo, one
    reviewer across all of them (the contracts between WPs and repos are the
-   point). Pass the plan's `Journeys:` to the validator; check its
-   `Coverage:` line ("Journey coverage").
+   point). Pass each validator the plan's `Journeys:` whose WPs (`journeys:`,
+   `repo:`) sit in its repo, never the whole list; check its `Coverage:`
+   line ("Journey coverage").
 4. **UI review** (`harnex:ui-ux-reviewer`), once, after the validator
    passes, when `UI: yes`, over every changed screen. Scope is the plan's
    `UI scope` widened by the changed files (standards.md "UI and UX
@@ -174,20 +175,28 @@ against); `/harnex` also stamps `run start` (report.md "Timings").
    with `untracked save` again before each change's step 2.
    `together`: implement the changes in order, then steps 3-4 once.
 
-Webapps, both flows: start the dev server once before the first validation,
-the way the repo says (standards.md "Run target"; desktop app:
+Webapps, both flows: start the dev server once, from the merged checkout,
+before the first early UI review or validation (restart it after a merge it
+would not hot-reload), the way the repo says (standards.md "Run target"; desktop app:
 `preview_start`), pass its URL on, stop it at Completion.
 
 ## Journey coverage
-Both flows, after the validator and again after the UI reviewer (their full
-runs, not delta rounds). With the plan's journey ids (the `ui: yes` ones for
-the UI reviewer), run `node <this skill's folder>/harnex.mjs coverage
-<J1,J2,...> '<the agent's Coverage: line>'`. Exit 0: covered. Exit 1: it
-prints each gap (`J2 skipped`, `J4 missing`). Re-spawn that agent once with
-only the gap ids and the reason it gave; this is not a fix round and never goes
-to the implementer. A gap left after that is `NOT VERIFIED` in the report
-(`Not verified:`, naming the journey), and the gate is not APPROVE or PASS
-for it. No `Journeys:` line (backend-only change): skip the check.
+After every full run of a gate agent that returns a `Coverage:` line: the
+validator (`/harnex` always; Quick only on `Tier: full`) and the UI reviewer;
+not after early, delta, or `harnex:reviewer` runs. Take its line, drop every
+`(reason)`, and run `node <this skill's folder>/harnex.mjs coverage
+<J1,J2,...> '<J1=walked J2=blocked ...>'` with the ids that agent was given
+(the `ui: yes` ones for the UI reviewer). Pass only those tokens, never a
+reason: it is agent text and never goes into a shell command. Exit 0: covered
+(it also catches the `J<n>+` ids the agent added). Exit 1: it prints each gap
+(`J2 skipped`, `J4 missing`). Re-spawn that agent once with only the gap ids
+and its reason; this is not a fix round and never goes to the implementer.
+Check the re-run's line alone against those ids, never joined to the old
+line. A gap left after that is `NOT VERIFIED` in the report (`Not verified:`,
+naming the journey), and the gate is not APPROVE or PASS for it. Quick with no
+validator: walk every journey and state yourself in step 3 and list any you
+could not as `Not verified:`; no helper check. No `Journeys:` line
+(backend-only change): skip the check.
 
 ## Review loop
 - Only CRITICAL, MUST-FIX, and failing tests open a round. Any other label
@@ -262,8 +271,10 @@ AskUserQuestion is unavailable.
   downgrade a finding yourself.
 - A failing test reported by a reviewer is a validation failure, not a
   review finding.
-- A gate that says APPROVE or PASS without a `Coverage:` line covering every
-  journey has not finished: run "Journey coverage", never accept the verdict.
+- A validator or UI reviewer full run that says PASS or APPROVE without a
+  `Coverage:` line covering its journeys has not finished: run "Journey
+  coverage", never accept the verdict. Early and delta runs and the code
+  reviewer have no Coverage line.
 - `NOT VERIFIED: no browser tool` is an environment gap: fix the tool and
   re-run that reviewer. It is not a fix round and never goes to the
   implementer.

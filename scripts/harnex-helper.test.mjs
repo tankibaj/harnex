@@ -153,3 +153,27 @@ test('coverage: exits 0 only when every journey id is walked; prints each gap', 
 test('coverage: needs ids and a line', () => {
   assert.equal(run(['coverage', 'J1']).status, 1);
 });
+
+test('coverage: reason text never reads as an entry, case and spaces are tolerated', () => {
+  const r = run(['coverage', 'J1, J2,J3', 'Coverage: J3=blocked(needs J2=walked first, can\'t log in) J1 = Walked']);
+  assert.equal(r.status, 1);
+  assert.deepEqual(r.stdout.trim().split('\n'), ['J2 missing', 'J3 blocked']);
+});
+
+test('coverage: walked with a reason is partial, a gap', () => {
+  const r = run(['coverage', 'J1', 'Coverage: J1=walked(partial)']);
+  assert.equal(r.status, 1);
+  assert.equal(r.stdout.trim(), 'J1 partial');
+});
+
+test('coverage: agent-added J<n>+ ids must be walked too', () => {
+  assert.equal(run(['coverage', 'J1', 'Coverage: J1=walked J4+=walked']).status, 0);
+  const r = run(['coverage', 'J1', 'Coverage: J1=walked J4+=blocked(no data)']);
+  assert.equal(r.status, 1);
+  assert.equal(r.stdout.trim(), 'J4+ blocked');
+});
+
+test('coverage: a re-run line checked on its own clears the gap', () => {
+  assert.equal(run(['coverage', 'J2', 'Coverage: J2=walked']).status, 0);
+  assert.equal(run(['coverage', 'J1,J2', 'Coverage: J1=blocked(x) J2=walked J1=walked']).status, 1);
+});

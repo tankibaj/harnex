@@ -98,16 +98,23 @@ function untracked([mode]) {
   fs.rmSync(saved);
 }
 
-// A gate agent's `Coverage: J1=walked J2=blocked(reason) J3=skipped(reason)` line
-// against the plan's journey ids: a journey the line omits, repeats as anything
-// but walked, or marks blocked or skipped is a gap. Prints one line per gap.
+// A gate agent's `Coverage: J1=walked J2=blocked(reason) J4+=skipped(reason)` line
+// against the plan's journey ids. Only `walked` without a reason counts; a
+// missing id, blocked, skipped, or `walked(...)` is a gap, and so is any
+// agent-added `J<n>+` id that is not walked. Parentheses are consumed with their
+// entry, so reason text never reads as an entry. An id seen twice stays a gap
+// unless every occurrence is walked. Prints one line per gap.
 function coverage([ids, ...line]) {
   if (!ids || !line.length) throw new Error('coverage needs <ids> <coverage line>');
   const seen = new Map();
-  for (const [, id, status] of line.join(' ').matchAll(/\b(J\d+)=(walked|blocked|skipped)\b/g)) {
-    if (!seen.has(id) || seen.get(id) === 'walked') seen.set(id, status);
+  for (const [, id, word, reason] of line.join(' ').matchAll(/\b(J\d+\+?)\s*=\s*(walked|blocked|skipped)\b(\([^)]*\))?/gi)) {
+    const key = id.toUpperCase();
+    const status = reason && word.toLowerCase() === 'walked' ? 'partial' : word.toLowerCase();
+    if (!seen.has(key) || seen.get(key) === 'walked') seen.set(key, status);
   }
-  const gaps = ids.split(',').filter((id) => seen.get(id) !== 'walked');
+  const want = new Set(ids.split(',').map((id) => id.trim().toUpperCase()).filter(Boolean));
+  for (const id of seen.keys()) if (id.endsWith('+')) want.add(id);
+  const gaps = [...want].filter((id) => seen.get(id) !== 'walked');
   for (const id of gaps) console.log(`${id} ${seen.get(id) ?? 'missing'}`);
   if (gaps.length) process.exitCode = 1;
 }

@@ -62,7 +62,7 @@ the red check (tests run on `<base>` and how each failed), the browser flow
 walked (each control used and what rendered), console errors, failed
 requests and the key response checked, each plan done check with its
 evidence (or NOT VERIFIED), the security scans, tracked files restored (or
-none), the line `Coverage: J1=walked J2=blocked(<reason>) ...` with one entry
+none), the line `Coverage: J1=walked J2=blocked(<reason>) ...` (`walked` never takes a reason) with one entry
 per journey id (`Coverage: none` when the plan lists none), and a verdict: PASS, or FAIL with a numbered failure list, or NOT
 VERIFIED naming what could not run. A journey not `walked` is NOT VERIFIED,
 never PASS.
