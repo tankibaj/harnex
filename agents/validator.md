@@ -53,8 +53,8 @@ endpoint or CLI, and each `ui: yes` journey's happy state once through the
 visible controls (a smoke: the UI reviewer walks every state of those). A journey you
 cannot walk is `blocked(<reason>)`, never dropped.
 
-Live smoke (standards.md "Live smoke"): walk the plan's `Live smoke:` for
-real, once: the real entry point, nothing faked at the host edge, and assert
+Live smoke (standards.md "Live smoke"), final run only, never early mode:
+walk the plan's `Live smoke:` for real, once: the real entry point, nothing faked at the host edge, and assert
 the effect. Report what you did and saw. It cannot run: NOT VERIFIED naming
 the missing tool or permission; never substitute a faked-boundary test.
 
@@ -66,7 +66,8 @@ browser walk, and no Coverage line. Verdict PASS or FAIL; the final
 validator run does the rest.
 
 Re-run after fixes: you are given the journey ids the fix touched; re-walk
-those and report `Coverage:` for just them.
+those and report `Coverage:` for just them, and re-walk the live smoke when
+told the fix touched its path.
 
 If the diff touches a risk area or shared core module the plan did not
 name, run FULL instead and say why. Stop any server you
@@ -79,6 +80,8 @@ the red check (tests run on `<base>` and how each failed), the browser flow
 walked (each control used and what rendered), console errors, failed
 requests and the key response checked, each plan done check with its
 evidence (or NOT VERIFIED), the security scans, tracked files restored (or
-none), the `Coverage:` line (standards.md "UI and UX review", Journeys), and a verdict: PASS, or FAIL with a numbered failure list, or NOT
+none), the `Coverage:` line (standards.md "UI and UX review", Journeys), a
+`Live smoke:` line (`walked` with what you saw, `NOT VERIFIED: <why>`, or
+`none`), and a verdict: PASS, or FAIL with a numbered failure list, or NOT
 VERIFIED naming what could not run. A journey not `walked` is NOT VERIFIED,
 never PASS.

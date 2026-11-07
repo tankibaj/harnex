@@ -30,8 +30,10 @@ Risk: <only real high risks, one line each; else none>
   missing journey is the cheapest thing to catch here.
 - **Settings line** per SKILL.md "Settings"; never ask for it.
 - **Live smoke** is the plan's `Live smoke:` line, shown so the developer
-  sees the one real-world proof the gates will run; the developer may waive
-  it here (`Live smoke: waived`), never anyone else.
+  sees the one real-world proof the gates will run. Only the developer's
+  answer at the brief ("Other", e.g. "waive the live smoke") sets
+  `Live smoke: waived`; the orchestrator never does. `none: <reason>` on a
+  change that reaches a user is a planner error: send it back to the planner.
 - **Tools:** only when a gate needs a tool the run may lack (SKILL.md
   "Tool preflight"): `Tools: <tool> unavailable: <what is lost, the fallback>`.
   Omit the line when all are present.

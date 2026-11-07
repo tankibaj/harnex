@@ -58,7 +58,7 @@ decisions to judge, where the risk is, and what proves each done item.
 | <item> | `<test name>`, `<command>`, or browser step | pass (<who>), red check proven |
 
 ### Not verified
-- <item: why> (or `nothing`)
+- <item: why> (or `nothing`; a waived or unrunnable live smoke is always an item)
 
 ### Skip
 - <generated, lockfile, snapshot paths> (or `nothing`)

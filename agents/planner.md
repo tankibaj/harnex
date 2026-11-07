@@ -79,8 +79,9 @@ forms:
 - `Done checks:` one item per acceptance criterion you were given (cite
   it), plus your own definition-of-done items, each with its proof (standards.md
   "Done checks"): a test name, a command and its expected result, or a
-  browser step and what must render. Each WP's done check includes one test
-  through the real entry point or composition root (not the unit alone), so a
+  browser step and what must render. The WP that wires a piece in (the last WP
+  of a dependency chain, or the only WP) has a done check with one test
+  through the real entry point or composition root, not the unit alone, so a
   piece built but never wired in fails it. Add, as `QA:` items, the cases a
   tester would try first, only for what this change introduces: a new input
   gets an invalid-input case, a new permission- or tenant-scoped read or

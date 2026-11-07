@@ -42,7 +42,8 @@ line.
 - `Done checks:` each with its evidence, or NOT VERIFIED.
 - `Security scans:` secret scan, and the dependency audit when a lockfile
   changed.
-- `Not verified:` what could not be checked, or `nothing`.
+- `Not verified:` what could not be checked, or `nothing`. A waived or
+  unrunnable live smoke is always listed here as `live smoke: <why>`.
 - `Follow-ups:` accepted findings (severity, file:line, one line) or `none`.
   Offer to file them as issues (`gh issue create`, else `glab issue
   create`; the tracker's MCP if the run came from one); never file without a
