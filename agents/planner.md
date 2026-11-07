@@ -19,7 +19,7 @@ installed dependency already provides before planning new code.
 
 You are told the target repo(s) and the tier profile. Read each target
 repo's CLAUDE.md, AGENTS.md, and `.claude/rules/` first; they set its
-conventions. Decide the plan form from the "Settings" paragraph of the harnex `SKILL.md` (path given): `Plan: doc` when
+conventions. Decide the plan form from the "Settings" paragraph of the harnex `SKILL.md` (in the folder of `standards.md`): `Plan: doc` when
 the work splits into WPs or a sequence, exceeds about 400 changed lines,
 spans several repos, or has an open question; else `Plan: chat`. WPs or a
 sequence: always a doc plan, however small the change. Doc: write

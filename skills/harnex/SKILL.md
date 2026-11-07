@@ -19,9 +19,7 @@ follow `report.md`. If you are a
 sub-agent, never invoke this skill.
 
 Pass every phase agent the standards path and the resolved tier profile path
-as absolute paths; they cannot resolve relative paths on their own. The
-planner also gets this file's path (it reads "Settings" and "Two flows"),
-the reviewer `../pr-review/criteria.md` (its criteria rows).
+as absolute paths; they cannot resolve relative paths on their own.
 Agent names differ per tool: `harnex:<agent>` in Claude Code, `harnex-<agent>`
 in Codex and OpenCode (installed by `scripts/install-agents.mjs`). No such
 agent available: run that phase yourself, in order, with the same inputs
@@ -121,7 +119,8 @@ overrides it.
 **Run start**, both flows, before the plan: `node <this skill's
 folder>/harnex.mjs untracked save` (the baseline Completion compares
 against); `/harnex` also runs `stamp --reset run start` (report.md "Timings"), so
-an earlier run's lines never mix in.
+an earlier run's lines never mix in. One run per checkout at a time: the
+timings file and the untracked baseline are one file each.
 
 ## Quick
 1. Plan it yourself: the change, the root cause (bugs), the test that
@@ -172,8 +171,11 @@ an earlier run's lines never mix in.
    WP returns uncommitted (implementers never commit): commit it in its
    worktree, leaving the dependency link out (`git -C <wt> add -A -- .
    ':(exclude)<link>'`, then `git -C <wt> commit -qm "wip: <wp>"`), `git
-   merge --squash` its branch into the feature branch, remove the worktree.
-   A conflict goes to the later WP's implementer.
+   merge` its branch into the feature branch, remove the worktree; a WP
+   that `depends:` on it then branches from the result. After the last WP,
+   `git reset --soft <start>` (`<start>`: HEAD after branching, before the
+   first WP) leaves the change staged and uncommitted for the gates and
+   Delivery. A conflict goes to the later WP's implementer.
    `early-review: yes` on a WP: spawn a `harnex:reviewer` on that WP's diff
    when it returns, and fix its findings ("Review loop") before the WPs
    that depend on it start.
@@ -242,9 +244,10 @@ could not as `Not verified:`; no helper check. No `Journeys:` line
   verify mode with those findings, the requirement, and `<base>`. REFUTED:
   dropped, counted in the report. PLAUSIBLE MUST-FIX: NICE-TO-HAVE.
   CONFIRMED, and any CRITICAL not REFUTED: kept. Nothing kept: APPROVE.
-- **High-risk, still open:** a confirmed CRITICAL or risk-area MUST-FIX that
-  survives the high-effort fix gets one more `harnex:implementer` attempt
-  on the last row of "Models and effort", then "Escalate and wait".
+- **High-risk, still open:** a confirmed risk-area MUST-FIX, or a CRITICAL
+  the developer approved fixing (see below), that survives the high-effort
+  fix gets one more `harnex:implementer` attempt on the last row of "Models
+  and effort", then "Escalate and wait".
 - **Escalate and wait** instead of fixing when a finding is CRITICAL, a fix
   would change scope, architecture, a public contract, or an existing test
   the plan doesn't name, a new dependency is copyleft, or the plan doesn't

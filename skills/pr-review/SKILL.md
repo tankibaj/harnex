@@ -181,7 +181,8 @@ raised in an open thread is not offered; cite that thread instead.
   file. GitHub: `gh pr comment <n> -R <host>/<owner>/<repo> --body-file
   <file>`.
   GitLab: `node <this skill's folder>/../harnex/harnex.mjs note <iid>
-  <project> <file>` (a resolvable=false note, does not block merging).
+  <project> <file>` (a resolvable=false note, does not block merging; it
+  fails with a message: then give the developer the body).
 - Never approve, merge, or resolve a thread. Posted findings are ordinary
   threads: the author answers them.
 

@@ -211,6 +211,20 @@ test('note: posts the file body to glab as one non-resolvable MR note', () => {
     ['mr', 'note', 'create', '12', '-R', 'g/p', '--resolvable=false', '-m', 'line "one"\n$(not run)\n']);
 });
 
+test('note: no glab, a failing glab, or a huge body fail with a clear message', () => {
+  const dir = tmp();
+  const file = path.join(dir, 'body.md');
+  fs.writeFileSync(file, 'x');
+  const bare = spawnSync(process.execPath, [HELPER, 'note', '1', 'g/p', file], { encoding: 'utf8', env: { ...process.env, PATH: dir } });
+  assert.equal(bare.status, 1);
+  assert.match(bare.stderr, /glab not found/);
+  fs.writeFileSync(path.join(dir, 'glab'), '#!/bin/sh\nexit 3\n', { mode: 0o755 });
+  const failing = run(['note', '1', 'g/p', file], { env: { ...process.env, PATH: `${dir}${path.delimiter}${process.env.PATH}` } });
+  assert.match(failing.stderr, /glab failed \(exit 3\)/);
+  fs.writeFileSync(file, 'x'.repeat(100001));
+  assert.match(run(['note', '1', 'g/p', file]).stderr, /too large/);
+});
+
 test('note: needs iid, project and file', () => {
   assert.equal(run(['note', '12']).status, 1);
 });

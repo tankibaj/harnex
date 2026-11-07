@@ -34,6 +34,9 @@ const CODEX_WRITE = new Set(['suite-runner', 'validator', 'ui-ux-reviewer', 'qa'
 const CODEX_FAMILY = { haiku: 'luna', sonnet: 'sol', opus: 'astra' };
 const CODEX_EFFORT = new Set(['low', 'medium', 'high']);
 
+// Codex's config dir: where agents go and where its models cache lives.
+const codexHome = () => process.env.CODEX_HOME || path.join(os.homedir(), '.codex');
+
 const versionOf = (slug) => slug.split('-')[1].split('.').map(Number);
 const newer = (a, b) => {
   const [x, y] = [versionOf(a), versionOf(b)];
@@ -43,7 +46,7 @@ const newer = (a, b) => {
 
 // family -> newest served slug (cache unreadable: none, so every agent keeps the default model)
 function codexModels() {
-  const cache = path.join(process.env.CODEX_HOME || path.join(os.homedir(), '.codex'), 'models_cache.json');
+  const cache = path.join(codexHome(), 'models_cache.json');
   const best = {};
   try {
     for (const { slug } of JSON.parse(fs.readFileSync(cache, 'utf8')).models) {
@@ -89,7 +92,7 @@ const tomlBlock = (s) => (s.includes("'''") ? toml(s) : `'''\n${s}'''`);
 
 const TARGETS = {
   codex: {
-    dir: () => path.join(os.homedir(), '.codex', 'agents'),
+    dir: () => path.join(codexHome(), 'agents'),
     file: (n) => `harnex-${n}.toml`,
     render: (a, served) => [
       `# ${MARK} from agents/${a.name}.md`,
@@ -127,7 +130,7 @@ function main(argv) {
   let status = 0;
   for (const t of picked) {
     const { dir, file, render } = TARGETS[t];
-    const served = codexModels();
+    const served = t === 'codex' && !uninstall ? codexModels() : {};
     const d = dir();
     fs.mkdirSync(d, { recursive: true });
     for (const a of agents) {
@@ -143,6 +146,10 @@ function main(argv) {
       } else {
         fs.writeFileSync(target, render(a, served));
         console.log(`installed ${target}`);
+        // Effort still applies, so say which agents run on the default model.
+        if (t === 'codex' && CODEX_FAMILY[a.model] && !served[CODEX_FAMILY[a.model]]) {
+          console.error(`harnex-${a.name}: no gpt-${CODEX_FAMILY[a.model]} model served, using the default model`);
+        }
       }
     }
   }

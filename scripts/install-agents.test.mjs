@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SCRIPT = path.join(ROOT, 'scripts', 'install-agents.mjs');
-const run = (home, ...args) => spawnSync('node', [SCRIPT, ...args], { encoding: 'utf8', env: { ...process.env, HOME: home, XDG_CONFIG_HOME: '' } });
+const run = (home, ...args) => spawnSync('node', [SCRIPT, ...args], { encoding: 'utf8', env: { ...process.env, HOME: home, XDG_CONFIG_HOME: '', CODEX_HOME: '' } });
 
 test('installs every agent for Codex (toml) and OpenCode (md), prefixed harnex-', () => {
   const home = fs.mkdtempSync(path.join(os.tmpdir(), 'harnex-home-'));
@@ -59,11 +59,24 @@ test('Codex agents get the newest served model of the family and the effort; an 
   fs.mkdirSync(path.join(home, '.codex'), { recursive: true });
   const slugs = ['gpt-6-luna', 'gpt-5.6-sol', 'gpt-6.1-sol', 'gpt-6-sol'].map((slug) => ({ slug }));
   fs.writeFileSync(path.join(home, '.codex', 'models_cache.json'), JSON.stringify({ models: slugs }));
-  assert.equal(run(home, '--codex').status, 0);
+  const r = run(home, '--codex');
+  assert.equal(r.status, 0);
+  assert.match(r.stderr, /harnex-planner: no gpt-astra model served, using the default model/);
+  assert.doesNotMatch(r.stderr, /harnex-implementer/);
   const toml = (a) => fs.readFileSync(path.join(home, '.codex', 'agents', `harnex-${a}.toml`), 'utf8');
   assert.match(toml('suite-runner'), /^model = "gpt-6-luna"\nmodel_reasoning_effort = "low"$/m);
   assert.match(toml('implementer'), /^model = "gpt-6.1-sol"\nmodel_reasoning_effort = "medium"$/m);
   assert.doesNotMatch(toml('planner'), /^model = /m); // no gpt-astra served
   assert.match(toml('planner'), /^model_reasoning_effort = "medium"$/m);
   assert.doesNotMatch(toml('reviewer'), /^model/m); // inherit
+});
+
+test('CODEX_HOME moves the agents and the models cache together', () => {
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'harnex-home-'));
+  const codex = fs.mkdtempSync(path.join(os.tmpdir(), 'harnex-codex-'));
+  fs.writeFileSync(path.join(codex, 'models_cache.json'), JSON.stringify({ models: [{ slug: 'gpt-6-sol' }] }));
+  const r = spawnSync('node', [SCRIPT, '--codex'], { encoding: 'utf8', env: { ...process.env, HOME: home, CODEX_HOME: codex } });
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(fs.readFileSync(path.join(codex, 'agents', 'harnex-implementer.toml'), 'utf8'), /^model = "gpt-6-sol"$/m);
+  assert.ok(!fs.existsSync(path.join(home, '.codex')));
 });

@@ -14,7 +14,7 @@ side by side, compare them, keep one.
   repos: say explore is single-repo, run the normal flow.
 - **Clean start:** the developer's checkout must have no uncommitted or
   untracked changes (`git status --porcelain` empty), except this run's own
-  plan docs (`Plan: doc`: `docs/plan/<feature-slug>-*.md`). Otherwise ask
+  plan docs (`Plan: doc`: the paths the planner returned). Otherwise ask
   them to commit or stash first, and stop.
 
 ## 1. Approaches (this is the brief)
@@ -57,8 +57,9 @@ standards.md "Independent red check" does (e.g. a link to its installed-packages
 In one message, one `harnex:implementer` per worktree (the worktree path is
 its repo; no `isolation` option), the shared requirement, and only its own
 plan (`Plan: doc`: its plan doc path). When each returns, commit its work in its
-worktree, leaving the dependency link out: `git -C <wt> add -A -- .
-':(exclude)<link>' && git -C <wt> commit -qm "wip: explore <x>"`. A failed
+worktree, leaving the dependency link and `docs/plan` out: `git -C <wt> add -A
+-- . ':(exclude)<link>' ':(exclude)docs/plan' && git -C <wt> commit -qm "wip:
+explore <x>"`. A failed
 implementer: its approach is out; continue with the rest.
 
 ## 3. Check, one at a time
@@ -91,7 +92,8 @@ simplest). Ask: keep one (one option per approach), or Other: refine
    branch> explore/<slug>-<kept>` (standards.md "Branches", issue
    reference included), then `git reset --soft <base>`, so the change is staged and
    uncommitted for the normal loop.
-3. `Plan: doc`: keep the kept approach's plan doc, delete the others.
+3. `Plan: doc`: keep the kept approach's plan doc, delete the others (this
+   run's own files, listed in step 1).
 4. Continue in `<main>` at SKILL.md "/harnex" step 3 (the gates once on
    the merged change, at the plan's tier, with journey coverage), then step
    4 (UI review), "Review loop", Completion and Delivery, with the kept plan
