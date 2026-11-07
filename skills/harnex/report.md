@@ -16,7 +16,7 @@ Stamp to a file, never to memory; each stamp is one self-contained command
 - At Completion, `cat` the file and compute every duration from it; never
   estimate. Report waits separately. `Plan: doc`: a `## Timings` section in
   the plan. `Plan: chat`: one line (`Timings: plan 4m, implement 12m,
-  gates 6m, fixes 0, total 27m`).
+  review 3m, validate 3m, fixes 0, total 27m`).
 
 ## Plan doc (`Plan: doc`)
 Set the plan (and WP docs) to `Done` once every checklist item is `[x]` or an
@@ -96,8 +96,8 @@ Quick), `ticket` (issue
 reference, or null), `minutes` (per phase and total from the timings file; Quick: null),
 `waits_min`, `rounds`, `findings` (`{critical, must_fix, nice}` across all
 reviewers), `refuted` (findings the verify pass dropped, 0 when it did
-not run), `escaped` (findings reviewers raised that the validator's tests
-missed, count), `tests` (`PASS|FAIL|NOT VERIFIED`), `red_check`
+not run), `escaped` (kept CRITICAL or MUST-FIX findings, WP and gate reviews
+together, that no test or validator run caught first, count), `tests` (`PASS|FAIL|NOT VERIFIED`), `red_check`
 (`proven|n/a|NOT VERIFIED`), `ui_review` (`APPROVE|CHANGES|none`), `explore` (`{rounds, built, kept}`, explore runs only, also when none was kept). No code,
 file contents, requirement text, or names. `/pr-review`
 and `/qa` write their own kinds with the keys their skills list.

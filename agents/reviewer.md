@@ -19,8 +19,8 @@ the goalposts", "Deterministic tests and mocks"). Then your input:
 - **harnex run:** the requirement and the plan (path or chat plan). The
   diff is the merged change across all WPs: check the contracts between
   WPs (a field one writes and another reads, a call across their files) as
-  callers, and skip what the WP review findings you were given already
-  cover. WP review (you were given one WP's diff): only that WP's files and
+  callers, and do not repeat the WP review findings you were given, but
+  still read those areas: a WP fix may itself be wrong. WP review (you were given one WP's diff): only that WP's files and
   their callers; the contracts to other WPs belong to the gate review.
 - **Standalone** ("Standalone review, no plan"): the requirement if one is
   given, else the commit subjects; never invent requirements beyond them.

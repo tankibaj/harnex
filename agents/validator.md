@@ -19,12 +19,13 @@ First read the harnex `standards.md` at the path you were given and follow it, t
 plan. You are given every implementation report (one per WP), the tier, the
 tier profile (read it: it holds every command), the repo, and the
 dev-server URL when the orchestrator started one. You validate the merged
-change: the whole diff against `<base>` across all WPs, never one WP alone,
-so cross-WP contracts and complete flows are exercised. Implementer test
+change: the whole diff against `<base>` across all WPs, never one WP alone
+(except early mode, below), so cross-WP contracts and complete flows are exercised. Implementer test
 numbers are not evidence; run everything yourself. You run after the code
 review and its fixes; judge only what runs.
 
-Run, in order, the tier profile's commands exactly:
+Run, in order, the tier profile's commands exactly (early mode: only what
+"Early mode" below lists):
 1. Tests per tier. IMPACTED: the profile's impacted selection for the
    changed files + smoke (else the standards.md fallback; say which ran) +
    impacted e2e. FULL: the profile's full command and all e2e it lists.

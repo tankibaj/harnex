@@ -200,13 +200,19 @@ after the UI review.
    **WP review**, plans with WPs only (no WPs: the gate review in step 3 is
    the only review): when a WP returns, spawn one `harnex:reviewer` on that
    WP's diff (its files and their callers), parallel WPs in parallel, and
-   fix its findings once ("Review loop"), no re-review. Fixes merge before
-   the gates. It blocks the WPs that `depends:` on it only when the WP is
-   `early-validate: yes`; for any other WP the dependents start at once and
-   its fixes merge afterwards.
-   `early-validate: yes` on a WP (a risk-area WP that later WPs build on): at
-   the same moment spawn `harnex:validator` in early mode on that WP only,
-   and fix what fails before the WPs that depend on it start.
+   fix its findings once ("Review loop"); a delta review follows only for a
+   risk-area fix or a CRITICAL. Its fixes are made by that WP's implementer
+   in the feature checkout once the WP is merged, and committed like a WP
+   (`git add -- <files from the fix report>`, `git commit -qm "wip: <wp>
+   fixes"`) before any later worktree WP merges. It blocks the WPs that
+   `depends:` on it when the WP is `early-validate: yes` or touches a risk
+   area; for any other WP the dependents start at once, their merges come
+   after its fixes, and the gate review covers a dependent built on the
+   unfixed code.
+   `early-validate: yes` on a WP (a risk-area WP that later WPs build on):
+   once it is merged and its review fixes are in, spawn `harnex:validator` in
+   early mode on that WP only, and fix what fails before the WPs that depend
+   on it start.
    Early UI review (after the WP review and its fixes), only when the
    developer turned it on at the brief for the plan's `Early UI
    candidates:`: after that WP is merged into the
@@ -244,8 +250,9 @@ after the UI review.
    with `untracked save` again before each change's step 2.
    `together`: implement the changes in order, then steps 3-5 once.
 
-Webapps, both flows: start the dev server once, from the merged checkout,
-before the first early validation, early UI review or validation (restart it after a merge it
+Webapps, both flows: start the dev server once, from the merged checkout
+(an early run happens after its WP is merged, so this holds), before the
+first validation or UI review, early or final (restart it after a merge it
 would not hot-reload), the way the repo says (standards.md "Run target"; desktop app:
 `preview_start`), pass its URL on, stop it at Completion.
 
@@ -293,8 +300,8 @@ could not as `Not verified:`; no helper check. No `Journeys:` line
   its own list, at the "reproducible failure" row of "Models and effort"
   (`effort: high`). The WPs are merged, so in one
   repo they run one after another.
-- **WP review fixes:** one pass, no re-review and no round counted; the gate
-  review sees the merged result anyway.
+- **WP review fixes:** one pass, no round counted; a delta review only for a
+  risk-area fix or a CRITICAL. The gate review sees the merged result anyway.
 - **Re-check the delta only.** After a fix, a
   `harnex:reviewer` in delta mode gets its previous findings and the fix
   diff and verifies those, not the whole change, only when the fix touches
@@ -309,8 +316,10 @@ could not as `Not verified:`; no helper check. No `Journeys:` line
 - **UI review fixes:** the UI reviewer re-runs in delta mode only when a fix
   went beyond wording (copy, labels): touched screens and journeys plus its
   previous findings. A wording-only fix gets the impacted tests re-run, no
-  browser session. A UI fix that touched non-UI code gets the validator on
-  the plan's tier too.
+  browser session. Any UI fix beyond wording, and any that touched non-UI code,
+  also gets the validator on the plan's tier (journeys of the touched
+  screens), because the UI review runs after the validator and its
+  impacted-test numbers are not authoritative.
 - **Cap: 3 rounds** per run: the gate fix passes (gate review, validator, UI
   review) and inline fixes together; a round is one fix pass plus its
   re-check. WP review fixes, early-validate fixes and the high-risk extra
