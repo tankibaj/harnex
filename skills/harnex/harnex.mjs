@@ -10,6 +10,7 @@
 //   node harnex.mjs clean <dir>               remove a <dir> that base created
 //   node harnex.mjs untracked save|new        save the untracked files now | list the ones added since
 //   node harnex.mjs coverage <ids> <line>     check a `Coverage:` line walked every journey id (J1,J2); exit 1 on gaps
+//   node harnex.mjs note <iid> <project> <file>  post <file> as a non-resolvable GitLab MR note (glab has no body-file flag)
 //
 // record never fails the caller: metrics are passive.
 import crypto from 'node:crypto';
@@ -135,6 +136,13 @@ function coverage([ids, ...line]) {
   if (gaps.length) process.exitCode = 1;
 }
 
+// glab takes the note body only as an argument, so a skill would need command substitution on the file.
+function note([iid, project, file]) {
+  if (!iid || !project || !file) throw new Error('note needs <iid> <project> <file>');
+  const body = fs.readFileSync(file, 'utf8');
+  execFileSync('glab', ['mr', 'note', 'create', iid, '-R', project, '--resolvable=false', '-m', body], { stdio: 'inherit' });
+}
+
 const [cmd, ...args] = process.argv.slice(2);
 try {
   if (cmd === 'stamp') stamp(args);
@@ -144,8 +152,9 @@ try {
   else if (cmd === 'clean') clean(args);
   else if (cmd === 'untracked') untracked(args);
   else if (cmd === 'coverage') coverage(args);
+  else if (cmd === 'note') note(args);
   else {
-    console.error('usage: harnex.mjs stamp [--reset] <label> | record <json> | key <url> | base <ref> <dir> | clean <dir> | untracked save|new | coverage <ids> <line>');
+    console.error('usage: harnex.mjs stamp [--reset] <label> | record <json> | key <url> | base <ref> <dir> | clean <dir> | untracked save|new | coverage <ids> <line> | note <iid> <project> <file>');
     process.exitCode = 2;
   }
 } catch (e) {

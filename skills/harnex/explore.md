@@ -13,8 +13,9 @@ side by side, compare them, keep one.
   obvious approach: say so in one line and run the normal flow. Several
   repos: say explore is single-repo, run the normal flow.
 - **Clean start:** the developer's checkout must have no uncommitted or
-  untracked changes (`git status --porcelain` empty). Otherwise ask them to
-  commit or stash first, and stop.
+  untracked changes (`git status --porcelain` empty), except this run's own
+  plan docs (`Plan: doc`: `docs/plan/<feature-slug>-*.md`). Otherwise ask
+  them to commit or stash first, and stop.
 
 ## 1. Approaches (this is the brief)
 Reuse the plan's `Approaches:`; only on a forced explore spawn
@@ -43,9 +44,12 @@ built before that last yes.
 All paths absolute. `<main>` = the developer's checkout (stamps and its git
 dir stay there). Run `git -C <main> rev-parse HEAD` once; every later
 `<base>` is that SHA. Before creating anything, clear leftovers of an
-earlier run: `git -C <main> worktree prune`, then remove any
-`<main>-explore-*` directory and every branch listed by `git -C <main>
-for-each-ref --format='%(refname:short)' 'refs/heads/explore/<slug>-*'`.
+earlier run: `git -C <main> worktree prune`, then list the worktrees
+`git -C <main> worktree list` shows under `<main>-explore-*` and every
+branch listed by `git -C <main> for-each-ref --format='%(refname:short)'
+'refs/heads/explore/<slug>-*'`. Any listed: name them and ask once before
+removing (they may hold uncommitted work); declined: stop. Never
+delete a directory `worktree list` does not show.
 
 Per picked approach X: `git -C <main> worktree add -b explore/<slug>-x
 <main>-explore-x <base>`, then link the checkout's dependencies the way
@@ -83,13 +87,15 @@ simplest). Ask: keep one (one option per approach), or Other: refine
 ## 5. Keep one
 1. Check `git -C <wt-kept> log -1` shows the wip commit, then
    `git -C <main> worktree remove --force <wt-kept>`.
-2. In `<main>` (still clean, still at `<base>`): `git checkout -b <feature
+2. In `<main>` (still clean bar the plan docs, still at `<base>`): `git checkout -b <feature
    branch> explore/<slug>-<kept>` (standards.md "Branches", issue
    reference included), then `git reset --soft <base>`, so the change is staged and
    uncommitted for the normal loop.
 3. `Plan: doc`: keep the kept approach's plan doc, delete the others.
-4. Continue in `<main>` at SKILL.md "Review loop" (fixes, UI review,
-   pre-PR gate, report, Delivery) with the kept plan as the plan.
+4. Continue in `<main>` at SKILL.md "/harnex" step 3 (the gates once on
+   the merged change, at the plan's tier, with journey coverage), then step
+   4 (UI review), "Review loop", Completion and Delivery, with the kept plan
+   as the plan. Section 3 above was only a screen.
 
 ## Cleanup (every exit)
 Kept, refined, stopped, or failed: `git -C <main> worktree remove --force`

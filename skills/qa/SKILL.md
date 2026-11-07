@@ -79,8 +79,8 @@ data cleaned up, and what was `NOT VERIFIED`. Verdict: `QA PASS`, `QA FAIL`
 ## 6. Post (ask first)
 Ask once, `multiSelect: true`: post the cases (and results, if run) to the
 PR and/or to the linked issue. PR: write the body to a temp file, then
-`gh pr comment <n> -R <owner>/<repo> --body-file <file>` (GitLab: `glab mr
-note create <iid> -R <project> --resolvable=false -m "$(cat <file>)"`);
+`gh pr comment <n> -R <owner>/<repo> --body-file <file>` (GitLab: `node <this skill's
+folder>/../harnex/harnex.mjs note <iid> <project> <file>`);
 delete the file after. Issue: `gh issue comment <n> --body-file <file>`
 (GitLab: `glab issue note`); Jira only when its MCP is connected (load with
 ToolSearch if deferred). The body ends with `(harnex:qa)`. Never include a

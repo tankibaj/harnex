@@ -198,3 +198,19 @@ test('coverage: nested parentheses stay inside the reason; glued status text is 
   const open = run(['coverage', 'J1,J2', 'Coverage: J1=blocked( J2=walked']);
   assert.deepEqual(open.stdout.trim().split('\n'), ['J1 blocked', 'J2 missing']);
 });
+
+test('note: posts the file body to glab as one non-resolvable MR note', () => {
+  const dir = tmp();
+  const out = path.join(dir, 'args.json');
+  fs.writeFileSync(path.join(dir, 'glab'), `#!/bin/sh\nnode -e 'require("fs").writeFileSync(process.argv[1], JSON.stringify(process.argv.slice(2)))' "${out}" "$@"\n`, { mode: 0o755 });
+  const file = path.join(dir, 'body.md');
+  fs.writeFileSync(file, 'line "one"\n$(not run)\n');
+  const r = run(['note', '12', 'g/p', file], { env: { ...process.env, PATH: `${dir}${path.delimiter}${process.env.PATH}` } });
+  assert.equal(r.status, 0, r.stderr);
+  assert.deepEqual(JSON.parse(fs.readFileSync(out, 'utf8')),
+    ['mr', 'note', 'create', '12', '-R', 'g/p', '--resolvable=false', '-m', 'line "one"\n$(not run)\n']);
+});
+
+test('note: needs iid, project and file', () => {
+  assert.equal(run(['note', '12']).status, 1);
+});

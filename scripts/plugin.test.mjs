@@ -124,7 +124,7 @@ test('skills call harnex.mjs, not shell one-liners, for timings, metrics and key
   // Permission-restricted runs deny `$(...)`, redirects and pipes; timings and metrics were lost.
   for (const f of files('skills').filter((x) => !/apple-design|web-design/.test(x))) {
     const s = fs.readFileSync(f, 'utf8');
-    for (const bad of ['| shasum', '$(git ', '${HARNEX_METRICS:-']) {
+    for (const bad of ['| shasum', '$(git ', '$(cat ', '${HARNEX_METRICS:-']) {
       assert.ok(!s.includes(bad), `${path.relative(ROOT, f)} still uses ${bad}`);
     }
   }

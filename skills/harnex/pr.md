@@ -59,7 +59,7 @@ how dangerous merging it is; the reviewer's guide then says how to read it.
 ## Template
 
 ````markdown
-<!-- harnex:run <run start, YYYY-MM-DDTHH:MM> <quick|harnex> -->
+<!-- harnex:run <quick|harnex> -->
 ## Summary
 <one sentence: what changed and why> · Issue: <#123 or none>
 

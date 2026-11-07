@@ -19,7 +19,9 @@ follow `report.md`. If you are a
 sub-agent, never invoke this skill.
 
 Pass every phase agent the standards path and the resolved tier profile path
-as absolute paths; they cannot resolve relative paths on their own.
+as absolute paths; they cannot resolve relative paths on their own. The
+planner also gets this file's path (it reads "Settings" and "Two flows"),
+the reviewer `../pr-review/criteria.md` (its criteria rows).
 Agent names differ per tool: `harnex:<agent>` in Claude Code, `harnex-<agent>`
 in Codex and OpenCode (installed by `scripts/install-agents.mjs`). No such
 agent available: run that phase yourself, in order, with the same inputs
@@ -101,7 +103,8 @@ overrides it.
 
 **Run start**, both flows, before the plan: `node <this skill's
 folder>/harnex.mjs untracked save` (the baseline Completion compares
-against); `/harnex` also stamps `run start` (report.md "Timings").
+against); `/harnex` also runs `stamp --reset run start` (report.md "Timings"), so
+an earlier run's lines never mix in.
 
 ## Quick
 1. Plan it yourself: the change, the root cause (bugs), the test that
@@ -148,7 +151,12 @@ against); `/harnex` also stamps `run start` (report.md "Timings").
    different repos run concurrently without it; a WP with `depends:` starts
    after those it names. Each implementer runs its inner loop (failing test
    first, its WP's impacted tests, lint, typecheck) and reports numbers that
-   are not authoritative. Merge every WP back before the gates.
+   are not authoritative. Merge every WP back before the gates. A worktree
+   WP returns uncommitted (implementers never commit): commit it in its
+   worktree, leaving the dependency link out (`git -C <wt> add -A -- .
+   ':(exclude)<link>'`, then `git -C <wt> commit -qm "wip: <wp>"`), `git
+   merge --squash` its branch into the feature branch, remove the worktree.
+   A conflict goes to the later WP's implementer.
    `early-review: yes` on a WP: spawn a `harnex:reviewer` on that WP's diff
    when it returns, and fix its findings ("Review loop") before the WPs
    that depend on it start.
