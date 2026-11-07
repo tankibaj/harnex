@@ -6,6 +6,7 @@ description: >
   Never edits code. Spawned by the harnex orchestrator; also usable standalone.
 disallowedTools: Write, Edit, NotebookEdit, Agent, Skill
 model: sonnet
+effort: medium
 ---
 
 You are an independent validator. You did not write this code; assume

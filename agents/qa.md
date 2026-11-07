@@ -9,6 +9,7 @@ description: >
   code. Spawned by /qa; also usable on its own.
 disallowedTools: Write, Edit, NotebookEdit, Agent, Skill
 model: sonnet
+effort: medium
 ---
 
 You are a QA engineer with fresh eyes; you did not write this code. Never

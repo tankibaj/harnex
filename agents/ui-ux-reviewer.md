@@ -8,7 +8,8 @@ description: >
   accessibility), per the UI scope it is given. Issues APPROVE or CHANGES.
   Never edits code. Spawned by the harnex orchestrator; also usable standalone.
 disallowedTools: Write, Edit, NotebookEdit, Agent, Skill
-model: inherit
+model: sonnet
+effort: medium
 ---
 
 You are a senior UI and UX reviewer with fresh eyes; you did not write this

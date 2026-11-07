@@ -2,7 +2,7 @@
 // Installs harnex's sub-agents for tools whose plugins can't ship them.
 // Claude Code needs none of this: its plugin loads agents/ itself.
 //
-//   node scripts/install-agents.mjs --codex       ~/.codex/agents/harnex-<name>.toml
+//   node scripts/install-agents.mjs --codex       $CODEX_HOME/agents (default ~/.codex/agents)/harnex-<name>.toml
 //   node scripts/install-agents.mjs --opencode    ~/.config/opencode/agents/harnex-<name>.md
 //   node scripts/install-agents.mjs --all         both
 //   add --uninstall to remove what it installed
@@ -26,6 +26,39 @@ const TOOL_CAP = {
 // in Codex (sandbox) and OpenCode (permissions) alike.
 const CODEX_WRITE = new Set(['suite-runner', 'validator', 'ui-ux-reviewer', 'qa']);
 
+// skills/harnex/SKILL.md "Models and effort": the Claude alias each agent
+// declares, as the Codex model that does the same job. A model the Codex
+// install does not serve (no slug of that family in its models cache) is left
+// out, so the agent runs on the default model. The family has no version:
+// the newest served `gpt-<version>-<family>` slug wins.
+const CODEX_FAMILY = { haiku: 'luna', sonnet: 'sol', opus: 'astra' };
+const CODEX_EFFORT = new Set(['low', 'medium', 'high']);
+
+// Codex's config dir: where agents go and where its models cache lives.
+const codexHome = () => process.env.CODEX_HOME || path.join(os.homedir(), '.codex');
+
+const versionOf = (slug) => slug.split('-')[1].split('.').map(Number);
+const newer = (a, b) => {
+  const [x, y] = [versionOf(a), versionOf(b)];
+  for (let i = 0; i < Math.max(x.length, y.length); i++) if ((x[i] ?? 0) !== (y[i] ?? 0)) return (x[i] ?? 0) > (y[i] ?? 0);
+  return false;
+};
+
+// family -> newest served slug (cache unreadable: none, so every agent keeps the default model)
+function codexModels() {
+  const cache = path.join(codexHome(), 'models_cache.json');
+  const best = {};
+  try {
+    for (const { slug } of JSON.parse(fs.readFileSync(cache, 'utf8')).models) {
+      const m = slug.match(/^gpt-\d+(?:\.\d+)*-(\w+)$/);
+      if (m && (!best[m[1]] || newer(slug, best[m[1]]))) best[m[1]] = slug;
+    }
+  } catch {
+    // no cache: nothing is known to be served
+  }
+  return best;
+}
+
 function parse(file) {
   const text = fs.readFileSync(file, 'utf8');
   const m = text.match(/^---\n([\s\S]*?)\n---\n/);
@@ -44,7 +77,7 @@ function parse(file) {
     data[key] = value.replace(/^"(.*)"$/, '$1');
   }
   const list = (v) => (v ? v.split(',').map((s) => s.trim()).filter(Boolean) : null);
-  return { name: data.name, description: data.description, tools: list(data.tools),
+  return { name: data.name, description: data.description, model: data.model, effort: data.effort, tools: list(data.tools),
     disallowed: list(data.disallowedTools), body: text.slice(m[0].length) };
 }
 
@@ -59,12 +92,14 @@ const tomlBlock = (s) => (s.includes("'''") ? toml(s) : `'''\n${s}'''`);
 
 const TARGETS = {
   codex: {
-    dir: () => path.join(os.homedir(), '.codex', 'agents'),
+    dir: () => path.join(codexHome(), 'agents'),
     file: (n) => `harnex-${n}.toml`,
-    render: (a) => [
+    render: (a, served) => [
       `# ${MARK} from agents/${a.name}.md`,
       `name = ${toml(`harnex-${a.name}`)}`,
       `description = ${toml(a.description)}`,
+      ...(served[CODEX_FAMILY[a.model]] ? [`model = ${toml(served[CODEX_FAMILY[a.model]])}`] : []),
+      ...(CODEX_EFFORT.has(a.effort) ? [`model_reasoning_effort = ${toml(a.effort)}`] : []),
       `sandbox_mode = ${toml(CODEX_WRITE.has(a.name) || !denied(a).includes('edit') ? 'workspace-write' : 'read-only')}`,
       `developer_instructions = ${tomlBlock(a.body)}`,
       '',
@@ -95,6 +130,7 @@ function main(argv) {
   let status = 0;
   for (const t of picked) {
     const { dir, file, render } = TARGETS[t];
+    const served = t === 'codex' && !uninstall ? codexModels() : {};
     const d = dir();
     fs.mkdirSync(d, { recursive: true });
     for (const a of agents) {
@@ -108,8 +144,12 @@ function main(argv) {
       if (uninstall) {
         if (fs.existsSync(target)) { fs.rmSync(target); console.log(`removed ${target}`); }
       } else {
-        fs.writeFileSync(target, render(a));
+        fs.writeFileSync(target, render(a, served));
         console.log(`installed ${target}`);
+        // Effort still applies, so say which agents run on the default model.
+        if (t === 'codex' && CODEX_FAMILY[a.model] && !served[CODEX_FAMILY[a.model]]) {
+          console.error(`harnex-${a.name}: no gpt-${CODEX_FAMILY[a.model]} model served, using the default model`);
+        }
       }
     }
   }

@@ -180,8 +180,9 @@ raised in an open thread is not offered; cite that thread instead.
 - **Summary note:** write the body to a temp file, post it, delete the
   file. GitHub: `gh pr comment <n> -R <host>/<owner>/<repo> --body-file
   <file>`.
-  GitLab: `glab mr note create <iid> -R <project> --resolvable=false -m
-  "$(cat <file>)"` (does not block merging).
+  GitLab: `node <this skill's folder>/../harnex/harnex.mjs note <iid>
+  <project> <file>` (a resolvable=false note, does not block merging; it
+  fails with a message: then give the developer the body).
 - Never approve, merge, or resolve a thread. Posted findings are ordinary
   threads: the author answers them.
 

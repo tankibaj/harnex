@@ -89,6 +89,23 @@ past about 400 changed lines, or hits an open question.
 Once code is written, settings only grow: a newly found risk area adds
 `Tier: full` and `Reviewer: default` with a one-line note.
 
+## Models and effort
+One table; the agents' frontmatter carries the first three rows
+(`scripts/install-agents.mjs` maps them to Codex), the last two are
+spawn-time overrides (`model` and `effort` on the spawn). Models are
+families, not versions (haiku, opus, sonnet; gpt-luna, gpt-astra, gpt-sol):
+the tool picks its newest served version. A family the tool does not serve:
+no override, the session's model, same effort. The
+reviewer is not in the table (see "Settings").
+
+| Work | Claude Code | Codex | Effort |
+|---|---|---|---|
+| Read-only exploration, docs lookup, test-output summaries (`Explore`, `harnex:suite-runner`) | haiku | gpt-luna | low |
+| Planning (`harnex:planner`) | opus | gpt-astra | medium |
+| Implementation, independent validation, UI review (`harnex:implementer`, `validator`, `ui-ux-reviewer`) | sonnet | gpt-sol | medium |
+| Reproducible failure (a failing test or finding the implementer fixes in "Review loop") | sonnet | gpt-sol | high |
+| Confirmed high-risk issue still open after the high-effort attempt | opus | gpt-astra | high |
+
 `/harnex quick <requirement>` forces Quick: the first word is the flow, the
 rest is the requirement. The word alone: ask for the goal once, then build
 the requirement from the answer (Requirement first). Forcing Quick onto a
@@ -101,7 +118,9 @@ overrides it.
 
 **Run start**, both flows, before the plan: `node <this skill's
 folder>/harnex.mjs untracked save` (the baseline Completion compares
-against); `/harnex` also stamps `run start` (report.md "Timings").
+against); `/harnex` also runs `stamp --reset run start` (report.md "Timings"), so
+an earlier run's lines never mix in. One run per checkout at a time: the
+timings file and the untracked baseline are one file each.
 
 ## Quick
 1. Plan it yourself: the change, the root cause (bugs), the test that
@@ -130,7 +149,7 @@ against); `/harnex` also stamps `run start` (report.md "Timings").
    `Plan: doc`: a plan over 60 lines (checklist and WPs excluded; `wc -l`)
    or a change estimated over about 400 lines goes back to the planner once
    to cut or split it before the grounding check. Then the grounding check
-   (spawn `Explore`, `model: "haiku"`, with the plan path: sort each cited
+   (spawn `Explore` ("Models and effort": exploration row), with the plan path: sort each cited
    anchor as **confirmed** (existing code matches the claim), **mismatch**
    (existing code differs), or **planned** (marked `(new)` or `(changes)`,
    or code the plan itself adds: skipped, never a mismatch); check each
@@ -139,7 +158,8 @@ against); `/harnex` also stamps `run start` (report.md "Timings").
    brief with the plan path and `Grounding: N anchors, M fixed, K
    unverified` (N counts existing-code anchors only), and wait for "Looks
    good".
-2. **Implement** (`harnex:implementer`): branch first, in every target repo.
+2. **Implement** (`harnex:implementer`): branch first, in every target repo,
+   and note each repo's HEAD there as `<start>`.
    Input: the plan (path, or the chat plan verbatim) and its WP path. One
    implementer per WP (no WPs: one implementer). WPs the planner marks
    `parallel: yes` in the same repo run concurrently, each with
@@ -148,7 +168,19 @@ against); `/harnex` also stamps `run start` (report.md "Timings").
    different repos run concurrently without it; a WP with `depends:` starts
    after those it names. Each implementer runs its inner loop (failing test
    first, its WP's impacted tests, lint, typecheck) and reports numbers that
-   are not authoritative. Merge every WP back before the gates.
+   are not authoritative. Merge every WP back before the gates. A worktree
+   WP returns uncommitted (implementers never commit). To merge it: commit
+   what earlier WPs left in the feature checkout, only the files their
+   reports list (`git add -- <files>`, `git commit -qm "wip"`; never `-A`,
+   the developer's own untracked files stay out); commit the WP in its
+   worktree, leaving the dependency link out (`git -C <wt> add -A -- .
+   ':(exclude)<link>'`, then `git -C <wt> commit -qm "wip: <wp>"`); `git
+   merge` its branch; remove the worktree. A WP that `depends:` on it then
+   branches from the result. A conflict: leave the merge open, its
+   implementer resolves the markers (no commit), then `git add -- <those
+   files>` and `git commit --no-edit`. After the last WP, `git reset --soft
+   <start>` (per repo) leaves the change staged and uncommitted for the
+   gates and Delivery.
    `early-review: yes` on a WP: spawn a `harnex:reviewer` on that WP's diff
    when it returns, and fix its findings ("Review loop") before the WPs
    that depend on it start.
@@ -217,6 +249,10 @@ could not as `Not verified:`; no helper check. No `Journeys:` line
   verify mode with those findings, the requirement, and `<base>`. REFUTED:
   dropped, counted in the report. PLAUSIBLE MUST-FIX: NICE-TO-HAVE.
   CONFIRMED, and any CRITICAL not REFUTED: kept. Nothing kept: APPROVE.
+- **High-risk, still open:** a confirmed risk-area MUST-FIX, or a CRITICAL
+  the developer approved fixing (see below), that survives the high-effort
+  fix gets one more `harnex:implementer` attempt on the last row of "Models
+  and effort", then "Escalate and wait".
 - **Escalate and wait** instead of fixing when a finding is CRITICAL, a fix
   would change scope, architecture, a public contract, or an existing test
   the plan doesn't name, a new dependency is copyleft, or the plan doesn't
@@ -225,7 +261,8 @@ could not as `Not verified:`; no helper check. No `Journeys:` line
   test: fix it yourself. Otherwise route each failure and finding to the
   `harnex:implementer` of the WP that owns its file (a file no WP owns:
   the WP whose change caused it; no WPs: one implementer), each with only
-  its own list. The WPs are merged, so in one
+  its own list, at the "reproducible failure" row of "Models and effort"
+  (`effort: high`). The WPs are merged, so in one
   repo they run one after another.
 - **Re-check the delta only:** the reviewer gets its previous findings and
   the fix diff and verifies those, not the whole change. Re-run the tests

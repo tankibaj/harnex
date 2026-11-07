@@ -77,7 +77,7 @@ What to check:
    field, reflection), and no later planned step uses: MUST-FIX. Exported or
    framework-wired: at most NICE-TO-HAVE. A new helper that re-implements an
    existing one, the standard library, or a platform feature: MUST-FIX when
-   the existing one does the same job (criteria row 10), else NICE-TO-HAVE;
+   the existing one does the same job (row 10 of `../pr-review/criteria.md`, relative to the folder of `standards.md`), else NICE-TO-HAVE;
    cite the existing `path:line`.
 8. Invented names: an env var, config key, flag, or column the compiler
    cannot catch that the diff reads with no default: MUST-FIX only when the

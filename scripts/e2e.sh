@@ -45,7 +45,7 @@ e2e_codex() {
   local root; root="$(find "$CODEX_HOME/plugins/cache/harnex/harnex" -mindepth 1 -maxdepth 1 -type d | head -1)"
   for s in $SKILLS; do check "skill $s" [ -f "$root/skills/$s/SKILL.md" ]; done
   HOME="$WORK/home" node "$REPO/scripts/install-agents.mjs" --codex >/dev/null
-  for a in $AGENTS; do check "agent harnex-$a" grep -q "^name = \"harnex-$a\"" "$WORK/home/.codex/agents/harnex-$a.toml" 2>/dev/null; done
+  for a in $AGENTS; do check "agent harnex-$a" grep -q "^name = \"harnex-$a\"" "$CODEX_HOME/agents/harnex-$a.toml" 2>/dev/null; done
   unset CODEX_HOME
 }
 

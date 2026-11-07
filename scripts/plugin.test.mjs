@@ -52,6 +52,17 @@ test('every agent has name, description and a model the CLIs accept', () => {
   }
 });
 
+test('SKILL.md "Models and effort" matches the agents\' model and effort', () => {
+  const skill = fs.readFileSync(path.join(ROOT, 'skills/harnex/SKILL.md'), 'utf8');
+  const want = { 'suite-runner': ['haiku', 'low'], planner: ['opus', 'medium'], implementer: ['sonnet', 'medium'],
+    validator: ['sonnet', 'medium'], 'ui-ux-reviewer': ['sonnet', 'medium'], qa: ['sonnet', 'medium'] };
+  assert.match(skill, /## Models and effort/);
+  for (const [name, [model, effort]] of Object.entries(want)) {
+    const md = fs.readFileSync(path.join(ROOT, 'agents', `${name}.md`), 'utf8');
+    assert.match(md, new RegExp(`\\nmodel: ${model}\\neffort: ${effort}\\n`), name);
+  }
+});
+
 test('/qa is standalone: the /harnex workflow never runs or offers it', () => {
   for (const f of files('skills/harnex')) {
     const s = fs.readFileSync(f, 'utf8');
@@ -124,7 +135,7 @@ test('skills call harnex.mjs, not shell one-liners, for timings, metrics and key
   // Permission-restricted runs deny `$(...)`, redirects and pipes; timings and metrics were lost.
   for (const f of files('skills').filter((x) => !/apple-design|web-design/.test(x))) {
     const s = fs.readFileSync(f, 'utf8');
-    for (const bad of ['| shasum', '$(git ', '${HARNEX_METRICS:-']) {
+    for (const bad of ['| shasum', '$(git ', '$(cat ', '${HARNEX_METRICS:-']) {
       assert.ok(!s.includes(bad), `${path.relative(ROOT, f)} still uses ${bad}`);
     }
   }

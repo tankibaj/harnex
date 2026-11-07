@@ -29,6 +29,7 @@ nothing. Any language, any stack. Claude Code, Codex, OpenCode.
 ```bash
 git clone https://github.com/tankibaj/harnex && node harnex/scripts/install-agents.mjs --all
 ```
+Codex agents go to `$CODEX_HOME/agents` (default `~/.codex/agents`); run `--uninstall` with the same `CODEX_HOME` you installed with.
 > [!WARNING]
 > **Skip this and Codex or OpenCode run every phase in one agent.** Same
 > workflow, but the reviewer is no longer a fresh pair of eyes: it has seen
