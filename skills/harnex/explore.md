@@ -94,9 +94,9 @@ simplest). Ask: keep one (one option per approach), or Other: refine
    uncommitted for the normal loop.
 3. `Plan: doc`: keep the kept approach's plan doc, delete the others (this
    run's own files, listed in step 1).
-4. Continue in `<main>` at SKILL.md "/harnex" step 3 (the gates once on
-   the merged change, at the plan's tier, with journey coverage), then step
-   4 (UI review), "Review loop", Completion and Delivery, with the kept plan
+4. Continue in `<main>` at SKILL.md "/harnex" step 3 (gate review, then the
+   validator once, at the plan's tier, with journey coverage), then step
+   5 (UI review), "Review loop", Completion and Delivery, with the kept plan
    as the plan. Section 3 above was only a screen.
 
 ## Cleanup (every exit)

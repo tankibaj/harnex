@@ -265,7 +265,7 @@ button:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
       <div class="loopbox"><span class="ltag">↻ UP TO 3 ROUNDS</span>
         <ol class="steps">
           <li><div><span class="agent">Implementers</span>, one per work package, in parallel: a failing test, then the code, then their own tests.</div></li>
-          <li><div><span>Once, on the merged change:</span> <span class="agent">validator</span> runs tests, lint, scans, a browser walk. <span>At the same time,</span> a fresh <span class="agent">reviewer</span> reads the whole diff.</div></li>
+          <li><div>Each work package gets one fresh <span class="agent">reviewer</span>. <span>Merged:</span> a gate <span class="agent">reviewer</span> reads the whole diff, then the <span class="agent">validator</span> runs once on the final code: tests, lint, scans, a browser walk.</div></li>
           <li><div><span class="agent">UI reviewer</span> checks the screens in a real browser. <span>Only if the UI changed.</span></div></li>
           <li><div>Findings? Must-fix or a failing test is fixed. <span>Critical, or still failing after round 3:</span> <b class="you2">it asks you.</b></div></li>
         </ol>

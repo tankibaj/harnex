@@ -73,10 +73,11 @@ flowchart TD
   plan --> brief["Brief: Goal · Plan · Risk<br/>you approve or refine"]
   brief -- "refine" --> plan
   brief -- "looks good" --> build["1 · Implementers, one per work package, in parallel:<br/>failing test, then code, own tests"]
-  build --> check["2 · Once, on the merged change:<br/>validator + fresh reviewer, at the same time"]
-  check --> ui["3 · UI reviewer, if the UI changed"]
-  ui --> found{"4 · Findings?"}
-  found -- "must-fix or failing test<br/>(up to 3 rounds)" --> fix["Fix, re-check only the fix"] --> check
+  build --> wp["2 · Each work package: one fresh review<br/>(risky foundation: cheap validation too)"]
+  wp --> check["3 · Merged change: gate review,<br/>then the validator once on the final code"]
+  check --> ui["4 · UI reviewer last, if the UI changed"]
+  ui --> found{"5 · Findings?"}
+  found -- "must-fix or failing test<br/>(up to 3 rounds)" --> fix["Fix, re-check only the fix<br/>(review again only if risky)"] --> check
   found -- "critical, or still failing" --> you["Stops and asks you"]
   found -- "clean" --> gate["Pre-PR gate: /pr-review's checks, now"] --> ship["You: commit, push, open the PR"]
 ```
@@ -87,7 +88,7 @@ flowchart TD
 | **Plan** | harnex itself: change, root cause, proving test | Planner: a chat plan, or a plan doc (≤ 60 lines, fact-checked) with work packages |
 | **You approve** | The [brief](skills/harnex/brief.md): Goal, Plan, Risk | The brief (+ the plan doc) |
 | **Build** | harnex itself, test first | One implementer per work package, in parallel, each running its own tests |
-| **Check** | harnex runs tests, lint, scans; fresh reviewer; UI reviewer if UI changed | Once, on the merged change: validator + reviewer at once, then the UI reviewer if UI changed |
+| **Check** | harnex runs tests, lint, scans; fresh reviewer; UI reviewer if UI changed | One reviewer per work package, then on the merged change: gate review, the validator once on the final code, the UI reviewer last if UI changed |
 
 Settings come from the change, one line in the brief: `Plan: doc · Tier: full · Reviewer: default · UI: yes`.
 Plan doc for split, big (> 400 lines), multi-repo or unclear work; full test suite and the strongest

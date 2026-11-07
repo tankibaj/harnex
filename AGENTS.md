@@ -8,8 +8,9 @@ For agents working ON this repo. What users run lives in `skills/` and
   `standards.md`, `brief.md`, `explore.md`, `report.md`, `pr.md`,
   `review-guide.md`, `input.md`, `tiers/`, and `harnex.mjs` (stamp, record,
   key, base/clean: the commands skills run). Two flows, `/harnex quick` and
-  `/harnex`, with settings derived from the change; the gates (validator,
-  reviewer, UI reviewer) run once on the merged result, never per WP.
+  `/harnex`, with settings derived from the change; each WP gets one
+  review, then the gates run on the merged result: gate review, the validator
+  once on the final code, UI reviewer last.
 - `skills/pr-review/` (+ `threads.py`), `skills/qa/`, `skills/retro/`:
   standalone skills, never part of the `/harnex` run.
 - `skills/apple-design/`, `skills/web-design/`: design skills distilled from

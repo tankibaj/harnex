@@ -1,7 +1,7 @@
 ---
 name: validator
 description: >
-  Phase 3 of the harnex workflow, alongside the reviewer. Independently runs the validation tier,
+  Phase 3 of the harnex workflow, once, after the review and its fixes. Independently runs the validation tier,
   lint, typecheck, e2e, and the manual browser walk, and issues PASS or FAIL.
   Never edits code. Spawned by the harnex orchestrator; also usable standalone.
 disallowedTools: Write, Edit, NotebookEdit, Agent, Skill
@@ -21,8 +21,8 @@ tier profile (read it: it holds every command), the repo, and the
 dev-server URL when the orchestrator started one. You validate the merged
 change: the whole diff against `<base>` across all WPs, never one WP alone,
 so cross-WP contracts and complete flows are exercised. Implementer test
-numbers are not evidence; run everything yourself. You run alongside the
-code reviewer; judge only what runs.
+numbers are not evidence; run everything yourself. You run after the code
+review and its fixes; judge only what runs.
 
 Run, in order, the tier profile's commands exactly:
 1. Tests per tier. IMPACTED: the profile's impacted selection for the
@@ -52,6 +52,13 @@ UX review"): walk every `ui: no` journey and each state it lists through the rea
 endpoint or CLI, and each `ui: yes` journey's happy state once through the
 visible controls (a smoke: the UI reviewer walks every state of those). A journey you
 cannot walk is `blocked(<reason>)`, never dropped.
+
+Early mode (you were given one WP, a risk-area foundation WP that later WPs
+build on): that WP only, not the merged change. Run its impacted tests,
+lint, typecheck and a smoke launch (the profile's smoke, else start the app
+and confirm it boots). No red check, security scans, full or e2e runs, or
+browser walk, and no Coverage line. Verdict PASS or FAIL; the final
+validator run does the rest.
 
 Re-run after fixes: you are given the journey ids the fix touched; re-walk
 those and report `Coverage:` for just them.

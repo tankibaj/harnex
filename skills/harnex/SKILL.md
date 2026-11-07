@@ -1,6 +1,6 @@
 ---
 name: harnex
-description: "harnex: plan → your approval → implement → validate → review with phase sub-agents. Two flows: /harnex [requirement] (planner, work packages, the gates once on the merged change) and /harnex quick [requirement] (inline, then a fresh reviewer); settings derived from the change; build several approaches and pick one with /harnex explore <requirement>. Use when the user asks to build a feature, fix a bug, refactor, or tackle tech debt through the plan-approve-implement-validate-review workflow, or types /harnex."
+description: "harnex: plan → your approval → implement → validate → review with phase sub-agents. Two flows: /harnex [requirement] (planner, work packages each reviewed once, then the gates on the merged change) and /harnex quick [requirement] (inline, then a fresh reviewer); settings derived from the change; build several approaches and pick one with /harnex explore <requirement>. Use when the user asks to build a feature, fix a bug, refactor, or tackle tech debt through the plan-approve-implement-validate-review workflow, or types /harnex."
 ---
 
 # harnex (orchestrated)
@@ -58,8 +58,9 @@ exported module).
   reviewer when UI changed). Picked automatically for one repo, one place,
   no risk area, no open question; a bug needs a reproduction and a
   single-place root cause.
-- **`/harnex`** (everything else): planner, implementers (one per WP), then
-  the gates once on the merged change.
+- **`/harnex`** (everything else): planner, implementers (one per WP, each
+  reviewed once), then the gates on the merged change: review, then the
+  validator once on the final code, then UI review.
 
 State the flow in one line: `Flow: <quick | harnex>, <reason>`. When
 unsure, take `/harnex`. Quick escalates to `/harnex` in one line, carrying
@@ -134,7 +135,7 @@ timings file and the untracked baseline are one file each.
    full tier instead (never a full regression in the main context).
 4. Spawn a fresh `harnex:reviewer` (model per settings) with the
    requirement, the chat plan, and your test output. `UI: yes`: after your
-   tests pass, `harnex:ui-ux-reviewer` per "/harnex" step 4. Then "Review
+   tests pass, `harnex:ui-ux-reviewer` per "/harnex" step 5. Then "Review
    loop".
 
 ## /harnex
@@ -181,42 +182,55 @@ timings file and the untracked baseline are one file each.
    files>` and `git commit --no-edit`. After the last WP, `git reset --soft
    <start>` (per repo) leaves the change staged and uncommitted for the
    gates and Delivery.
-   `early-review: yes` on a WP: spawn a `harnex:reviewer` on that WP's diff
-   when it returns, and fix its findings ("Review loop") before the WPs
-   that depend on it start.
-   Early UI review (after the early code review and its fixes when the WP has
-   both), only when the developer turned it on at the brief for
-   the plan's `Early UI candidates:`: after that WP is merged into the
+   **WP review**, plans with WPs only (no WPs: the gate review in step 3 is
+   the only review): when a WP returns, spawn one `harnex:reviewer` on that
+   WP's diff (its files and their callers), parallel WPs in parallel, and
+   fix its findings once ("Review loop"), no re-review. Fixes merge before
+   the gates. It blocks the WPs that `depends:` on it only when the WP is
+   `early-validate: yes`; for any other WP the dependents start at once and
+   its fixes merge afterwards.
+   `early-validate: yes` on a WP (a risk-area WP that later WPs build on): at
+   the same moment spawn `harnex:validator` in early mode on that WP only,
+   and fix what fails before the WPs that depend on it start.
+   Early UI review (after the WP review and its fixes), only when the
+   developer turned it on at the brief for the plan's `Early UI
+   candidates:`: after that WP is merged into the
    feature branch (the dev server runs from the merged checkout), spawn
    `harnex:ui-ux-reviewer` in early mode on that WP's diff and screens, and
    fix its findings before the dependent WPs start. It never runs next to
-   another browser session. The full UI review in step 4 still runs once on
+   another browser session. The full UI review in step 5 still runs once on
    the merged change.
-3. **Gates, once on the merged change**, in one message: `harnex:validator`
-   (plan, every implementation report, tier, tier profile, dev-server URL)
-   and `harnex:reviewer` (requirement, plan, model per settings), both on
-   the whole diff across all WPs. Multi-repo: one validator per repo, one
-   reviewer across all of them (the contracts between WPs and repos are the
-   point). A journey belongs to its entry's repo (the planner prefixes the
-   entry with `<repo>:` on a multi-repo plan): pass each validator only
-   those, and it walks them end to end through the other repos' running
-   services. A chat plan is one repo, so one validator gets every journey.
-   Check each `Coverage:` line ("Journey coverage").
-4. **UI review** (`harnex:ui-ux-reviewer`), once, after the validator
-   passes, when `UI: yes`, over every changed screen. Scope is the plan's
-   `UI scope` widened by the changed files (standards.md "UI and UX
-   review"): `git diff --name-only <base>...HEAD` plus uncommitted and
-   untracked, where `<base>` is `git symbolic-ref --short
+3. **Gate review** (`harnex:reviewer`, model per settings) on the whole
+   diff across all WPs: requirement, plan, and the WP review findings (so
+   it does not repeat them). It reads by risk area for what a WP review
+   cannot see: the contracts between WPs and repos (unwired triggers, a
+   blocking launch, a stale stream). Multi-repo: one reviewer across all of
+   them. Then "Review loop": verify, fixes, delta review.
+4. **Validator, once, on the final code** (`harnex:validator`): after the
+   gate review's fixes (and its delta review) are in, so its numbers cover
+   what ships. Input: plan, every implementation report, tier, tier
+   profile, dev-server URL. Multi-repo: one validator per repo. A journey
+   belongs to its entry's repo (the planner prefixes the entry with
+   `<repo>:` on a multi-repo plan): pass each validator only those, and it
+   walks them end to end through the other repos' running services. A chat
+   plan is one repo, so one validator gets every journey. Check each
+   `Coverage:` line ("Journey coverage"). A failure goes to "Review loop"
+   and the validator re-runs on the fix.
+5. **UI review** (`harnex:ui-ux-reviewer`), once, last, after the validator
+   passes, when `UI: yes`, over every changed screen on the final UI. Scope
+   is the plan's `UI scope` widened by the changed files (standards.md "UI
+   and UX review"): `git diff --name-only <base>...HEAD` plus uncommitted
+   and untracked, where `<base>` is `git symbolic-ref --short
    refs/remotes/origin/HEAD`, else `develop`, else `main`, else `master`.
    Re-evaluate it every round. Pass the `ui: yes` journeys; check its
    `Coverage:` line ("Journey coverage").
-5. **Sequences** (the planner's `Delivery:` line): `separate PRs`: each
-   change runs steps 2-4 and Completion in order, since each merges alone,
+6. **Sequences** (the planner's `Delivery:` line): `separate PRs`: each
+   change runs steps 2-5 and Completion in order, since each merges alone,
    with `untracked save` again before each change's step 2.
-   `together`: implement the changes in order, then steps 3-4 once.
+   `together`: implement the changes in order, then steps 3-5 once.
 
 Webapps, both flows: start the dev server once, from the merged checkout,
-before the first early UI review or validation (restart it after a merge it
+before the first early validation, early UI review or validation (restart it after a merge it
 would not hot-reload), the way the repo says (standards.md "Run target"; desktop app:
 `preview_start`), pass its URL on, stop it at Completion.
 
@@ -244,7 +258,7 @@ could not as `Not verified:`; no helper check. No `Journeys:` line
 - Only CRITICAL, MUST-FIX, and failing tests open a round. Any other label
   counts as MUST-FIX; NICE-TO-HAVE goes to the report.
 - **Verify first** (`/harnex` with `Reviewer: default`, the gate review
-  only, not early or delta reviews): when it returns CRITICAL or MUST-FIX
+  only, not WP or delta reviews): when it returns CRITICAL or MUST-FIX
   findings, spawn one more fresh `harnex:reviewer` (no `model` override) in
   verify mode with those findings, the requirement, and `<base>`. REFUTED:
   dropped, counted in the report. PLAUSIBLE MUST-FIX: NICE-TO-HAVE.
@@ -264,11 +278,23 @@ could not as `Not verified:`; no helper check. No `Journeys:` line
   its own list, at the "reproducible failure" row of "Models and effort"
   (`effort: high`). The WPs are merged, so in one
   repo they run one after another.
-- **Re-check the delta only:** the reviewer gets its previous findings and
-  the fix diff and verifies those, not the whole change. Re-run the tests
-  (yourself on Quick and after your own fix, except Quick on `Tier: full`;
-  the validator on the plan's tier otherwise). The UI reviewer re-runs in delta mode when UI findings or UI
-  files were touched.
+- **WP review fixes:** one pass, no re-review and no round counted; the gate
+  review sees the merged result anyway.
+- **Re-check the delta only.** After a fix, a
+  `harnex:reviewer` in delta mode gets its previous findings and the fix
+  diff and verifies those, not the whole change, only when the fix touches
+  a risk area (sync, insertion, schema, data loss, anything under "Risk
+  areas") or answers a CRITICAL. A low-risk fix skips it. Every fix, risk
+  area or not, gets its impacted tests re-run: yourself on Quick (on
+  `Tier: full` the validator), else a `harnex:suite-runner` on the tier profile's impacted command (numbers not
+  authoritative: the validator that follows runs the tier). A fix after the
+  validator ran (its own failures) re-runs the validator on the plan's tier,
+  journeys of the touched WPs only.
+- **UI review fixes:** the UI reviewer re-runs in delta mode only when a fix
+  went beyond wording (copy, labels): touched screens and journeys plus its
+  previous findings. A wording-only fix gets the impacted tests re-run, no
+  browser session. A UI fix that touched non-UI code gets the validator on
+  the plan's tier too.
 - **Cap: 3 rounds**, inline fixes included. Still failing: stop and escalate
   with what remains, what was tried, and a recommendation.
 
@@ -313,7 +339,8 @@ AskUserQuestion is unavailable.
   agent of a similar name (a repo `reviewer`, `test-runner`) for a harnex
   phase agent.
 - On `/harnex`, test numbers come from the validator, never from you or the
-  implementers. Theirs and yours there are NOT VERIFIED.
+  implementers. Theirs and yours there are NOT VERIFIED. The validator runs
+  once, after the review and its fixes, never beside the gate review.
 - Agents relabel severities (SHOULD, MINOR). Treat them as MUST-FIX; never
   downgrade a finding yourself.
 - A failing test reported by a reviewer is a validation failure, not a

@@ -108,8 +108,8 @@ Only truly independent areas become `docs/wp/wpN-<slug>.md` work packages
 first, or none), `parallel: yes|no` (yes when it shares no files or
 unmerged code with a concurrent WP), and per-WP tests and `journeys:` (the
 ids it delivers; every journey belongs to at least one WP). Add
-`early-review: yes` only to a risk-area WP that later WPs build on; the gates otherwise run
-once on the merged WPs. A UI WP that later WPs build on (shared layout,
+`early-validate: yes` only to a risk-area WP that later WPs build on (every WP gets one
+review when it returns; the validator otherwise runs once, on the final merged change). A UI WP that later WPs build on (shared layout,
 navigation shell, design-system component) goes under `Early UI candidates:`
 in the plan, never as a WP field: the developer opts in at the brief; else
 "none". Work spanning repos is always WPs, one or more per
