@@ -141,3 +141,15 @@ test('unknown command: usage and exit 2', () => {
   assert.equal(r.status, 2);
   assert.match(r.stderr, /usage/);
 });
+
+test('coverage: exits 0 only when every journey id is walked; prints each gap', () => {
+  const ok = run(['coverage', 'J1,J2', 'Coverage: J1=walked J2=walked']);
+  assert.equal(ok.status, 0, ok.stderr);
+  const gaps = run(['coverage', 'J1,J2,J3,J4', 'Coverage: J1=walked J2=skipped(no seed data) J3=blocked(login) J1=blocked']);
+  assert.equal(gaps.status, 1);
+  assert.deepEqual(gaps.stdout.trim().split('\n'), ['J1 blocked', 'J2 skipped', 'J3 blocked', 'J4 missing']);
+});
+
+test('coverage: needs ids and a line', () => {
+  assert.equal(run(['coverage', 'J1']).status, 1);
+});

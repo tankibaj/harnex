@@ -9,6 +9,7 @@
 //   node harnex.mjs base <ref> <dir>          check out <ref> into a new <dir>, no worktree (red check)
 //   node harnex.mjs clean <dir>               remove a <dir> that base created
 //   node harnex.mjs untracked save|new        save the untracked files now | list the ones added since
+//   node harnex.mjs coverage <ids> <line>     check a `Coverage:` line walked every journey id (J1,J2); exit 1 on gaps
 //
 // record never fails the caller: metrics are passive.
 import crypto from 'node:crypto';
@@ -97,6 +98,20 @@ function untracked([mode]) {
   fs.rmSync(saved);
 }
 
+// A gate agent's `Coverage: J1=walked J2=blocked(reason) J3=skipped(reason)` line
+// against the plan's journey ids: a journey the line omits, repeats as anything
+// but walked, or marks blocked or skipped is a gap. Prints one line per gap.
+function coverage([ids, ...line]) {
+  if (!ids || !line.length) throw new Error('coverage needs <ids> <coverage line>');
+  const seen = new Map();
+  for (const [, id, status] of line.join(' ').matchAll(/\b(J\d+)=(walked|blocked|skipped)\b/g)) {
+    if (!seen.has(id) || seen.get(id) === 'walked') seen.set(id, status);
+  }
+  const gaps = ids.split(',').filter((id) => seen.get(id) !== 'walked');
+  for (const id of gaps) console.log(`${id} ${seen.get(id) ?? 'missing'}`);
+  if (gaps.length) process.exitCode = 1;
+}
+
 const [cmd, ...args] = process.argv.slice(2);
 try {
   if (cmd === 'stamp') stamp(args);
@@ -105,8 +120,9 @@ try {
   else if (cmd === 'base') base(args);
   else if (cmd === 'clean') clean(args);
   else if (cmd === 'untracked') untracked(args);
+  else if (cmd === 'coverage') coverage(args);
   else {
-    console.error('usage: harnex.mjs stamp [--reset] <label> | record <json> | key <url> | base <ref> <dir> | clean <dir> | untracked save|new');
+    console.error('usage: harnex.mjs stamp [--reset] <label> | record <json> | key <url> | base <ref> <dir> | clean <dir> | untracked save|new | coverage <ids> <line>');
     process.exitCode = 2;
   }
 } catch (e) {

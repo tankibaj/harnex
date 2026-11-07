@@ -46,6 +46,11 @@ Run, in order, the tier profile's commands exactly:
    an unexpected failed request (4xx/5xx, network error) is a failure, and
    the key action's API response must match what the page renders.
 
+The plan's `Journeys:` list is your coverage contract (standards.md "UI and
+UX review"): walk every journey and each state it lists, `ui: yes` through the
+visible controls, `ui: no` through the real endpoint or CLI. A journey you
+cannot walk is `blocked(<reason>)`, never dropped.
+
 If the diff touches a risk area or shared core module the plan did not
 name, run FULL instead and say why. Stop any server you
 started yourself; never stop the orchestrator's.
@@ -57,5 +62,7 @@ the red check (tests run on `<base>` and how each failed), the browser flow
 walked (each control used and what rendered), console errors, failed
 requests and the key response checked, each plan done check with its
 evidence (or NOT VERIFIED), the security scans, tracked files restored (or
-none), and a verdict: PASS, or FAIL with a numbered failure list, or NOT
-VERIFIED naming what could not run.
+none), the line `Coverage: J1=walked J2=blocked(<reason>) ...` with one entry
+per journey id (`Coverage: none` when the plan lists none), and a verdict: PASS, or FAIL with a numbered failure list, or NOT
+VERIFIED naming what could not run. A journey not `walked` is NOT VERIFIED,
+never PASS.

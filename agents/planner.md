@@ -35,7 +35,17 @@ forms:
   (risk area or shared core: `Tier: full`; risk area: `Reviewer: default`)
 - `UI scope: none | visual | flow | both` with a one-line reason (standards.md
   "UI and UX review"; `flow` when a user flow, form, navigation, or its
-  empty/error/loading state changes)
+  empty/error/loading state changes, and always when a journey has `ui: yes`)
+- `Journeys:` one line per end-user journey the change builds or alters,
+  ids `J1`, `J2`...: `J<n> | <actor> | <entry> | <steps> | states: <happy,
+  empty, error, loading as they apply> | ui: yes|no | src: <AC cited |
+  requirement | code>`. Source order: every acceptance criterion a user can
+  exercise maps to a journey; with none given, each functionality the
+  requirement states; with neither, the user-reachable behavior the change
+  adds or alters in code (route, handler, control), cited by `path:line`. A
+  journey backed by an endpoint with no screen is `ui: no`. Backend-only
+  change with no user-visible journey: "none". The gates walk exactly this list
+  (standards.md "Journeys")
 - requirement restated
 - for a bug: root-cause note (what breaks, why, where)
 - for a refactor/tech debt: the behavior the characterization tests must pin
@@ -94,9 +104,13 @@ merged (gated once at the end).
 Only truly independent areas become `docs/wp/wpN-<slug>.md` work packages
 (doc only) with `repo:`, disjoint owned files, `depends:` (the WPs it needs
 first, or none), `parallel: yes|no` (yes when it shares no files or
-unmerged code with a concurrent WP), and per-WP tests. Add `early-review:
-yes` only to a risk-area WP that later WPs build on; the gates otherwise run
-once on the merged WPs. Work spanning repos is always WPs, one or more per
+unmerged code with a concurrent WP), and per-WP tests and `journeys:` (the
+ids it delivers; every journey belongs to at least one WP). Add
+`early-review: yes` only to a risk-area WP that later WPs build on; the gates otherwise run
+once on the merged WPs. A UI WP that later WPs build on (shared layout,
+navigation shell, design-system component) goes under `Early UI candidates:`
+in the plan, never as a WP field: the developer opts in at the brief; else
+"none". Work spanning repos is always WPs, one or more per
 repo, with the contract change ordered provider-first.
 
 Ground every claim about existing code (a function, signature, field, value,

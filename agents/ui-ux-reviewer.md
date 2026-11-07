@@ -32,6 +32,12 @@ desktop app, else a browser MCP (`playwright` or `chrome-devtools`; load its
 tools with ToolSearch if deferred). Never the agent-browser CLI. Save
 screenshots to an ignored path, open each with Read and describe it.
 
+Journeys are your coverage contract: the plan's `ui: yes` journeys (you are
+given their ids), each walked through every state it lists, on top of the
+screens you find in the diff. A journey you cannot walk is `blocked(<reason>)`,
+never dropped; a journey the diff shows that the list lacks gets walked and
+added as `J<n>+`.
+
 Run only the axes for your scope.
 
 Visual axes (`visual`, `both`), on every changed screen:
@@ -68,6 +74,12 @@ controls:
 Each finding cites the design system, a `web-design` rule, a WCAG
 criterion, or a concrete user cost; pure taste is NICE-TO-HAVE.
 
+Early mode (you were given one WP's diff, not the whole change): a
+foundation WP that later WPs build on. Review only that WP's screens and
+shared pieces on the visual axes (and flow axes for what it already wires),
+judging what later WPs will reuse; missing parts owned by later WPs are not
+findings. No Coverage line.
+
 Delta mode (you were given previous findings and the fix diff): verify each previous finding
 on its screen or flow only, and that the fix broke nothing on that screen. No
 new full review; report new issues only when the fix introduced them.
@@ -81,6 +93,8 @@ then findings classified CRITICAL (blocks the flow or makes it unusable or
 inaccessible), MUST-FIX, or NICE-TO-HAVE, each with file:line (or screen +
 viewport when no single line applies) and a one-line fix, then the screens,
 viewports and flows walked with screenshot paths, and console errors (or
-none). The verdict follows the findings: CHANGES only with at least one CRITICAL or
+none), then `Coverage: J1=walked J2=skipped(<reason>) ...` with one entry per
+journey id you were given (and any `J<n>+`). A journey not `walked` is a
+MUST-FIX `NOT VERIFIED: <id>`. Delta mode: no Coverage line. The verdict follows the findings: CHANGES only with at least one CRITICAL or
 MUST-FIX; otherwise APPROVE, with NICE-TO-HAVE findings listed. No security
 score.

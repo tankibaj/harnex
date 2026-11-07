@@ -128,9 +128,10 @@ live in the tier profile (`tiers/`).
 ### UI and UX review
 - **UI scope** is `none`, `visual`, `flow`, or `both`:
   - `visual` when a changed file matches `*.tsx *.jsx *.vue *.svelte *.astro *.html *.css *.scss *.sass *.less`, `tailwind.config.*`, `postcss.config.*`, a path segment `components/ layouts/ styles/ views/`, or a static asset under `public/`.
-  - `flow` when the plan says a user flow, form, navigation, or its empty, error, or loading state changes.
+  - `flow` when the plan says a user flow, form, navigation, or its empty, error, or loading state changes, or lists a journey with `ui: yes`.
   - Never UI on their own: `app/api/**`, `pages/api/**`, `route.*`, `middleware.*`, `'use server'` files, `*.server.*`, tests, `*.stories.*`, `*.d.ts`, non-asset files under `public/`.
   - The plan's `UI scope` can widen the file-based scope, never narrow it. Server code behind a UI action still gets the browser walk.
+- **Journeys:** the plan's `Journeys:` list (one line per end-user journey: id, actor, entry, steps, states, `ui: yes|no`, its source: an acceptance criterion, else the requirement's stated functionality, else the user-reachable behavior in the code) is the coverage contract. The `validator` walks every journey (`ui: no` ones through the real endpoint or CLI), the `ui-ux-reviewer` every `ui: yes` one, each state listed. Each ends its report with `Coverage: J1=walked J2=blocked(<reason>) J3=skipped(<reason>)`, one entry per id, nothing omitted. Only `walked` counts; `blocked` and `skipped` are NOT VERIFIED and the orchestrator re-runs them (SKILL.md). A journey found while walking that the list lacks: walk it, add it as `J<n>+` and report it. `Journeys: none`: `Coverage: none`, no check.
 - Bar: WCAG 2.2 AA via the accessibility snapshot and a keyboard walk. Findings cite the repo's design system (from its CLAUDE.md or rules, e.g. a shared UI library), a WCAG criterion, or a concrete user cost; pure taste is NICE-TO-HAVE.
 
 ## Project documentation
