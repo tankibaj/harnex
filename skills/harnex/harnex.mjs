@@ -102,18 +102,32 @@ function untracked([mode]) {
 // against the plan's journey ids. Only a bare `walked` counts. A missing id,
 // blocked, skipped, partial, or `walked` carrying a reason (even `walked (x)` or
 // an unterminated `walked(`) is a gap, and so is any agent-added `J<n>+` id that
-// is not walked. A reason is consumed with its entry, so its text never reads as
-// an entry. An id seen twice stays a gap unless every occurrence is walked.
-// Prints one line per gap.
+// is not walked. A status glued to more text (`walked-partial`) is no entry. A
+// reason is skipped to its matching parenthesis (nested ones included, an
+// unterminated one runs to the end), so its text never reads as an entry. An id
+// seen twice stays a gap unless every occurrence is walked. Prints one line per gap.
 function coverage([ids, ...line]) {
   if (!ids || !line.length) throw new Error('coverage needs <ids> <coverage line>');
   const want = new Set(ids.split(',').map((id) => id.trim().toUpperCase()).filter(Boolean));
   if (!want.size) throw new Error('coverage needs at least one journey id');
+  const text = line.join(' ');
+  const re = /\b(J\d+\+?)\s*=\s*(walked|partial|blocked|skipped)(?![\w\-/:])/gi;
   const seen = new Map();
-  for (const [, id, word, reason] of line.join(' ').matchAll(/\b(J\d+\+?)\s*=\s*(walked|partial|blocked|skipped)\b(\s*\([^)]*\)?)?/gi)) {
-    const key = id.toUpperCase();
-    const status = reason && word.toLowerCase() === 'walked' ? 'partial' : word.toLowerCase();
-    if (!seen.has(key) || seen.get(key) === 'walked') seen.set(key, status);
+  for (let m; (m = re.exec(text));) {
+    let i = re.lastIndex;
+    while (/\s/.test(text[i] ?? '')) i++;
+    const reason = text[i] === '(';
+    if (reason) {
+      for (let depth = 0; i < text.length; i++) {
+        if (text[i] === '(') depth++;
+        else if (text[i] === ')' && --depth === 0) { i++; break; }
+      }
+      re.lastIndex = i;
+    }
+    const id = m[1].toUpperCase();
+    const word = m[2].toLowerCase();
+    const status = reason && word === 'walked' ? 'partial' : word;
+    if (!seen.has(id) || seen.get(id) === 'walked') seen.set(id, status);
   }
   for (const id of seen.keys()) if (id.endsWith('+')) want.add(id);
   const gaps = [...want].filter((id) => seen.get(id) !== 'walked');

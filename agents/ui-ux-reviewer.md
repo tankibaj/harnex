@@ -95,9 +95,8 @@ then findings classified CRITICAL (blocks the flow or makes it unusable or
 inaccessible), MUST-FIX, or NICE-TO-HAVE, each with file:line (or screen +
 viewport when no single line applies) and a one-line fix, then the screens,
 viewports and flows walked with screenshot paths, and console errors (or
-none), then `Coverage: J1=walked J2=skipped(<reason>) ...` (`walked` never takes a
-reason: a journey not fully walked is `partial(<reason>)`) with one entry per journey id you were given and every `J<n>+` you
-added. A journey not `walked` is
-not a finding: it goes only in Coverage, and the orchestrator re-runs it. The verdict follows the findings: CHANGES only with at least one CRITICAL or
+none), then the `Coverage:` line (standards.md "UI and UX review", Journeys; your
+given ids and every `J<n>+` you added). A journey not `walked` is not a
+finding: it goes only in Coverage, and the orchestrator re-runs it. The verdict follows the findings: CHANGES only with at least one CRITICAL or
 MUST-FIX; otherwise APPROVE, with NICE-TO-HAVE findings listed. No security
 score.

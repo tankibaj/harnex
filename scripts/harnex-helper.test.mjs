@@ -190,3 +190,11 @@ test('coverage: an ids argument with no ids fails instead of passing', () => {
   assert.equal(run(['coverage', ',', 'Coverage: J1=walked']).status, 1);
   assert.equal(run(['coverage', ' ', 'Coverage: J1=walked']).status, 1);
 });
+
+test('coverage: nested parentheses stay inside the reason; glued status text is no entry', () => {
+  const r = run(['coverage', 'J1,J2,J3', 'Coverage: J3=blocked(see (SSO) J2=walked) J1=walked-partial']);
+  assert.equal(r.status, 1);
+  assert.deepEqual(r.stdout.trim().split('\n'), ['J1 missing', 'J2 missing', 'J3 blocked']);
+  const open = run(['coverage', 'J1,J2', 'Coverage: J1=blocked( J2=walked']);
+  assert.deepEqual(open.stdout.trim().split('\n'), ['J1 blocked', 'J2 missing']);
+});

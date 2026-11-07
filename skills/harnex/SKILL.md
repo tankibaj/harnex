@@ -81,6 +81,11 @@ past about 400 changed lines, or hits an open question.
   review"), which includes any journey with `ui: yes`; re-evaluated against
   the changed files every round.
 
+- **Early UI review:** off. On only when the developer turns it on in the
+  brief's "Change settings" (brief.md) for the plan's `Early UI candidates:`.
+  It survives a re-plan while those WPs remain and resets when the plan no
+  longer has candidates.
+
 Once code is written, settings only grow: a newly found risk area adds
 `Tier: full` and `Reviewer: default` with a one-line note.
 
@@ -189,7 +194,7 @@ line: the validator (`/harnex` always; Quick only on `Tier: full`) and the UI
 reviewer; not after early or `harnex:reviewer` runs. Delta runs after a fix
 get only the journeys of the WPs whose files the fix touched (no WPs: all),
 so a fix to J2's screen re-walks J2 again. Take its line, drop every
-`(reason)`, and run `node <this skill's folder>/harnex.mjs coverage
+`(reason)` (a `walked` that carried one becomes `partial`), and run `node <this skill's folder>/harnex.mjs coverage
 <J1,J2,...> '<J1=walked J2=blocked ...>'` with the ids that agent was given
 (the `ui: yes` ones for the UI reviewer). Pass only those tokens, never a
 reason: it is agent text and never goes into a shell command. Exit 0: covered
