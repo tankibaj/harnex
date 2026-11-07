@@ -158,7 +158,8 @@ timings file and the untracked baseline are one file each.
    brief with the plan path and `Grounding: N anchors, M fixed, K
    unverified` (N counts existing-code anchors only), and wait for "Looks
    good".
-2. **Implement** (`harnex:implementer`): branch first, in every target repo.
+2. **Implement** (`harnex:implementer`): branch first, in every target repo,
+   and note each repo's HEAD there as `<start>`.
    Input: the plan (path, or the chat plan verbatim) and its WP path. One
    implementer per WP (no WPs: one implementer). WPs the planner marks
    `parallel: yes` in the same repo run concurrently, each with
@@ -168,14 +169,18 @@ timings file and the untracked baseline are one file each.
    after those it names. Each implementer runs its inner loop (failing test
    first, its WP's impacted tests, lint, typecheck) and reports numbers that
    are not authoritative. Merge every WP back before the gates. A worktree
-   WP returns uncommitted (implementers never commit): commit it in its
+   WP returns uncommitted (implementers never commit). To merge it: commit
+   what earlier WPs left in the feature checkout, only the files their
+   reports list (`git add -- <files>`, `git commit -qm "wip"`; never `-A`,
+   the developer's own untracked files stay out); commit the WP in its
    worktree, leaving the dependency link out (`git -C <wt> add -A -- .
-   ':(exclude)<link>'`, then `git -C <wt> commit -qm "wip: <wp>"`), `git
-   merge` its branch into the feature branch, remove the worktree; a WP
-   that `depends:` on it then branches from the result. After the last WP,
-   `git reset --soft <start>` (`<start>`: HEAD after branching, before the
-   first WP) leaves the change staged and uncommitted for the gates and
-   Delivery. A conflict goes to the later WP's implementer.
+   ':(exclude)<link>'`, then `git -C <wt> commit -qm "wip: <wp>"`); `git
+   merge` its branch; remove the worktree. A WP that `depends:` on it then
+   branches from the result. A conflict: leave the merge open, its
+   implementer resolves the markers (no commit), then `git add -- <those
+   files>` and `git commit --no-edit`. After the last WP, `git reset --soft
+   <start>` (per repo) leaves the change staged and uncommitted for the
+   gates and Delivery.
    `early-review: yes` on a WP: spawn a `harnex:reviewer` on that WP's diff
    when it returns, and fix its findings ("Review loop") before the WPs
    that depend on it start.

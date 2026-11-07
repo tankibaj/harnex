@@ -57,9 +57,9 @@ standards.md "Independent red check" does (e.g. a link to its installed-packages
 In one message, one `harnex:implementer` per worktree (the worktree path is
 its repo; no `isolation` option), the shared requirement, and only its own
 plan (`Plan: doc`: its plan doc path). When each returns, commit its work in its
-worktree, leaving the dependency link and `docs/plan` out: `git -C <wt> add -A
--- . ':(exclude)<link>' ':(exclude)docs/plan' && git -C <wt> commit -qm "wip:
-explore <x>"`. A failed
+worktree, leaving the dependency link and this run's plan docs (the paths
+the planner returned) out: `git -C <wt> add -A -- . ':(exclude)<link>'
+':(exclude)<plan doc>' && git -C <wt> commit -qm "wip: explore <x>"`. A failed
 implementer: its approach is out; continue with the rest.
 
 ## 3. Check, one at a time

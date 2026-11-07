@@ -140,12 +140,12 @@ function coverage([ids, ...line]) {
 function note([iid, project, file]) {
   if (!iid || !project || !file) throw new Error('note needs <iid> <project> <file>');
   const body = fs.readFileSync(file, 'utf8');
-  // One argv entry: far under the OS limit (128 KB on Linux) for any real note.
+  // One argv entry: kept under Linux's 128 KB per-argument limit (macOS allows more).
   if (Buffer.byteLength(body) > 100000) throw new Error(`${file} is too large for glab -m; give the body to the developer instead`);
   try {
     execFileSync('glab', ['mr', 'note', 'create', iid, '-R', project, '--resolvable=false', '-m', body], { stdio: 'inherit' });
   } catch (e) {
-    throw new Error(e.code === 'ENOENT' ? 'glab not found; give the body to the developer instead' : `glab failed (exit ${e.status}); give the body to the developer instead`);
+    throw new Error(e.code === 'ENOENT' ? 'glab not found; give the body to the developer instead' : `glab failed (${e.status != null ? `exit ${e.status}` : (e.signal ?? e.code)}); give the body to the developer instead`);
   }
 }
 

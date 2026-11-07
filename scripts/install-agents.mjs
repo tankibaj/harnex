@@ -2,7 +2,7 @@
 // Installs harnex's sub-agents for tools whose plugins can't ship them.
 // Claude Code needs none of this: its plugin loads agents/ itself.
 //
-//   node scripts/install-agents.mjs --codex       ~/.codex/agents/harnex-<name>.toml
+//   node scripts/install-agents.mjs --codex       $CODEX_HOME/agents (default ~/.codex/agents)/harnex-<name>.toml
 //   node scripts/install-agents.mjs --opencode    ~/.config/opencode/agents/harnex-<name>.md
 //   node scripts/install-agents.mjs --all         both
 //   add --uninstall to remove what it installed

@@ -221,6 +221,8 @@ test('note: no glab, a failing glab, or a huge body fail with a clear message', 
   fs.writeFileSync(path.join(dir, 'glab'), '#!/bin/sh\nexit 3\n', { mode: 0o755 });
   const failing = run(['note', '1', 'g/p', file], { env: { ...process.env, PATH: `${dir}${path.delimiter}${process.env.PATH}` } });
   assert.match(failing.stderr, /glab failed \(exit 3\)/);
+  fs.writeFileSync(path.join(dir, 'glab'), '#!/bin/sh\nkill -TERM $$\n', { mode: 0o755 });
+  assert.match(run(['note', '1', 'g/p', file], { env: { ...process.env, PATH: `${dir}${path.delimiter}${process.env.PATH}` } }).stderr, /glab failed \(SIGTERM\)/);
   fs.writeFileSync(file, 'x'.repeat(100001));
   assert.match(run(['note', '1', 'g/p', file]).stderr, /too large/);
 });
