@@ -125,7 +125,10 @@ overrides it.
 folder>/harnex.mjs untracked save` (the baseline Completion compares
 against); `/harnex` also runs `stamp --reset run start` (report.md "Timings"), so
 an earlier run's lines never mix in. One run per checkout at a time: the
-timings file and the untracked baseline are one file each.
+timings file and the untracked baseline are one file each. Run every
+`harnex.mjs` command from the target repo, by the script's absolute path: never
+`cd` into the skill's folder first, a stamp made there is refused or lands
+in the wrong repo.
 
 **Tool preflight**, both flows, once the plan exists and just before the
 brief (Quick step 1; `/harnex` step 1 after the grounding check), when `UI:
@@ -197,7 +200,8 @@ answer, so you ask before the planner:
    loop".
 
 ## /harnex
-1. **Plan** (`harnex:planner`), in this order:
+1. **Plan** (`harnex:planner`; stamp `plan start` before the spawn and
+   `plan end` once the brief is approved), in this order:
    - **a. Spawn.** Input is the requirement and its acceptance criteria
      verbatim (from "Requirement first"), the `Decisions:` block on a
      greenfield repo ("Greenfield"), the target repo(s), the tier profile,
@@ -246,7 +250,8 @@ answer, so you ask before the planner:
      anchors, M fixed, K unverified, U unlisted` (N counts existing-code
      anchors only; U is the callers the plan had missed), and wait for
      "Looks good".
-2. **Implement** (`harnex:implementer`), in this order:
+2. **Implement** (`harnex:implementer`; stamp `implement start` before the
+   first spawn and `implement end` after the last merge), in this order:
    - **a. Branch** first, in every target repo, and note each repo's HEAD
      there as `<start>`.
    - **b. Spawn.** Input: the plan (path, or the chat plan verbatim) and its
@@ -300,13 +305,15 @@ answer, so you ask before the planner:
      early mode on that WP's diff and screens, and fix its findings before
      the dependent WPs start. It never runs next to another browser session.
      The full UI review in step 5 still runs once on the merged change.
-3. **Gate review** (`harnex:reviewer`, model per settings) on the whole
+3. **Gate review** (`harnex:reviewer`, model per settings; stamp `review
+   start`, and `review end` once its fixes are in) on the whole
    diff across all WPs: requirement, plan, and the WP review findings (so
    it does not repeat them). It reads by risk area for what a WP review
    cannot see: the contracts between WPs and repos (unwired triggers, a
    blocking launch, a stale stream). Multi-repo: one reviewer across all of
    them. Then "Review loop": verify, fixes, delta review.
-4. **Validator, once, on the final code** (`harnex:validator`): after the
+4. **Validator, once, on the final code** (`harnex:validator`; stamp
+   `validate start` and `validate end`): after the
    gate review's fixes (and its delta review) are in, so its numbers cover
    what ships. Input: plan, every implementation report, tier, tier
    profile, dev-server URL. Multi-repo: one validator per repo. A journey
@@ -316,7 +323,8 @@ answer, so you ask before the planner:
    plan is one repo, so one validator gets every journey. Check each
    `Coverage:` line ("Journey coverage"). A failure goes to "Review loop"
    and the validator re-runs on the fix.
-5. **UI review** (`harnex:ui-ux-reviewer`), once, last, after the validator
+5. **UI review** (`harnex:ui-ux-reviewer`; stamp `ui start` and `ui end`),
+   once, last, after the validator
    passes, when `UI: yes`, over every changed screen on the final UI. Scope
    is the plan's `UI scope` widened by the changed files (standards.md "UI
    and UX review"): `git diff --name-only <base>...HEAD` plus uncommitted
@@ -412,7 +420,8 @@ could not as `Not verified:`; no helper check. No `Journeys:` line
 Read report.md, `review-guide.md`, and `../pr-review/criteria.md` now; the
 reviewer's guide and the `Criteria:` line are never skipped. Then follow
 report.md, including the metrics record: one report shape for both
-flows, timings on `/harnex` only (stamped from `run start`). Both flows: the
+flows, timings on `/harnex` only (stamped from `run start`; stamp `run
+end` first, from the target repo). Both flows: the
 reviewer's guide per `review-guide.md`, the pre-PR gate
 (report.md: the `/pr-review` criteria, so the second reviewer finds
 nothing), and delivery

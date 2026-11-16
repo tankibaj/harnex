@@ -220,6 +220,16 @@ test('the brief shows what the planner decided without asking', () => {
   for (const line of ['\nNot building: ', '\nDecided for you: ', '\nUnconfirmed: ']) assert.ok(brief.includes(line), line.trim());
 });
 
+test('every /harnex phase is stamped in its step, from the target repo', () => {
+  const skill = fs.readFileSync(path.join(ROOT, 'skills/harnex/SKILL.md'), 'utf8');
+  for (const phase of ['plan', 'implement', 'review', 'validate', 'ui']) {
+    assert.match(skill, new RegExp(`stamp\\s+\`${phase}\\s+start\``), `${phase} start`);
+    assert.match(skill, new RegExp(`\`${phase}\\s+end\``), `${phase} end`);
+  }
+  assert.match(skill, /stamp\s+`run\s+end`\s+first,\s+from\s+the\s+target\s+repo/);
+  assert.match(skill, /never\s+`cd`\s+into\s+the\s+skill's\s+folder/);
+});
+
 test('planning is measured: patch and refine stamps, and a planning key in the metrics record', () => {
   const report = fs.readFileSync(path.join(ROOT, 'skills/harnex/report.md'), 'utf8');
   const skill = fs.readFileSync(path.join(ROOT, 'skills/harnex/SKILL.md'), 'utf8');
@@ -243,7 +253,7 @@ test('the run never sweeps the developer\'s staged or modified files into the ch
 test('/harnex steps 1 and 2 are lettered sub-steps, not one paragraph each', () => {
   // Rules buried mid-paragraph (size check, patch-scoped grounding) were the ones runs skipped.
   const skill = fs.readFileSync(path.join(ROOT, 'skills/harnex/SKILL.md'), 'utf8');
-  const step1 = skill.slice(skill.indexOf('1. **Plan** (`harnex:planner`)'), skill.indexOf('2. **Implement**'));
+  const step1 = skill.slice(skill.indexOf('1. **Plan** (`harnex:planner`'), skill.indexOf('2. **Implement**'));
   const step2 = skill.slice(skill.indexOf('2. **Implement**'), skill.indexOf('3. **Gate review**'));
   for (const l of ['a. Spawn', 'b. Open questions', 'c. Settings', 'd. Size check', 'e. Grounding check', 'f. Brief']) assert.ok(step1.includes(`**${l}`), `step 1 ${l}`);
   for (const l of ['a. Branch', 'b. Spawn', 'c. Merge', 'd. WP review', 'e. Early validation', 'f. Early UI review']) assert.ok(step2.includes(`**${l}`), `step 2 ${l}`);

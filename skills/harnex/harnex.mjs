@@ -39,7 +39,11 @@ function stamp(args) {
   const d = new Date();
   const line = `${label} ${date(d)} ${time(d)}\n`;
   if (reset) fs.writeFileSync(log, line);
-  else fs.appendFileSync(log, line);
+  else if (!fs.existsSync(log)) {
+    // A stamp run from another repo (after a `cd`) would start a stray file
+    // there and leave this run's file without its end.
+    throw new Error(`no run started in ${path.dirname(gitDir)}: stamp from the target repo, after \`stamp --reset run start\``);
+  } else fs.appendFileSync(log, line);
 }
 
 // Durations from the stamps, so no one does clock arithmetic by hand. A phase
@@ -76,6 +80,8 @@ function timings() {
     }
   }
   if (first === null) throw new Error('the timings file has no stamps');
+  // No `run end`: the total runs to the last stamp, and the run is listed as open.
+  if (runStart !== null && runEnd === null) open.set('run', runStart);
   const mins = (s) => Math.round(s / 6) / 10;
   const show = (s) => (s > 0 && s < 30 ? '<1m' : `${Math.round(s / 60)}m`);
   const total = ((runEnd ?? last) - (runStart ?? first)) / 1000;

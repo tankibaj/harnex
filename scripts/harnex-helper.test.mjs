@@ -52,7 +52,7 @@ test('record: invalid JSON or an unwritable file never fails the caller', () => 
 test('stamp: writes labelled stamps to .git/harnex-timings.log; --reset starts over', () => {
   const dir = repo();
   const log = path.join(dir, '.git', 'harnex-timings.log');
-  assert.equal(run(['stamp', 'old'], { cwd: dir }).status, 0);
+  assert.equal(run(['stamp', '--reset', 'old'], { cwd: dir }).status, 0);
   assert.equal(run(['stamp', '--reset', 'run start'], { cwd: dir }).status, 0);
   assert.equal(run(['stamp', 'plan start'], { cwd: dir }).status, 0);
   const lines = fs.readFileSync(log, 'utf8').trim().split('\n');
@@ -258,6 +258,22 @@ test('timings: sums each phase, reports waits apart, counts the count-only stamp
   assert.deepEqual(JSON.parse(json), { minutes: { plan: 4, review: 4.5, total: 27 }, waits_min: 2, patches: 1, refines: 0, open: [] });
 });
 
+test('stamp: without a started run in this repo it fails and writes no file', () => {
+  const dir = repo();
+  const r = run(['stamp', 'run end'], { cwd: dir });
+  assert.notEqual(r.status, 0);
+  assert.match(r.stderr, /no run started in .*stamp from the target repo/);
+  assert.equal(fs.existsSync(path.join(dir, '.git', 'harnex-timings.log')), false);
+});
+
+test('timings: a run with no end is listed as open', () => {
+  const r = run(['timings'], { cwd: timingsRepo(['run start 2026-01-05 10:00:00']) });
+  assert.equal(r.status, 0, r.stderr);
+  const [line, json] = r.stdout.trim().split('\n');
+  assert.equal(line, 'Timings: waits 0m, total 0m, open: run');
+  assert.deepEqual(JSON.parse(json).open, ['run']);
+});
+
 test('timings: a start with no end is listed as open and adds no time; no run end uses the last stamp', () => {
   const dir = timingsRepo([
     'run start 2026-01-05 23:59:50',
@@ -267,8 +283,8 @@ test('timings: a start with no end is listed as open and adds no time; no run en
   const r = run(['timings'], { cwd: dir });
   assert.equal(r.status, 0, r.stderr);
   const [line, json] = r.stdout.trim().split('\n');
-  assert.equal(line, 'Timings: implement 0m, waits 0m, total <1m, plan refine 1, open: implement');
-  assert.deepEqual(JSON.parse(json).open, ['implement']);
+  assert.equal(line, 'Timings: implement 0m, waits 0m, total <1m, plan refine 1, open: implement, run');
+  assert.deepEqual(JSON.parse(json).open, ['implement', 'run']);
   assert.equal(JSON.parse(json).refines, 1);
 });
 

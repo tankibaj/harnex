@@ -22,8 +22,8 @@ Stamp to a file, never to memory; each stamp is one self-contained command
   validate 3m, waits 2m, total 27m, plan patch 1`) and, on a second line,
   the same numbers as JSON for the metrics record (`minutes`, `waits_min`,
   `patches`, `refines`). Copy both; never compute or estimate a duration
-  yourself. `open: <phase>` means a start stamp with no end: say so in the
-  report. `Plan: doc`: the line also goes into a `## Timings` section in the
+  yourself. `open: <phase>` means a start stamp with no end (`open: run`:
+  `run end` was never stamped in this repo): say so in the report. `Plan: doc`: the line also goes into a `## Timings` section in the
   plan.
 
 ## Plan doc (`Plan: doc`)
