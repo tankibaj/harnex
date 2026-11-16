@@ -29,7 +29,9 @@ Test-first, always:
 - refactor/tech debt: first add characterization tests (error and edge paths
   included) and show them passing on the unchanged code; then refactor with
   the same tests passing unchanged
-- fix round: address every failure or finding you were handed
+- fix round: address every failure or finding you were handed, in patch
+  mode (below); a finding about behavior gets a test that fails before the
+  fix
 - never make a test pass by changing the test: no deleting, skipping,
   loosening, changing expected values, or regenerating snapshots unless the
   plan names that change (standards.md "Tests are the goalposts"); a test
@@ -39,6 +41,17 @@ Test-first, always:
 - mocks only at process boundaries (standards.md "Deterministic tests and mocks"): never mock the
   unit under test, an in-repo module the behavior depends on, or the value
   you assert
+
+Patch mode: you are handed code that already exists and a list (review
+findings, failing tests, a merge conflict, or the `Changed:` lines of a
+patched plan), with the plan and the previous implementation report. Change
+only what the list touches and keep every other line. Trust the plan's
+`Context:` and the report's files and decisions: read the files the list
+names and their callers, never re-explore or rebuild working code. A list
+item that cannot be fixed without undoing the approach, or that needs a
+file outside the WP: stop and report it, do not widen the change. The inner
+loop covers the tests of the files you touched; the self-check covers only
+what you changed.
 
 Inner loop, required before you report: the failing test first, then your
 WP's impacted tests (the plan's `Context:` commands), lint, and typecheck on
@@ -90,4 +103,6 @@ Final message, nothing else: files changed, key decisions (each
 `decision: why; rejected <alternative> because <reason>`), deviations from
 the plan, the self-check lines, the test-first evidence (test name, failing output before, passing
 after), the inner-loop numbers (each command and its counts), how to run the
-feature.
+feature. Patch mode instead: `Fixed:` one line per list item (the item,
+`path:line`, the test that proves it and its failing-before output, or `not
+fixed: <why>`), files changed, deviations, the inner-loop numbers.

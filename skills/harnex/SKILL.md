@@ -136,7 +136,7 @@ after the UI review.
 ## Quick
 1. Plan it yourself: the change, the root cause (bugs), the test that
    proves it, the UI scope, the journeys (the planner's `Journeys:` format,
-   standards.md "UI and UX review"), the live smoke (standards.md "Live smoke"). Show it as the brief (brief.md) and wait for
+   standards.md "UI and UX review"), the live smoke (standards.md "Live smoke"); only the core fields of `plan-template.md` that a small change needs, no more. Show it as the brief (brief.md) and wait for
    "Looks good". Then branch off the default branch if on it.
 2. Bugs and new behavior: write the test, show it failing, then the change.
 3. Run the profile's impacted tests, lint, typecheck, and the secret scan
@@ -154,7 +154,13 @@ after the UI review.
    criteria verbatim (from "Requirement first"), the target repo(s), the
    tier profile, and today's timestamp. Ask its open questions in one
    AskUserQuestion call, recommended option first; any open question means
-   `Plan: doc` (re-spawn the planner with the answers). Derive the settings
+   `Plan: doc`. The plan already assumes every recommended option: when
+   every answer is the recommended one, keep the plan and only move the
+   questions to its `## Decisions` and drop their `(Q<n>)` markers
+   yourself, no planner. Any other answer:
+   re-spawn the planner in patch mode (the previous plan, the answers), so
+   it rewrites the `(Q<n>)` lines instead of planning again; stamp `plan
+   patch` (report.md "Timings"). Derive the settings
    from its `Risk areas:`, `UI scope`, WPs, sequence, and size estimate. A
    chat plan that has WPs or a sequence goes back to the planner for the
    doc, however small. `Plan: chat`: show the brief (brief.md) and wait for "Looks good".
@@ -165,10 +171,22 @@ after the UI review.
    anchor as **confirmed** (existing code matches the claim), **mismatch**
    (existing code differs), or **planned** (marked `(new)` or `(changes)`,
    or code the plan itself adds: skipped, never a mismatch); check each
-   `Assumptions:` line; return anchors checked, mismatches, planned skipped,
-   assumptions confirmed or refuted), fix the mismatches, then show the
+   `Assumptions:` line; then completeness, what the plan did not cite:
+   search for each signature, field, export, or behavior the plan changes
+   and list every caller or consumer missing from `Blast radius:` as
+   **unlisted**, with its `path:line`, and any existing helper that already
+   does what the plan builds new and is missing from `Reuse:`; return
+   anchors checked, mismatches, planned skipped, assumptions confirmed or
+   refuted, unlisted callers, reuse candidates), fix the mismatches and add
+   the unlisted callers to `Blast radius:` yourself. An unlisted caller or a
+   reuse candidate that changes the approach, the files, or the size
+   estimate goes back to the planner once, in patch mode (stamp `plan
+   patch`). After a patch
+   the grounding check covers only the anchors under the planner's
+   `Changed:`. Then show the
    brief with the plan path and `Grounding: N anchors, M fixed, K
-   unverified` (N counts existing-code anchors only), and wait for "Looks
+   unverified, U unlisted` (N counts existing-code anchors only; U is the
+   callers the plan had missed), and wait for "Looks
    good".
 2. **Implement** (`harnex:implementer`): branch first, in every target repo,
    and note each repo's HEAD there as `<start>`.
@@ -296,8 +314,10 @@ could not as `Not verified:`; no helper check. No `Journeys:` line
 - **Fix:** Quick, or a few lines outside any risk area with no failing
   test: fix it yourself. Otherwise route each failure and finding to the
   `harnex:implementer` of the WP that owns its file (a file no WP owns:
-  the WP whose change caused it; no WPs: one implementer), each with only
-  its own list, at the "reproducible failure" row of "Models and effort"
+  the WP whose change caused it; no WPs: one implementer), in patch mode:
+  each with only its own list, the plan, and that WP's implementation
+  report, so a fresh worker changes what the list touches and re-explores
+  nothing; at the "reproducible failure" row of "Models and effort"
   (`effort: high`). The WPs are merged, so in one
   repo they run one after another.
 - **WP review fixes:** one pass, no round counted; a delta review only for a

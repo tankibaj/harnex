@@ -28,77 +28,23 @@ the plan to
 WPs excluded), never over 60: cut detail the code will show, or split the
 work. Chat: write no file; the plan is your final message.
 
-Plan format. Doc only, directly under the H1: `**Status:** Draft | **Owner:**
-harnex | **Updated:** <YYYY-MM-DD HH:MM>`, then a `- [ ]` checklist. Both
-forms:
-- `Settings: Plan: <chat | doc> · Tier: <impacted | full> · Reviewer:
-  <sonnet | default> · UI: <yes | no>`, derived per SKILL.md "Settings"
-  (risk area or shared core: `Tier: full`; risk area: `Reviewer: default`)
-- `UI scope: none | visual | flow | both` with a one-line reason (standards.md
-  "UI and UX review"; `flow` when a user flow, form, navigation, or its
-  empty/error/loading state changes, and a journey with `ui: yes` raises `none` to `flow` and `visual` to `both`; a desktop or native UI also lists its minimum, default and large window sizes)
-- `Journeys:` one line per end-user journey the change builds or alters,
-  ids `J1`, `J2`... (multi-repo: `<entry>` is `<repo>:<entry>`, the repo that owns
-  the journey): `J<n> | <actor> | <entry> | <steps> | states: <happy,
-  empty, error, loading as they apply> | ui: yes|no | src: <AC cited |
-  requirement | code>`. Source order: every acceptance criterion a user can
-  exercise maps to a journey; with none given, each functionality the
-  requirement states; with neither, the user-reachable behavior the change
-  adds or alters in code (route, handler, control), cited by `path:line`. A
-  journey backed by an endpoint with no screen is `ui: no`. Backend-only
-  change with no user-visible journey: "none". The gates walk exactly this list
-  (standards.md "Journeys")
-- `Live smoke:` the headline user action of the change, run once through the
-  real entry point with nothing faked at the host edge, and the effect to
-  assert (standards.md "Live smoke"); or `none: <reason>` when nothing is
-  user-reachable. A tool or permission it needs goes under `Assumptions:`
-- requirement restated
-- for a bug: root-cause note (what breaks, why, where)
-- for a refactor/tech debt: the behavior the characterization tests must pin
-- files to change and approach
-- `Reuse:` existing helpers, components, or patterns to use, with paths
-- `Not building:` what nobody asked for, one line
-- `Blast radius:` callers and consumers of every signature, field, export, or
-  behavior that changes, with paths
-- `Risk areas:` each risk area the change touches (auth, schema/migrations,
-  security, CI/build/tooling config, dependencies, a public contract;
-  SKILL.md "Two flows") with its path, or "none". The orchestrator checks
-  the settings against this line.
-- `Context:` per repo, the exact test, lint, and typecheck commands resolved
-  from the tier profile (impacted test selection included) and the key
-  files, so later phases don't re-explore
-- any new dependency or schema change, with the checks from standards.md
-- risks
-- `Assumptions:` every claim about the code you did not confirm by reading
-  it (a default, a value, a behavior), one line each, or "none"
-- validation plan: tier (IMPACTED or FULL) with a one-line reason, exact test
-  commands, e2e flows, the manual browser flow to walk, test-first order
-- `API checks:` for each new or changed endpoint, one done check per
-  operation, validation case, and error case, per standards.md "API
-  endpoints", each naming its integration test; or "no endpoint changed"
-- `Done checks:` one item per acceptance criterion you were given (cite
-  it), plus your own definition-of-done items, each with its proof (standards.md
-  "Done checks"): a test name, a command and its expected result, or a
-  browser step and what must render. The WP that wires a piece in (the last WP
-  of a dependency chain, or the only WP) has a done check with one test
-  through the real entry point or composition root, not the unit alone, so a
-  piece built but never wired in fails it. Add, as `QA:` items, the cases a
-  tester would try first, only for what this change introduces: a new input
-  gets an invalid-input case, a new permission- or tenant-scoped read or
-  action gets a denied case, a new list or query gets an empty case. Each
-  cites the line it could break; prefer a parametrized row in an existing
-  test over a new test; endpoint cases already in `API checks:` are not
-  repeated. A `QA:` item is never moved to `Not building:`: it gets a test
-  or a browser step, or it is a blocking open question
-- `Approaches:` only when there are 2 or 3 genuinely different ways to meet
-  the requirement with real trade-offs (not variations of one), one line
-  each: name, idea, trade-off; else omit. Asked for "explore: 2-3
-  approaches": give each its own short plan (max 3 bullets) instead.
-- `## Open questions`: only blocking ones (a blocker, a CRITICAL risk, or an
-  answer the implementation depends on), each with 2-4 options and one marked
-  recommended, or "none"
-- `## Decisions`: trivial ambiguities you settled yourself (naming, defaults
-  with no behavioral or security weight), one line each with the reason
+Plan format: the fields of `plan-template.md` (in the folder of
+`standards.md`), in its order, both forms. Core fields always; a "when it
+applies" field only when it has something to say, never a "none" line for
+it. Read the template before writing.
+
+Open questions never stop the plan: write it whole, as if every recommended
+option was picked, and end each line that would change with another answer
+with `(Q<n>)`, so a different answer is a patch, not a new plan.
+
+Patch mode: given a previous plan (its path, or the chat plan verbatim)
+with answers or feedback, change only what they touch. Keep the path and
+every other line; set `**Updated:**`. Trust the plan's `Context:` and its
+anchors: read only code the answers or feedback newly bring in, never
+re-explore. Answers: rewrite the `(Q<n>)` lines of each question answered
+differently, drop the markers of every answered question, and move the
+question to `## Decisions` with the answer. Feedback that overturns the
+approach: say so in one line and plan again from the code.
 
 Never plan new test scripts, tooling, or CI changes the requirement did not
 ask for; a tier the profile cannot run is NOT VERIFIED in the validation
@@ -118,8 +64,7 @@ ids it delivers; every journey belongs to at least one WP). Add
 `early-validate: yes` only to a risk-area WP that later WPs build on (every WP gets one
 review when it returns; the validator otherwise runs once, on the final merged change). A UI WP that later WPs build on (shared layout,
 navigation shell, design-system component) goes under `Early UI candidates:`
-in the plan, never as a WP field: the developer opts in at the brief; else
-"none". Work spanning repos is always WPs, one or more per
+in the plan, never as a WP field: the developer opts in at the brief. Work spanning repos is always WPs, one or more per
 repo, with the contract change ordered provider-first.
 
 Ground every claim about existing code (a function, signature, field, value,
@@ -138,5 +83,8 @@ modify nothing else.
 
 Final message, nothing else. Doc: the `Settings:` line, the file path(s)
 you wrote, then the open questions verbatim with their options and
-recommendation (or "Open questions: none"), then the Decisions lines. Chat:
-the whole plan, then the same open questions and Decisions.
+recommendation (or "Open questions: none"), then the Decisions, `Not
+building:` and `Assumptions:` lines (the brief shows them). Chat:
+the whole plan, then the same open questions and Decisions. Patch mode adds
+`Changed:` first: one line per field you changed, and the anchors you added
+or changed.

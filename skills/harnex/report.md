@@ -13,6 +13,10 @@ Stamp to a file, never to memory; each stamp is one self-contained command
   SKILL.md "Run start" also saves the untracked baseline, on both flows),
   `<phase> start|end` per phase, `wait start|end` around each user wait,
   `run end`.
+- Count-only stamps, no start or end, never a duration: `plan patch` each
+  time the planner is re-spawned for open-question answers or an unlisted
+  caller, `plan refine` each time it is re-spawned for a refine at the
+  brief. Completion counts the lines for the metrics record.
 - At Completion, `cat` the file and compute every duration from it; never
   estimate. Report waits separately. `Plan: doc`: a `## Timings` section in
   the plan. `Plan: chat`: one line (`Timings: plan 4m, implement 12m,
@@ -94,7 +98,7 @@ if it fails:
 `harnex`), `settings` (`{plan, tier, reviewer, ui}`), `wps` (count, 0 on
 Quick), `ticket` (issue
 reference, or null), `minutes` (per phase and total from the timings file; Quick: null),
-`waits_min`, `rounds`, `findings` (`{critical, must_fix, nice}` across all
+`waits_min`, `planning` (`{open_questions, patches, refines, grounding: {anchors, fixed, unverified, unlisted}}`: questions asked, the `plan patch` and `plan refine` stamp counts, and the brief's `Grounding:` numbers, null on `Plan: chat`; Quick: null), `rounds`, `findings` (`{critical, must_fix, nice}` across all
 reviewers), `refuted` (findings the verify pass dropped, 0 when it did
 not run), `escaped` (kept CRITICAL or MUST-FIX findings, WP and gate reviews
 together, that no test or validator run caught first, count), `tests` (`PASS|FAIL|NOT VERIFIED`), `red_check`

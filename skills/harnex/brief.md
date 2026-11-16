@@ -17,6 +17,9 @@ Live smoke: <the headline action run for real, and the effect asserted | waived 
 Plan:
 - <at most 5 bullets: what will change, in order>
 Risk: <only real high risks, one line each; else none>
+Not building: <what nobody asked for and the plan leaves out>   (only when the plan has it)
+Decided for you: <each plan decision in a few words; answered open questions included>   (only when there are any)
+Unconfirmed: <each plan assumption the grounding check did not confirm>   (only when there are any)
 ```
 
 - **Flow reason** names the risk area behind `Tier: full` or `Reviewer:
@@ -41,6 +44,12 @@ Risk: <only real high risks, one line each; else none>
   data loss (CRITICAL), or breaking callers, a public contract, or stored
   data. Take them from the plan's risks; never invent one. None at that
   level: `none`.
+- **Not building, Decided for you, Unconfirmed** are the plan's `Not
+  building:`, `## Decisions` and `Assumptions:` lines, shortened, never
+  invented: the choices the planner made without asking. A wrong one is
+  cheapest to catch here, so none is dropped to keep the brief short; an
+  assumption the grounding check confirmed is left out. Omit a line with
+  nothing to show.
 - `Plan: doc`: the plan doc path and the `Grounding:` line go under the brief.
 - Draft acceptance criteria (input.md): list them under the brief, marked
   draft.
@@ -58,8 +67,11 @@ answer is the refine:
 - Other (free text): what to change.
 
 **Refine:** re-plan with the feedback (Quick: yourself; `/harnex`: re-spawn
-the planner with the previous plan and the feedback), show a new brief, ask
-again. After the third refine, suggest `Plan: doc` or splitting the work
+the planner in patch mode with the previous plan and the feedback, so it
+changes what the feedback touches and re-explores nothing; stamp `plan
+refine`, report.md "Timings"), show a new brief, ask
+again. `Plan: doc`: the grounding check re-runs on the planner's `Changed:`
+anchors only. After the third refine, suggest `Plan: doc` or splitting the work
 instead of a fourth brief.
 
 **Change settings:** re-plan with the new settings before a new brief. Quick

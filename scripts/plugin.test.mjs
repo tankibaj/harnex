@@ -180,3 +180,51 @@ test('untracked new runs once, and Delivery defers to Headless', () => {
   assert.match(skill, /untracked new`\s+once/);
   assert.match(report, /## Delivery[^\n]*\n[^#]*Headless/);
 });
+
+test('plan format lives in plan-template.md, with the fields later phases read as core', () => {
+  // The planner prompt carried ~20 mandatory fields on every plan, so small plans spent their lines on format.
+  const planner = fs.readFileSync(path.join(ROOT, 'agents/planner.md'), 'utf8');
+  const tpl = fs.readFileSync(path.join(ROOT, 'skills/harnex/plan-template.md'), 'utf8');
+  assert.ok(planner.includes('`plan-template.md`'), 'planner reads the template');
+  assert.ok(!planner.includes('`Journeys:` one line per end-user journey'), 'the format is not duplicated in the planner');
+  const core = tpl.slice(tpl.indexOf('\n## Core\n'), tpl.indexOf('\n## When it applies\n'));
+  assert.ok(core.length > 0 && tpl.includes('\n## When it applies\n'), 'template has Core and When it applies');
+  for (const field of ['`Settings:', '`UI scope:', '`Journeys:`', '`Live smoke:`', '`Blast radius:`', '`Risk areas:`', '`Context:`', '`Done checks:`', '`## Open questions`', '`## Decisions`']) {
+    assert.ok(core.includes(field), `${field} is a core field`);
+  }
+});
+
+test('answers, refines and fix rounds patch the work instead of redoing it', () => {
+  // Every open-question answer and every refine re-spawned a planner that explored the repo again.
+  const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');
+  const skill = read('skills/harnex/SKILL.md');
+  assert.match(read('agents/planner.md'), /\nPatch mode: /, 'planner patch mode');
+  assert.match(read('agents/implementer.md'), /\nPatch mode: /, 'implementer patch mode');
+  assert.ok(!skill.includes('re-spawn the planner with the answers'), 'answers no longer mean a new plan');
+  assert.match(skill, /every\s+answer\s+is\s+the\s+recommended\s+one,\s+keep\s+the\s+plan/, 'recommended answers skip the planner');
+  assert.match(skill, /re-spawn\s+the\s+planner\s+in\s+patch\s+mode/, 'other answers patch');
+  assert.match(read('skills/harnex/brief.md'), /planner\s+in\s+patch\s+mode\s+with\s+the\s+previous\s+plan\s+and\s+the\s+feedback/, 'refine patches');
+  const loop = skill.slice(skill.indexOf('## Review loop'), skill.indexOf('## Completion'));
+  assert.match(loop, /in\s+patch\s+mode/, 'fix rounds patch');
+});
+
+test('grounding check also reports callers the plan did not list', () => {
+  // The check confirmed cited anchors only; a caller missing from Blast radius reached review.
+  const skill = fs.readFileSync(path.join(ROOT, 'skills/harnex/SKILL.md'), 'utf8');
+  assert.match(skill, /\*\*unlisted\*\*/);
+  assert.match(skill, /K\s+unverified,\s+U\s+unlisted/);
+});
+
+test('the brief shows what the planner decided without asking', () => {
+  const brief = fs.readFileSync(path.join(ROOT, 'skills/harnex/brief.md'), 'utf8');
+  for (const line of ['\nNot building: ', '\nDecided for you: ', '\nUnconfirmed: ']) assert.ok(brief.includes(line), line.trim());
+});
+
+test('planning is measured: patch and refine stamps, and a planning key in the metrics record', () => {
+  const report = fs.readFileSync(path.join(ROOT, 'skills/harnex/report.md'), 'utf8');
+  const skill = fs.readFileSync(path.join(ROOT, 'skills/harnex/SKILL.md'), 'utf8');
+  const brief = fs.readFileSync(path.join(ROOT, 'skills/harnex/brief.md'), 'utf8');
+  assert.match(report, /`planning` \(`\{open_questions, patches, refines, grounding: /);
+  assert.match(skill, /stamp\s+`plan\s+patch`/);
+  assert.match(brief, /stamp\s+`plan\s+refine`/);
+});
