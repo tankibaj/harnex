@@ -174,23 +174,23 @@ after the UI review.
    and note each repo's HEAD there as `<start>`.
    Input: the plan (path, or the chat plan verbatim) and its WP path. One
    implementer per WP (no WPs: one implementer). WPs the planner marks
-   `parallel: yes` in the same repo run concurrently, each with
-   `isolation: "worktree"`, its worktree linked to the checkout's installed
-   dependencies the way standards.md "Independent red check" does; WPs in
-   different repos run concurrently without it; a WP with `depends:` starts
-   after those it names. Resume an implementer only for a fix round or a merge conflict on
+   `parallel: yes` in the same repo run concurrently, each in a worktree
+   you make per `worktrees.md` (kind `wp`: leftovers, create, link, spawn);
+   WPs in different repos run concurrently without one; a WP with
+   `depends:` starts after those it names are merged. Before creating a
+   worktree, commit what earlier WPs left in the feature checkout, only the
+   files their reports list (`git add -- <files>`, `git commit -qm "wip"`;
+   never `-A`, the developer's own untracked files stay out), so the
+   worktree branches from a HEAD that holds them.
+   Resume an implementer only for a fix round or a merge conflict on
    its own WP; any other task (an integration pass, a new kind of test) gets a
    fresh one, since a worker's context only grows. Each implementer runs its inner loop (failing test
    first, its WP's impacted tests, lint, typecheck) and reports numbers that
    are not authoritative. Merge every WP back before the gates. A worktree
-   WP returns uncommitted (implementers never commit). To merge it: commit
-   what earlier WPs left in the feature checkout, only the files their
-   reports list (`git add -- <files>`, `git commit -qm "wip"`; never `-A`,
-   the developer's own untracked files stay out); commit the WP in its
-   worktree, leaving the dependency link out (`git -C <wt> add -A -- .
-   ':(exclude)<link>'`, then `git -C <wt> commit -qm "wip: <wp>"`); `git
-   merge` its branch; remove the worktree. A WP that `depends:` on it then
-   branches from the result. A conflict: leave the merge open, its
+   WP returns uncommitted. To merge it: commit it in its worktree
+   (`worktrees.md` "Commit"); commit what the feature checkout holds
+   uncommitted from other WPs, the same way as above; `git merge` its
+   branch; then `worktrees.md` "Remove". A conflict: leave the merge open, its
    implementer resolves the markers (no commit), then `git add -- <those
    files>` and `git commit --no-edit`. After the last WP, `git reset --soft
    <start>` (per repo) leaves the change staged and uncommitted for the

@@ -6,7 +6,7 @@ For agents working ON this repo. What users run lives in `skills/` and
 ## Layout
 - `skills/harnex/`: the `/harnex` orchestrator (`SKILL.md`) and its files:
   `standards.md`, `brief.md`, `explore.md`, `report.md`, `pr.md`,
-  `review-guide.md`, `input.md`, `tiers/`, and `harnex.mjs` (stamp, record,
+  `review-guide.md`, `input.md`, `worktrees.md`, `tiers/`, and `harnex.mjs` (stamp, record,
   key, base/clean: the commands skills run). Two flows, `/harnex quick` and
   `/harnex`, with settings derived from the change; each WP gets one
   review, then the gates run on the merged result: gate review, the validator

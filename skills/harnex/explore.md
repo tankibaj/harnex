@@ -41,25 +41,14 @@ step 1); show the `Grounding:` lines and ask once more. Nothing is
 built before that last yes.
 
 ## 2. Build
-All paths absolute. `<main>` = the developer's checkout (stamps and its git
-dir stay there). Run `git -C <main> rev-parse HEAD` once; every later
-`<base>` is that SHA. Before creating anything, clear leftovers of an
-earlier run: `git -C <main> worktree prune`, then list the worktrees
-`git -C <main> worktree list` shows under `<main>-explore-*` and every
-branch listed by `git -C <main> for-each-ref --format='%(refname:short)'
-'refs/heads/explore/<slug>-*'`. Any listed: name them and ask once before
-removing (they may hold uncommitted work); declined: stop. Never
-delete a directory `worktree list` does not show.
+Worktrees per `worktrees.md`, kind `explore`, id the approach letter
+(`<main>-explore-x`, branch `explore/<slug>-x`). Run `git -C <main>
+rev-parse HEAD` once; every later `<base>` is that SHA, and it is `<from>`
+for every worktree. Clear the leftovers first ("Leftovers").
 
-Per picked approach X: `git -C <main> worktree add -b explore/<slug>-x
-<main>-explore-x <base>`, then link the checkout's dependencies the way
-standards.md "Independent red check" does (e.g. a link to its installed-packages directory).
-In one message, one `harnex:implementer` per worktree (the worktree path is
-its repo; no `isolation` option), the shared requirement, and only its own
-plan (`Plan: doc`: its plan doc path). When each returns, commit its work in its
-worktree, leaving the dependency link and this run's plan docs (the paths
-the planner returned) out: `git -C <wt> add -A -- . ':(exclude)<link>'
-':(exclude)<plan doc>' && git -C <wt> commit -qm "wip: explore <x>"`. A failed
+Per picked approach X: "Create". In one message, one `harnex:implementer`
+per worktree, with the shared requirement and only its own plan (`Plan:
+doc`: its plan doc path). When each returns: "Commit". A failed
 implementer: its approach is out; continue with the rest.
 
 ## 3. Check, one at a time
@@ -100,9 +89,9 @@ simplest). Ask: keep one (one option per approach), or Other: refine
    as the plan. Section 3 above was only a screen.
 
 ## Cleanup (every exit)
-Kept, refined, stopped, or failed: `git -C <main> worktree remove --force`
-every other `<main>-explore-*`, delete every branch from the `for-each-ref`
-list above (one `git branch -D <name>` each), and say which. A refine
+Kept, refined, stopped, or failed: `worktrees.md` "Remove" for every other
+`<main>-explore-*` and every `explore/<slug>-*` branch (the kept one too,
+once the feature branch exists), and say which. A refine
 starts a new round only after the old one is gone. Never touch the
 developer's other branches or files.
 

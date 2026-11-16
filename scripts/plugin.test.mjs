@@ -151,6 +151,22 @@ test('test-run gaps stay closed: completion reads, red-check fallback, browser a
   assert.match(skill, /\n## Headless\n/, 'headless contract');
 });
 
+test('the orchestrator makes its own worktrees, never the spawn isolation option', () => {
+  // The tool's isolation worktree branches from the remote default branch, so a WP that
+  // depends on another was built without it, and nobody linked its dependencies.
+  for (const f of ['skills/harnex', 'agents'].flatMap(files)) {
+    assert.ok(!/isolation:\s*"?worktree/.test(fs.readFileSync(f, 'utf8')), `${path.relative(ROOT, f)} spawns with isolation: worktree`);
+  }
+  const read = (f) => fs.readFileSync(path.join(ROOT, 'skills/harnex', f), 'utf8');
+  const step2 = read('SKILL.md').slice(read('SKILL.md').indexOf('2. **Implement**'), read('SKILL.md').indexOf('3. **Gate review**'));
+  assert.ok(step2.includes('`worktrees.md`'), 'step 2 follows worktrees.md');
+  assert.match(step2, /before\s+creating\s+a\s+worktree/i, 'earlier WPs are committed before a worktree branches from HEAD');
+  assert.ok(read('explore.md').includes('`worktrees.md`'), 'explore follows worktrees.md');
+  const wt = read('worktrees.md');
+  assert.match(wt, /worktree add -b/, 'worktrees.md creates the worktree');
+  assert.match(wt, /':\(exclude\)<link>'/, 'worktrees.md keeps the dependency link out of the commit');
+});
+
 test('the report says whether the metrics record was written', () => {
   // A test run skipped `record` and nothing in the report showed it.
   const report = fs.readFileSync(path.join(ROOT, 'skills/harnex/report.md'), 'utf8');

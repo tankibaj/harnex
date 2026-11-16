@@ -52,7 +52,7 @@ live in the tier profile (`tiers/`).
 - First add characterization tests pinning current behavior (error and edge paths included), passing on the unchanged code; then refactor with the same tests passing unchanged.
 
 ### Branches
-- If on the default branch, create the repo's branch pattern (its rules or CLAUDE.md), else `feature/<ticket>-<slug>`. Parallel WPs in one repo each get a worktree; the orchestrator merges them.
+- If on the default branch, create the repo's branch pattern (its rules or CLAUDE.md), else `feature/<ticket>-<slug>`. Parallel WPs in one repo each get a worktree; the orchestrator creates and merges them (`worktrees.md`).
 
 ### Multiple repos
 - One plan doc, in the primary repo (the one the requirement is about; else the first). Each WP names its `repo:`. Each repo gets its own branch, validation, and PR; the PRs link each other. Contract changes ship provider-first and stay backward compatible until every consumer is merged.
