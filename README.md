@@ -96,6 +96,9 @@ Plan doc for split, big (> 400 lines), multi-repo or unclear work; full test sui
 reviewer for auth, schema, security, CI, dependencies or a public API; UI review when screens change.
 
 - **Any stack:** commands come from your repo (README, CLAUDE.md/AGENTS.md, CI, package scripts). Pin them in `.harnex/tiers.md` if you like ([tiers](skills/harnex/tiers/README.md)).
+- **Empty repo:** with no code yet, `/harnex` first asks the founding decisions (stack, storage, how it runs, test tooling, what is not built), hands them to the planner as settled, and builds the skeleton first. Never `/harnex quick`.
+- **Clean start:** uncommitted changes to tracked files would end up in the diff, so harnex asks before it starts: stop and commit or stash, or count them as part of the change.
+- **Timings:** the `/harnex` report ends with the time each phase took and how long it waited for you.
 - **Any run target:** localhost, `docker compose up`, a local cluster; whatever the repo says.
 - **Less code:** the reviewer flags unused code, silent failures, misleading names, config keys nothing defines.
 - **Host:** GitHub first (`gh`), GitLab when the remote says so (`glab`).
