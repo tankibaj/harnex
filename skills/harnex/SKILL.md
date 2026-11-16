@@ -24,6 +24,10 @@ Agent names differ per tool: `harnex:<agent>` in Claude Code, `harnex-<agent>`
 in Codex and OpenCode (installed by `scripts/install-agents.mjs`). No such
 agent available: run that phase yourself, in order, with the same inputs
 and output rules (the phase is described in this file and `standards.md`).
+A review or a validation you ran yourself for that reason is not
+independent: mark it
+`(not independent)` in the report and record `independent: false`
+(report.md), never present it as a fresh one.
 
 ## Repos and precedence
 - Work in the repo(s) the requirement touches; the current directory may be
@@ -133,6 +137,49 @@ on the brief's `Tools:` line with the fallback (a scripted UI test, or the
 journeys or live smoke as `NOT VERIFIED`), so the developer decides before approval, not
 after the UI review.
 
+**Clean start**, both flows, first thing at Run start, per target repo: `git
+status --porcelain --untracked-files=no`. Any output means tracked files are
+staged or modified, and they would enter the diff every gate reads and the
+delivery commit. Ask once with AskUserQuestion: "Stop, I'll commit or stash
+first" (Recommended), or "They are part of this change" (then carry on and
+name those files in the report). Headless: stop and report. Untracked files
+need no check: `untracked save` covers them.
+
+## Greenfield
+A target repo with no source code yet (docs, a license, config or an empty
+scaffold only). A new package inside a repo that has code is not greenfield:
+the planner grounds it in that code. Never Quick. There is no code to
+explore, and a plan built on guessed foundations is thrown away by one
+answer, so you ask before the planner:
+1. **Read what exists:** the requirement, the issue, the repo's CLAUDE.md,
+   AGENTS.md and README. Facts are yours to find; only the decisions these
+   leave open are asked. A requirement that already carries them (`D<n>`
+   lines from an earlier run, or the developer's own text): ask only what is
+   missing, and nothing when nothing is.
+2. **One decision round**, AskUserQuestion (at most 4 questions a call; more
+   take a second call), each a full sentence, recommended option first with
+   its reason: language, framework and runtime; data and storage; how it
+   runs and ships; test, lint and typecheck tooling; what is not being
+   built. A recommended option comes from the requirement or the
+   conventions the repo or the developer states; where neither settles it,
+   recommend the plainest option that meets the requirement and say it is
+   your pick. Headless: a pick of your own is not a recommended option, so
+   the run stops there and reports the question ("Headless"). A second round
+   only for questions that depend on a first-round answer; never a third.
+   Each round is a user wait (`wait start|end`, report.md "Timings").
+3. **Hand on**, verbatim, to the planner: a `Decisions:` block, one line
+   each, `D<n>: <question> -> <answer>`. The planner treats each as settled
+   and never asks it again; one that a tool or the code contradicts comes
+   back as an open question ("/harnex" step 1b).
+4. **Skeleton first:** the first WP (or the first change of a sequence) is
+   the skeleton: an entry point, the test command, one passing test, and
+   lint and typecheck where the stack has them. It is part of the
+   requirement. Resolve the tier profile after the plan, from the commands
+   the skeleton creates (the plan's `Context:`, marked `(new)`); a tier it
+   cannot run yet is NOT VERIFIED. The skeleton's own tooling and
+   dependencies do not count as a risk area; everything else on that list
+   still does.
+
 ## Quick
 1. Plan it yourself: the change, the root cause (bugs), the test that
    proves it, the UI scope, the journeys (the planner's `Journeys:` format,
@@ -150,95 +197,109 @@ after the UI review.
    loop".
 
 ## /harnex
-1. **Plan** (`harnex:planner`): input is the requirement and its acceptance
-   criteria verbatim (from "Requirement first"), the target repo(s), the
-   tier profile, and today's timestamp. Ask its open questions in one
-   AskUserQuestion call, recommended option first; any open question means
-   `Plan: doc`. The plan already assumes every recommended option: when
-   every answer is the recommended one, keep the plan and only move the
-   questions to its `## Decisions` and drop their `(Q<n>)` markers
-   yourself, no planner. Any other answer:
-   re-spawn the planner in patch mode (the previous plan, the answers), so
-   it rewrites the `(Q<n>)` lines instead of planning again; stamp `plan
-   patch` (report.md "Timings"). Derive the settings
-   from its `Risk areas:`, `UI scope`, WPs, sequence, and size estimate. A
-   chat plan that has WPs or a sequence goes back to the planner for the
-   doc, however small. `Plan: chat`: show the brief (brief.md) and wait for "Looks good".
-   `Plan: doc`: a plan over 60 lines (checklist and WPs excluded; `wc -l`)
-   or a change estimated over about 400 lines goes back to the planner once
-   to cut or split it before the grounding check. Then the grounding check
-   (spawn `Explore` ("Models and effort": exploration row), with the plan path: sort each cited
-   anchor as **confirmed** (existing code matches the claim), **mismatch**
-   (existing code differs), or **planned** (marked `(new)` or `(changes)`,
-   or code the plan itself adds: skipped, never a mismatch); check each
-   `Assumptions:` line; then completeness, what the plan did not cite:
-   search for each signature, field, export, or behavior the plan changes
-   and list every caller or consumer missing from `Blast radius:` as
-   **unlisted**, with its `path:line`, and any existing helper that already
-   does what the plan builds new and is missing from `Reuse:`; return
-   anchors checked, mismatches, planned skipped, assumptions confirmed or
-   refuted, unlisted callers, reuse candidates), fix the mismatches and add
-   the unlisted callers to `Blast radius:` yourself. An unlisted caller or a
-   reuse candidate that changes the approach, the files, or the size
-   estimate goes back to the planner once, in patch mode (stamp `plan
-   patch`). After a patch
-   the grounding check covers only the anchors under the planner's
-   `Changed:`. Then show the
-   brief with the plan path and `Grounding: N anchors, M fixed, K
-   unverified, U unlisted` (N counts existing-code anchors only; U is the
-   callers the plan had missed), and wait for "Looks
-   good".
-2. **Implement** (`harnex:implementer`): branch first, in every target repo,
-   and note each repo's HEAD there as `<start>`.
-   Input: the plan (path, or the chat plan verbatim) and its WP path. One
-   implementer per WP (no WPs: one implementer). WPs the planner marks
-   `parallel: yes` in the same repo run concurrently, each in a worktree
-   you make per `worktrees.md` (kind `wp`: leftovers, create, link, spawn);
-   WPs in different repos run concurrently without one; a WP with
-   `depends:` starts after those it names are merged. Before creating a
-   worktree, commit what earlier WPs left in the feature checkout, only the
-   files their reports list (`git add -- <files>`, `git commit -qm "wip"`;
-   never `-A`, the developer's own untracked files stay out), so the
-   worktree branches from a HEAD that holds them.
-   Resume an implementer only for a fix round or a merge conflict on
-   its own WP; any other task (an integration pass, a new kind of test) gets a
-   fresh one, since a worker's context only grows. Each implementer runs its inner loop (failing test
-   first, its WP's impacted tests, lint, typecheck) and reports numbers that
-   are not authoritative. Merge every WP back before the gates. A worktree
-   WP returns uncommitted. To merge it: commit it in its worktree
-   (`worktrees.md` "Commit"); commit what the feature checkout holds
-   uncommitted from other WPs, the same way as above; `git merge` its
-   branch; then `worktrees.md` "Remove". A conflict: leave the merge open, its
-   implementer resolves the markers (no commit), then `git add -- <those
-   files>` and `git commit --no-edit`. After the last WP, `git reset --soft
-   <start>` (per repo) leaves the change staged and uncommitted for the
-   gates and Delivery. Between merges run at most the merged WPs' impacted
-   tests (a build when WPs share files); the full suite runs only in the
-   validator (its re-runs after a fix included), never here or in implementers.
-   **WP review**, plans with WPs only (no WPs: the gate review in step 3 is
-   the only review): when a WP returns, spawn one `harnex:reviewer` on that
-   WP's diff (its files and their callers), parallel WPs in parallel, and
-   fix its findings once ("Review loop"); a delta review follows only for a
-   risk-area fix or a CRITICAL. Its fixes are made by that WP's implementer
-   in the feature checkout once the WP is merged, and committed like a WP
-   (`git add -- <files from the fix report>`, `git commit -qm "wip: <wp>
-   fixes"`) before any later worktree WP merges. It blocks the WPs that
-   `depends:` on it when the WP is `early-validate: yes` or touches a risk
-   area; for any other WP the dependents start at once, their merges come
-   after its fixes, and the gate review covers a dependent built on the
-   unfixed code.
-   `early-validate: yes` on a WP (a risk-area WP that later WPs build on):
-   once it is merged and its review fixes are in, spawn `harnex:validator` in
-   early mode on that WP only, and fix what fails before the WPs that depend
-   on it start.
-   Early UI review (after the WP review and its fixes), only when the
-   developer turned it on at the brief for the plan's `Early UI
-   candidates:`: after that WP is merged into the
-   feature branch (the dev server runs from the merged checkout), spawn
-   `harnex:ui-ux-reviewer` in early mode on that WP's diff and screens, and
-   fix its findings before the dependent WPs start. It never runs next to
-   another browser session. The full UI review in step 5 still runs once on
-   the merged change.
+1. **Plan** (`harnex:planner`), in this order:
+   - **a. Spawn.** Input is the requirement and its acceptance criteria
+     verbatim (from "Requirement first"), the `Decisions:` block on a
+     greenfield repo ("Greenfield"), the target repo(s), the tier profile,
+     and today's timestamp.
+   - **b. Open questions.** Ask its open questions in one AskUserQuestion
+     call (at most 4 questions; more take a second call), recommended option
+     first, each a full sentence with the reason for the recommendation in
+     its description; any open question means `Plan: doc`. The plan already
+     assumes every recommended option: when every answer is the recommended
+     one, keep the plan and only move the questions to its `## Decisions`
+     and drop their `(Q<n>)` markers yourself, no planner. Any other answer:
+     re-spawn the planner in patch mode (the previous plan, the answers), so
+     it rewrites the `(Q<n>)` lines instead of planning again; stamp `plan
+     patch` (report.md "Timings"). A patch that returns open questions (new
+     ones, or ones an answer changed): ask those too, the same way, before
+     the grounding check.
+   - **c. Settings.** Derive the settings from its `Risk areas:`, `UI
+     scope`, WPs, sequence, and size estimate. A chat plan that has WPs or a
+     sequence goes back to the planner for the doc, however small. `Plan:
+     chat`: show the brief (brief.md) and wait for "Looks good"; d to f are
+     `Plan: doc` only.
+   - **d. Size check.** A plan over 60 lines (checklist and WPs excluded;
+     `wc -l`) or a change estimated over about 400 lines goes back to the
+     planner once to cut or split it before the grounding check.
+   - **e. Grounding check.** Spawn `Explore` ("Models and effort":
+     exploration row) with the plan path. It:
+     - sorts each cited anchor as **confirmed** (existing code matches the
+       claim), **mismatch** (existing code differs), or **planned** (marked
+       `(new)` or `(changes)`, or code the plan itself adds: skipped, never
+       a mismatch);
+     - checks each `Assumptions:` line;
+     - checks completeness, what the plan did not cite: searches for each
+       signature, field, export, or behavior the plan changes and lists
+       every caller or consumer missing from `Blast radius:` as
+       **unlisted**, with its `path:line`, and any existing helper that
+       already does what the plan builds new and is missing from `Reuse:`;
+     - returns anchors checked, mismatches, planned skipped, assumptions
+       confirmed or refuted, unlisted callers, reuse candidates.
+
+     Fix the mismatches and add the unlisted callers to `Blast radius:`
+     yourself. An unlisted caller or a reuse candidate that changes the
+     approach, the files, or the size estimate goes back to the planner
+     once, in patch mode (stamp `plan patch`). After a patch the grounding
+     check covers only the anchors under the planner's `Changed:`.
+   - **f. Brief.** Show the brief with the plan path and `Grounding: N
+     anchors, M fixed, K unverified, U unlisted` (N counts existing-code
+     anchors only; U is the callers the plan had missed), and wait for
+     "Looks good".
+2. **Implement** (`harnex:implementer`), in this order:
+   - **a. Branch** first, in every target repo, and note each repo's HEAD
+     there as `<start>`.
+   - **b. Spawn.** Input: the plan (path, or the chat plan verbatim) and its
+     WP path. One implementer per WP (no WPs: one implementer). WPs the
+     planner marks `parallel: yes` in the same repo run concurrently, each
+     in a worktree you make per `worktrees.md` (kind `wp`: leftovers,
+     create, link, spawn); WPs in different repos run concurrently without
+     one; a WP with `depends:` starts after those it names are merged.
+     Before creating a worktree, commit what earlier WPs left in the feature
+     checkout, only the files their reports list (`git add -- <files>`, `git
+     commit -qm "wip" -- <files>`; never `-A`, and never a commit without
+     the file list, which takes everything staged; the developer's own
+     untracked files stay out), so the worktree branches from a HEAD that
+     holds them. Resume an implementer only for a fix round or a merge
+     conflict on its own WP; any other task (an integration pass, a new kind
+     of test) gets a fresh one, since a worker's context only grows. Each
+     implementer runs its inner loop (failing test first, its WP's impacted
+     tests, lint, typecheck) and reports numbers that are not authoritative.
+   - **c. Merge** every WP back before the gates. A worktree WP returns
+     uncommitted. To merge it: commit it in its worktree (`worktrees.md`
+     "Commit"); commit what the feature checkout holds uncommitted from
+     other WPs, the same way as in b; `git merge` its branch; then
+     `worktrees.md` "Remove". A conflict: leave the merge open, its
+     implementer resolves the markers (no commit), then `git add -- <those
+     files>` and `git commit --no-edit`. After the last WP, `git reset
+     --soft <start>` (per repo) leaves the change staged and uncommitted for
+     the gates and Delivery. Between merges run at most the merged WPs'
+     impacted tests (a build when WPs share files); the full suite runs only
+     in the validator (its re-runs after a fix included), never here or in
+     implementers.
+   - **d. WP review**, plans with WPs only (no WPs: the gate review in step
+     3 is the only review): when a WP returns, spawn one `harnex:reviewer`
+     on that WP's diff (its files and their callers), parallel WPs in
+     parallel, and fix its findings once ("Review loop"); a delta review
+     follows only for a risk-area fix or a CRITICAL. Its fixes are made by
+     that WP's implementer in the feature checkout once the WP is merged,
+     and committed like a WP (`git add -- <files from the fix report>`, `git
+     commit -qm "wip: <wp> fixes" -- <those files>`) before any later
+     worktree WP merges. It blocks the WPs that `depends:` on it when the WP
+     is `early-validate: yes` or touches a risk area; for any other WP the
+     dependents start at once, their merges come after its fixes, and the
+     gate review covers a dependent built on the unfixed code.
+   - **e. Early validation.** `early-validate: yes` on a WP (a risk-area WP
+     that later WPs build on): once it is merged and its review fixes are
+     in, spawn `harnex:validator` in early mode on that WP only, and fix
+     what fails before the WPs that depend on it start.
+   - **f. Early UI review** (after the WP review and its fixes), only when
+     the developer turned it on at the brief for the plan's `Early UI
+     candidates:`: after that WP is merged into the feature branch (the dev
+     server runs from the merged checkout), spawn `harnex:ui-ux-reviewer` in
+     early mode on that WP's diff and screens, and fix its findings before
+     the dependent WPs start. It never runs next to another browser session.
+     The full UI review in step 5 still runs once on the merged change.
 3. **Gate review** (`harnex:reviewer`, model per settings) on the whole
    diff across all WPs: requirement, plan, and the WP review findings (so
    it does not repeat them). It reads by risk area for what a WP review
@@ -368,7 +429,7 @@ diff).
 ## Headless
 No one can answer: the caller says so (CI, a scripted or delegated run), or
 AskUserQuestion is unavailable.
-- Never wait. At every question (brief, open questions, escalation, skip
+- Never wait. At every question (the greenfield round, brief, open questions, escalation, skip
   approvals) take the recommended option and record the
   question, its options, and the pick (report.md `Headless:`). No
   recommended option, or a CRITICAL finding: stop and report it; never

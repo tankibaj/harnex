@@ -4,6 +4,7 @@
 // Node only, no dependencies.
 //
 //   node harnex.mjs stamp [--reset] <label>   append "<label> <time>" to .git/harnex-timings.log
+//   node harnex.mjs timings                   print the `Timings:` line and the metrics JSON from that log
 //   node harnex.mjs record '<json>'           append one metrics line (adds ts) to ~/.harnex/metrics.jsonl
 //   node harnex.mjs key <PR web URL>          12-character hash of the URL (pr_key)
 //   node harnex.mjs base <ref> <dir>          check out <ref> into a new <dir>, no worktree (red check)
@@ -39,6 +40,59 @@ function stamp(args) {
   const line = `${label} ${date(d)} ${time(d)}\n`;
   if (reset) fs.writeFileSync(log, line);
   else fs.appendFileSync(log, line);
+}
+
+// Durations from the stamps, so no one does clock arithmetic by hand. A phase
+// stamped start and end more than once is summed; `wait` is reported apart;
+// a stamp with neither word (`plan patch`) is a count. A start with no end is
+// listed as open and adds no time. Line 1 is the report's `Timings:` line,
+// line 2 the same numbers as JSON for the metrics record.
+function timings() {
+  const gitDir = execFileSync('git', ['rev-parse', '--absolute-git-dir'], { encoding: 'utf8' }).trim();
+  const log = path.join(gitDir, 'harnex-timings.log');
+  if (!fs.existsSync(log)) throw new Error('no timings file: `stamp --reset run start` was never run');
+  const secs = new Map();
+  const open = new Map();
+  const counts = {};
+  let first = null;
+  let last = null;
+  let runStart = null;
+  let runEnd = null;
+  for (const line of fs.readFileSync(log, 'utf8').split('\n')) {
+    const m = /^(.+) (\d{4}-\d\d-\d\d) (\d\d:\d\d:\d\d)$/.exec(line.trim());
+    if (!m) continue;
+    const at = new Date(`${m[2]}T${m[3]}`).getTime();
+    first ??= at;
+    last = at;
+    const edge = /^(.+) (start|end)$/.exec(m[1]);
+    if (!edge) counts[m[1]] = (counts[m[1]] ?? 0) + 1;
+    else if (edge[1] === 'run') edge[2] === 'start' ? (runStart = at) : (runEnd = at);
+    else if (edge[2] === 'start') {
+      if (!secs.has(edge[1])) secs.set(edge[1], 0);
+      open.set(edge[1], at);
+    } else if (open.has(edge[1])) {
+      secs.set(edge[1], secs.get(edge[1]) + (at - open.get(edge[1])) / 1000);
+      open.delete(edge[1]);
+    }
+  }
+  if (first === null) throw new Error('the timings file has no stamps');
+  const mins = (s) => Math.round(s / 6) / 10;
+  const show = (s) => (s > 0 && s < 30 ? '<1m' : `${Math.round(s / 60)}m`);
+  const total = ((runEnd ?? last) - (runStart ?? first)) / 1000;
+  const waits = secs.get('wait') ?? 0;
+  const phases = [...secs].filter(([name]) => name !== 'wait');
+  const parts = phases.map(([name, s]) => `${name} ${show(s)}`);
+  parts.push(`waits ${show(waits)}`, `total ${show(total)}`);
+  for (const [name, n] of Object.entries(counts)) parts.push(`${name} ${n}`);
+  if (open.size) parts.push(`open: ${[...open.keys()].join(', ')}`);
+  console.log(`Timings: ${parts.join(', ')}`);
+  console.log(JSON.stringify({
+    minutes: { ...Object.fromEntries(phases.map(([name, s]) => [name, mins(s)])), total: mins(total) },
+    waits_min: mins(waits),
+    patches: counts['plan patch'] ?? 0,
+    refines: counts['plan refine'] ?? 0,
+    open: [...open.keys()],
+  }));
 }
 
 function record(json) {
@@ -152,6 +206,7 @@ function note([iid, project, file]) {
 const [cmd, ...args] = process.argv.slice(2);
 try {
   if (cmd === 'stamp') stamp(args);
+  else if (cmd === 'timings') timings();
   else if (cmd === 'record') record(args.join(' '));
   else if (cmd === 'key' && args[0]) console.log(key(args[0]));
   else if (cmd === 'base') base(args);
@@ -160,7 +215,7 @@ try {
   else if (cmd === 'coverage') coverage(args);
   else if (cmd === 'note') note(args);
   else {
-    console.error('usage: harnex.mjs stamp [--reset] <label> | record <json> | key <url> | base <ref> <dir> | clean <dir> | untracked save|new | coverage <ids> <line> | note <iid> <project> <file>');
+    console.error('usage: harnex.mjs stamp [--reset] <label> | timings | record <json> | key <url> | base <ref> <dir> | clean <dir> | untracked save|new | coverage <ids> <line> | note <iid> <project> <file>');
     process.exitCode = 2;
   }
 } catch (e) {

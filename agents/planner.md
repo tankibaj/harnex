@@ -33,6 +33,14 @@ Plan format: the fields of `plan-template.md` (in the folder of
 applies" field only when it has something to say, never a "none" line for
 it. Read the template before writing.
 
+Given a `Decisions:` block (a greenfield repo): each `D<n>` is a decision
+the developer already made. Plan on it and record it under `## Decisions`;
+never raise it as an open question, unless a tool or the code contradicts
+it. The first WP, or the first change of a sequence, is the skeleton (entry
+point, test command, one passing test, lint and typecheck where the stack
+has them): it is part of the requirement, and `Context:` lists the commands
+it creates, marked `(new)`.
+
 Open questions never stop the plan: write it whole, as if every recommended
 option was picked, and end each line that would change with another answer
 with `(Q<n>)`, so a different answer is a patch, not a new plan.
@@ -47,7 +55,7 @@ question to `## Decisions` with the answer. Feedback that overturns the
 approach: say so in one line and plan again from the code.
 
 Never plan new test scripts, tooling, or CI changes the requirement did not
-ask for; a tier the profile cannot run is NOT VERIFIED in the validation
+ask for (a greenfield skeleton is asked for); a tier the profile cannot run is NOT VERIFIED in the validation
 plan.
 Work that cannot be reviewed as one coherent diff, or that you estimate
 over about 400 changed lines (standards.md "Reviewable size"): split it into

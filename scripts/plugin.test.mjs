@@ -228,3 +228,59 @@ test('planning is measured: patch and refine stamps, and a planning key in the m
   assert.match(skill, /stamp\s+`plan\s+patch`/);
   assert.match(brief, /stamp\s+`plan\s+refine`/);
 });
+
+test('the run never sweeps the developer\'s staged or modified files into the change', () => {
+  // `git commit -qm "wip"` took the whole index, and /harnex had no clean-start check.
+  const skill = fs.readFileSync(path.join(ROOT, 'skills/harnex/SKILL.md'), 'utf8');
+  assert.match(skill, /\*\*Clean start\*\*, both flows/);
+  assert.ok(skill.includes('--porcelain --untracked-files=no'), 'clean-start command');
+  const step2 = skill.slice(skill.indexOf('2. **Implement**'), skill.indexOf('3. **Gate review**'));
+  const wip = step2.match(/commit\s+-qm\s+"wip[^"]*"[^`]*`/g) || [];
+  assert.equal(wip.length, 2, 'both wip commits found');
+  for (const c of wip) assert.match(c, /--\s+<[^>]+>`$/, `${c} names its files`);
+});
+
+test('/harnex steps 1 and 2 are lettered sub-steps, not one paragraph each', () => {
+  // Rules buried mid-paragraph (size check, patch-scoped grounding) were the ones runs skipped.
+  const skill = fs.readFileSync(path.join(ROOT, 'skills/harnex/SKILL.md'), 'utf8');
+  const step1 = skill.slice(skill.indexOf('1. **Plan** (`harnex:planner`)'), skill.indexOf('2. **Implement**'));
+  const step2 = skill.slice(skill.indexOf('2. **Implement**'), skill.indexOf('3. **Gate review**'));
+  for (const l of ['a. Spawn', 'b. Open questions', 'c. Settings', 'd. Size check', 'e. Grounding check', 'f. Brief']) assert.ok(step1.includes(`**${l}`), `step 1 ${l}`);
+  for (const l of ['a. Branch', 'b. Spawn', 'c. Merge', 'd. WP review', 'e. Early validation', 'f. Early UI review']) assert.ok(step2.includes(`**${l}`), `step 2 ${l}`);
+});
+
+test('questions a patch returns are asked, and greenfield decisions come before the planner', () => {
+  // A changed answer left its dependent questions stale; an empty repo was planned on guessed foundations.
+  const skill = fs.readFileSync(path.join(ROOT, 'skills/harnex/SKILL.md'), 'utf8');
+  const planner = fs.readFileSync(path.join(ROOT, 'agents/planner.md'), 'utf8');
+  assert.match(skill, /patch\s+that\s+returns\s+open\s+questions/);
+  assert.match(skill, /\n## Greenfield\n/);
+  const green = skill.slice(skill.indexOf('\n## Greenfield\n'), skill.indexOf('\n## Quick\n'));
+  assert.match(green, /never\s+a\s+third/, 'the round is capped');
+  assert.match(green, /`D<n>: <question> -> <answer>`/);
+  assert.match(green, /Skeleton first/);
+  assert.match(planner, /`Decisions:`\s+block/);
+  assert.match(planner, /unless\s+a\s+tool\s+or\s+the\s+code\s+contradicts/);
+});
+
+test('Delivery stages the change by name, and a headless greenfield run never picks the stack itself', () => {
+  // "Commit" with no file list invites `git add -A`, which takes the developer's untracked files.
+  const report = fs.readFileSync(path.join(ROOT, 'skills/harnex/report.md'), 'utf8');
+  const delivery = report.slice(report.indexOf('\n## Delivery'));
+  assert.match(delivery, /\*\*Commit only the change:\*\* stage by name, `git add -- <files>`/);
+  assert.match(delivery, /Never `git add -A`/);
+  const skill = fs.readFileSync(path.join(ROOT, 'skills/harnex/SKILL.md'), 'utf8');
+  const green = skill.slice(skill.indexOf('\n## Greenfield\n'), skill.indexOf('\n## Quick\n'));
+  assert.match(green, /Headless:\s+a\s+pick\s+of\s+your\s+own\s+is\s+not\s+a\s+recommended\s+option/);
+});
+
+test('durations come from the script, and a self-run review is marked not independent', () => {
+  // The orchestrator did clock arithmetic on `cat` output, and reviewed its own work unmarked when no agent existed.
+  const report = fs.readFileSync(path.join(ROOT, 'skills/harnex/report.md'), 'utf8');
+  const skill = fs.readFileSync(path.join(ROOT, 'skills/harnex/SKILL.md'), 'utf8');
+  assert.match(report, /harnex\.mjs timings`/);
+  assert.ok(!/`cat` the file and compute/.test(report), 'no hand-computed durations');
+  assert.match(report, /`\(not independent\)`/);
+  assert.match(report, /`independent` \(`false`/);
+  assert.match(skill, /you\s+ran\s+yourself\s+for\s+that\s+reason\s+is\s+not\s+independent/);
+});

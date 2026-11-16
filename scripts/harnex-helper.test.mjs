@@ -230,3 +230,53 @@ test('note: no glab, a failing glab, or a huge body fail with a clear message', 
 test('note: needs iid, project and file', () => {
   assert.equal(run(['note', '12']).status, 1);
 });
+
+function timingsRepo(lines) {
+  const dir = repo();
+  fs.writeFileSync(path.join(dir, '.git', 'harnex-timings.log'), `${lines.join('\n')}\n`);
+  return dir;
+}
+
+test('timings: sums each phase, reports waits apart, counts the count-only stamps', () => {
+  const dir = timingsRepo([
+    'run start 2026-01-05 10:00:00',
+    'plan start 2026-01-05 10:00:00',
+    'plan patch 2026-01-05 10:02:00',
+    'plan end 2026-01-05 10:04:00',
+    'wait start 2026-01-05 10:04:00',
+    'wait end 2026-01-05 10:06:00',
+    'review start 2026-01-05 10:06:00',
+    'review end 2026-01-05 10:09:00',
+    'review start 2026-01-05 10:20:00',
+    'review end 2026-01-05 10:21:30',
+    'run end 2026-01-05 10:27:00',
+  ]);
+  const r = run(['timings'], { cwd: dir });
+  assert.equal(r.status, 0, r.stderr);
+  const [line, json] = r.stdout.trim().split('\n');
+  assert.equal(line, 'Timings: plan 4m, review 5m, waits 2m, total 27m, plan patch 1');
+  assert.deepEqual(JSON.parse(json), { minutes: { plan: 4, review: 4.5, total: 27 }, waits_min: 2, patches: 1, refines: 0, open: [] });
+});
+
+test('timings: a start with no end is listed as open and adds no time; no run end uses the last stamp', () => {
+  const dir = timingsRepo([
+    'run start 2026-01-05 23:59:50',
+    'implement start 2026-01-05 23:59:50',
+    'plan refine 2026-01-06 00:00:10',
+  ]);
+  const r = run(['timings'], { cwd: dir });
+  assert.equal(r.status, 0, r.stderr);
+  const [line, json] = r.stdout.trim().split('\n');
+  assert.equal(line, 'Timings: implement 0m, waits 0m, total <1m, plan refine 1, open: implement');
+  assert.deepEqual(JSON.parse(json).open, ['implement']);
+  assert.equal(JSON.parse(json).refines, 1);
+});
+
+test('timings: no file or no stamps fails with a clear message', () => {
+  const none = run(['timings'], { cwd: repo() });
+  assert.equal(none.status, 1);
+  assert.match(none.stderr, /no timings file/);
+  const empty = run(['timings'], { cwd: timingsRepo(['garbage']) });
+  assert.equal(empty.status, 1);
+  assert.match(empty.stderr, /no stamps/);
+});

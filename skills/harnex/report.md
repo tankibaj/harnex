@@ -16,11 +16,15 @@ Stamp to a file, never to memory; each stamp is one self-contained command
 - Count-only stamps, no start or end, never a duration: `plan patch` each
   time the planner is re-spawned for open-question answers or an unlisted
   caller, `plan refine` each time it is re-spawned for a refine at the
-  brief. Completion counts the lines for the metrics record.
-- At Completion, `cat` the file and compute every duration from it; never
-  estimate. Report waits separately. `Plan: doc`: a `## Timings` section in
-  the plan. `Plan: chat`: one line (`Timings: plan 4m, implement 12m,
-  review 3m, validate 3m, fixes 0, total 27m`).
+  brief.
+- At Completion, run `node <this skill's folder>/harnex.mjs timings`. It
+  prints the `Timings:` line (`Timings: plan 4m, implement 12m, review 3m,
+  validate 3m, waits 2m, total 27m, plan patch 1`) and, on a second line,
+  the same numbers as JSON for the metrics record (`minutes`, `waits_min`,
+  `patches`, `refines`). Copy both; never compute or estimate a duration
+  yourself. `open: <phase>` means a start stamp with no end: say so in the
+  report. `Plan: doc`: the line also goes into a `## Timings` section in the
+  plan.
 
 ## Plan doc (`Plan: doc`)
 Set the plan (and WP docs) to `Done` once every checklist item is `[x]` or an
@@ -37,6 +41,9 @@ line.
   the failing-before run).
 - `Review:` each reviewer's verdict and the model it ran on; when the
   verify pass ran, `verified: N confirmed, M plausible, K refuted`.
+  A review you ran yourself because no reviewer agent was available
+  (SKILL.md, the agents paragraph) is marked `(not independent)`; the same
+  mark goes on `Tests (orchestrator)` when `/harnex` had no validator agent.
 - `UI review:` the `ui-ux-reviewer` verdict, or `UI scope none` checked
   against the changed-file set. UI scope with no UI review means not done.
 - `Checklist:` every plan item (Quick: the chat plan's) with its evidence (command and result, test
@@ -97,8 +104,9 @@ if it fails:
 `~/.harnex/metrics.jsonl`, or `HARNEX_METRICS`) with keys `kind: "run"`, `repo` (basename(s)), `flow` (`quick` or
 `harnex`), `settings` (`{plan, tier, reviewer, ui}`), `wps` (count, 0 on
 Quick), `ticket` (issue
-reference, or null), `minutes` (per phase and total from the timings file; Quick: null),
-`waits_min`, `planning` (`{open_questions, patches, refines, grounding: {anchors, fixed, unverified, unlisted}}`: questions asked, the `plan patch` and `plan refine` stamp counts, and the brief's `Grounding:` numbers, null on `Plan: chat`; Quick: null), `rounds`, `findings` (`{critical, must_fix, nice}` across all
+reference, or null), `minutes` and `waits_min` (copied from the `timings` output; Quick: null),
+`independent` (`false` when you ran the review or the validation yourself for lack of the agent, else `true`),
+`planning` (`{open_questions, patches, refines, grounding: {anchors, fixed, unverified, unlisted}}`: questions asked, `patches` and `refines` from the `timings` output, and the brief's `Grounding:` numbers, null on `Plan: chat`; Quick: null), `rounds`, `findings` (`{critical, must_fix, nice}` across all
 reviewers), `refuted` (findings the verify pass dropped, 0 when it did
 not run), `escaped` (kept CRITICAL or MUST-FIX findings, WP and gate reviews
 together, that no test or validator run caught first, count), `tests` (`PASS|FAIL|NOT VERIFIED`), `red_check`
@@ -117,6 +125,13 @@ GitLab, where it is an MR).
   - commit only (local);
   - nothing, I'll do it myself.
   For a small or personal project, also offer a direct merge.
+- **Commit only the change:** stage by name, `git add -- <files>`: the
+  files the implementation and fix reports list (Quick: the files you
+  changed), plus the untracked files the change adds, from the `untracked
+  new` list (SKILL.md "Completion"). Never `git add -A`, `git add .` or `git
+  commit -a`: the developer's own untracked and unrelated files stay out.
+  On `/harnex` the change is already staged (`git reset --soft <start>`);
+  add by name only what the fixes after it left unstaged.
 - **Show first, then act:** before pushing, show the PR title and the target
   branch. The title is `type(scope): summary`, with the issue reference when
   there is one. The target is the repo's default branch (`git symbolic-ref
