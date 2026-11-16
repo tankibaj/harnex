@@ -6,7 +6,7 @@
     {
       "name": "harnex",
       "source": "./",
-      "description": "Plan you approve, test-first build, independent validation and review, pre-PR gate; plus /pr-review, /qa and /retro.",
+      "description": "Plan you approve, test-first build, independent validation and review, pre-PR gate; plus /pr-review, /qa, /retro and /interview.",
       "category": "development",
       "keywords": ["workflow", "agents", "tdd", "code-review", "qa"]
     }

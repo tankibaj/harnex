@@ -11,7 +11,7 @@ For agents working ON this repo. What users run lives in `skills/` and
   `/harnex`, with settings derived from the change; each WP gets one
   review, then the gates run on the merged result: gate review, the validator
   once on the final code, UI reviewer last.
-- `skills/pr-review/` (+ `threads.py`), `skills/qa/`, `skills/retro/`:
+- `skills/pr-review/` (+ `threads.py`), `skills/qa/`, `skills/retro/`, `skills/interview/`:
   standalone skills, never part of the `/harnex` run.
 - `skills/apple-design/`, `skills/web-design/`: design skills distilled from
   Apple's Human Interface Guidelines (native: every rule; web: what
